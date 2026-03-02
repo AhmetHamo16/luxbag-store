@@ -1,0 +1,15 @@
+﻿
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\Lenovo\Desktop\Melora\luxbag\frontend\src\pages\public\Shop.jsx
+  40:3  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  43:6  warning  React Hook useEffect has a missing dependency: 'fetchProducts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\Desktop\Melora\luxbag\frontend\src\store\authStore.js
+  39:14  error  'error' is defined but never used  no-unused-vars
+
+Γ£û 3 problems (1 error, 2 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
