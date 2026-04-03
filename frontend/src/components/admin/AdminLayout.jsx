@@ -68,6 +68,11 @@ const AdminLayout = () => {
       accountSettings: 'Account Settings',
       testSound: 'Test Alert Sound',
       stopSound: 'Stop Alert Sound',
+      stopForNow: 'Stop For Now',
+      preparing: 'Preparing',
+      paymentPending: 'Payment verification still required',
+      alertSilenced: 'Alert sound stopped',
+      orderPreparingNow: 'The order is now being prepared.',
       logout: 'Logout',
       developedWith: 'Developed with Melora',
       returnToStore: 'Return to Store',
@@ -100,6 +105,11 @@ const AdminLayout = () => {
       accountSettings: 'إعدادات الحساب',
       testSound: 'اختبار صوت الإشعار',
       stopSound: 'إيقاف صوت الإشعار',
+      stopForNow: 'إيقاف الآن',
+      preparing: 'قيد التجهيز',
+      paymentPending: 'ما زال الطلب بانتظار التحقق من الدفع',
+      alertSilenced: 'تم إيقاف صوت التنبيه',
+      orderPreparingNow: 'تم تحويل الطلب إلى قيد التجهيز.',
       logout: 'تسجيل الخروج',
       developedWith: 'تم تطويره مع Melora',
       returnToStore: 'العودة إلى المتجر',
@@ -132,6 +142,11 @@ const AdminLayout = () => {
       accountSettings: 'Hesap Ayarlari',
       testSound: 'Bildirim Sesini Test Et',
       stopSound: 'Bildirim Sesini Durdur',
+      stopForNow: 'Simdilik Durdur',
+      preparing: 'Hazirlaniyor',
+      paymentPending: 'Odeme dogrulamasi halen gerekli',
+      alertSilenced: 'Uyari sesi durduruldu',
+      orderPreparingNow: 'Siparis hazirlaniyor durumuna alindi.',
       logout: 'Cikis Yap',
       developedWith: 'Melora ile gelistirildi',
       returnToStore: 'Magazaya Don',
@@ -156,6 +171,32 @@ const AdminLayout = () => {
     setIsAlertTonePlaying(false);
   };
 
+  const handleSilenceAlert = () => {
+    stopNotificationTone();
+    setIsAlertTonePlaying(false);
+    toast.success(ui.alertSilenced);
+  };
+
+  const handlePrepareAlert = async (order) => {
+    try {
+      if (order?.status === 'pending_payment') {
+        handleSilenceAlert();
+        toast(ui.paymentPending, { icon: '⏳' });
+        return;
+      }
+
+      await orderService.markOrderPreparing(order._id);
+      stopNotificationTone();
+      setIsAlertTonePlaying(false);
+      setPendingPaymentOrders((prev) =>
+        prev.filter((entry) => entry._id !== order._id)
+      );
+      toast.success(ui.orderPreparingNow);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error?.message || 'Failed to update order');
+    }
+  };
+
   useEffect(() => {
     let intervalId;
 
@@ -164,6 +205,11 @@ const AdminLayout = () => {
         const res = await orderService.getOrderAlerts(8);
         const alerts = res.data || [];
         setPendingPaymentOrders(alerts);
+
+        if (!alerts.length && isNotificationLooping()) {
+          stopNotificationTone();
+          setIsAlertTonePlaying(false);
+        }
 
         const latestId = alerts[0]?._id || null;
         if (!alertsBootstrappedRef.current) {
@@ -423,6 +469,25 @@ const AdminLayout = () => {
                         <p className="text-sm font-medium text-black">{order.shippingAddress?.fullName || ui.guestCustomer}</p>
                         <p className="text-xs text-gray-500 mt-1">{ui.receiptWaiting}</p>
                         <p className="text-xs text-brand mt-1">Order #{order._id.slice(-8)} • {new Date(order.createdAt).toLocaleString()}</p>
+                        <div
+                          className="mt-3 flex flex-wrap gap-2"
+                          onClick={(event) => event.preventDefault()}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleSilenceAlert()}
+                            className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100"
+                          >
+                            {ui.stopForNow}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handlePrepareAlert(order)}
+                            className="rounded-lg border border-[#d7c1a2] bg-[#f6ead8] px-3 py-1.5 text-[11px] font-semibold text-[#5f4321] hover:bg-[#eddcc6]"
+                          >
+                            {ui.preparing}
+                          </button>
+                        </div>
                       </Link>
                     )) : (
                       <div className="px-4 py-6 text-sm text-gray-500 text-center">{ui.noPaymentAlerts}</div>

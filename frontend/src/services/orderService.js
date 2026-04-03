@@ -29,6 +29,11 @@ export const orderService = {
     return response.data;
   },
 
+  markOrderPreparing: async (id) => {
+    const response = await api.put(`/orders/${id}/prepare`);
+    return response.data;
+  },
+
   getCurrentPosShift: async () => {
     const response = await api.get('/orders/pos/shift/current');
     return response.data;

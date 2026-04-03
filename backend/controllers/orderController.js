@@ -745,6 +745,42 @@ exports.getOrderAlerts = async (req, res) => {
   }
 };
 
+// @desc    Mark online order alert as preparing
+// @route   PUT /api/orders/:id/prepare
+// @access  Private/Admin/Cashier
+exports.markOrderPreparing = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    if (order.salesChannel !== 'online') {
+      return res.status(400).json({ success: false, message: 'Only online orders can be prepared from alerts' });
+    }
+
+    if (order.status === 'pending_payment') {
+      return res.status(400).json({
+        success: false,
+        message: 'This order is still waiting for payment confirmation'
+      });
+    }
+
+    order.status = 'processing';
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      data: order,
+      message: 'Order moved to processing'
+    });
+  } catch (error) {
+    console.error('MARK ORDER PREPARING FAILED', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to update order status' });
+  }
+};
+
 
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders

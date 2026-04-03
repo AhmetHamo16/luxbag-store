@@ -20,6 +20,11 @@ const labels = {
     newOrderArrived: 'A new online order just arrived.',
     testSound: 'Test Alert Sound',
     stopSound: 'Stop Alert Sound',
+    stopForNow: 'Stop For Now',
+    preparing: 'Preparing',
+    paymentPending: 'Payment verification is still required.',
+    alertSilenced: 'Alert sound stopped',
+    orderPreparingNow: 'The order is now being prepared.',
     quickTools: 'Quick Tools',
     scannerShortcut: 'Barcode focus',
     searchShortcut: 'Search focus',
@@ -42,6 +47,11 @@ const labels = {
     newOrderArrived: 'وصل طلب جديد من المتجر الآن.',
     testSound: 'اختبار صوت الإشعار',
     stopSound: 'إيقاف صوت الإشعار',
+    stopForNow: 'إيقاف الآن',
+    preparing: 'قيد التجهيز',
+    paymentPending: 'ما زال الطلب بانتظار التحقق من الدفع.',
+    alertSilenced: 'تم إيقاف صوت التنبيه',
+    orderPreparingNow: 'تم تحويل الطلب إلى قيد التجهيز.',
     quickTools: 'أدوات سريعة',
     scannerShortcut: 'تركيز الباركود',
     searchShortcut: 'تركيز البحث',
@@ -64,6 +74,11 @@ const labels = {
     newOrderArrived: 'Magazaya yeni bir online siparis geldi.',
     testSound: 'Bildirim Sesini Test Et',
     stopSound: 'Bildirim Sesini Durdur',
+    stopForNow: 'Simdilik Durdur',
+    preparing: 'Hazirlaniyor',
+    paymentPending: 'Odeme dogrulamasi halen gerekli.',
+    alertSilenced: 'Uyari sesi durduruldu',
+    orderPreparingNow: 'Siparis hazirlaniyor durumuna alindi.',
     quickTools: 'Hizli Araclar',
     scannerShortcut: 'Barkod odagi',
     searchShortcut: 'Arama odagi',
@@ -122,6 +137,30 @@ const CashierLayout = () => {
     setIsAlertTonePlaying(false);
   };
 
+  const handleSilenceAlert = () => {
+    stopNotificationTone();
+    setIsAlertTonePlaying(false);
+    toast.success(ui.alertSilenced);
+  };
+
+  const handlePrepareAlert = async (order) => {
+    try {
+      if (order?.status === 'pending_payment') {
+        handleSilenceAlert();
+        toast(ui.paymentPending, { icon: '⏳' });
+        return;
+      }
+
+      await orderService.markOrderPreparing(order._id);
+      stopNotificationTone();
+      setIsAlertTonePlaying(false);
+      setAlerts((prev) => prev.filter((entry) => entry._id !== order._id));
+      toast.success(ui.orderPreparingNow);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error?.message || 'Failed to update order');
+    }
+  };
+
   useEffect(() => {
     let intervalId;
 
@@ -130,6 +169,11 @@ const CashierLayout = () => {
         const res = await orderService.getOrderAlerts(8);
         const nextAlerts = res.data || [];
         setAlerts(nextAlerts);
+
+        if (!nextAlerts.length && isNotificationLooping()) {
+          stopNotificationTone();
+          setIsAlertTonePlaying(false);
+        }
 
         const latestId = nextAlerts[0]?._id || null;
         if (!alertsBootstrappedRef.current) {
@@ -195,6 +239,22 @@ const CashierLayout = () => {
                 <div key={alert._id} className="rounded-2xl border border-[#4f436c] bg-white/5 p-4">
                   <p className="text-sm font-semibold text-[#fff8ef]">{alert.customerName}</p>
                   <p className="mt-1 text-xs text-[#f0dfbe]">{alert.invoiceNumber || alert._id?.slice(-8)}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSilenceAlert}
+                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100"
+                    >
+                      {ui.stopForNow}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePrepareAlert(alert)}
+                      className="rounded-lg border border-[#d7c1a2] bg-[#f6ead8] px-3 py-1.5 text-[11px] font-semibold text-[#5f4321] hover:bg-[#eddcc6]"
+                    >
+                      {ui.preparing}
+                    </button>
+                  </div>
                 </div>
               )) : (
                 <p className="text-sm text-[#f5ead9]">{ui.noAlerts}</p>
@@ -313,6 +373,22 @@ const CashierLayout = () => {
                 <div key={alert._id} className="rounded-2xl border border-[#eee1d0] bg-[#faf5ee] p-3">
                   <p className="text-sm font-semibold text-[#25170f]">{alert.customerName}</p>
                   <p className="mt-1 text-xs text-[#8c6a45]">{alert.invoiceNumber || alert._id?.slice(-8)}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSilenceAlert}
+                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-semibold text-red-700"
+                    >
+                      {ui.stopForNow}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePrepareAlert(alert)}
+                      className="rounded-lg border border-[#d7c1a2] bg-[#f6ead8] px-3 py-1.5 text-[11px] font-semibold text-[#5f4321]"
+                    >
+                      {ui.preparing}
+                    </button>
+                  </div>
                 </div>
               )) : (
                 <p className="text-sm text-[#7a6653]">{ui.noAlerts}</p>

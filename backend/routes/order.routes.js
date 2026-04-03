@@ -15,6 +15,7 @@ const {
   closePosShift,
   getPosShifts,
   voidPosOrder,
+  markOrderPreparing,
   exportOrdersCSV,
   getOrderById,
   createPosOrder
@@ -102,6 +103,9 @@ router.route('/pos/summary')
 
 router.route('/alerts')
   .get(protect, adminOrCashier, getOrderAlerts);
+
+router.route('/:id/prepare')
+  .put(protect, adminOrCashier, markOrderPreparing);
 
 router.route('/pos/shift/current')
   .get(protect, adminOrCashier, getCurrentPosShift);
