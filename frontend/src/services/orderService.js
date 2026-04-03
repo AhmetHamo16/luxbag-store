@@ -2,7 +2,57 @@ import api from './api';
 
 export const orderService = {
   createOrder: async (orderData) => {
-    const response = await api.post('/orders', orderData);
+    const isFormData = orderData instanceof FormData;
+    const response = await api.post('/orders', orderData, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
+    return response.data;
+  },
+
+  createPosOrder: async (orderData) => {
+    const response = await api.post('/orders/pos', orderData);
+    return response.data;
+  },
+
+  voidPosOrder: async (id, reason = '') => {
+    const response = await api.put(`/orders/${id}/void-pos`, { reason });
+    return response.data;
+  },
+
+  getPosSummary: async () => {
+    const response = await api.get('/orders/pos/summary');
+    return response.data;
+  },
+
+  getOrderAlerts: async (limit = 8) => {
+    const response = await api.get(`/orders/alerts?limit=${limit}`);
+    return response.data;
+  },
+
+  getCurrentPosShift: async () => {
+    const response = await api.get('/orders/pos/shift/current');
+    return response.data;
+  },
+
+  openPosShift: async (payload) => {
+    const response = await api.post('/orders/pos/shift/open', payload);
+    return response.data;
+  },
+
+  closePosShift: async (payload) => {
+    const response = await api.post('/orders/pos/shift/close', payload);
+    return response.data;
+  },
+
+  getPosShifts: async (limit = 8) => {
+    const response = await api.get(`/orders/pos/shifts?limit=${limit}`);
+    return response.data;
+  },
+
+  uploadReceipt: async (formData) => {
+    const response = await api.post('/orders/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     return response.data;
   },
 
@@ -22,13 +72,28 @@ export const orderService = {
   },
 
   // Admin Routes
-  getAllOrders: async () => {
-    const response = await api.get('/orders');
+  getAllOrders: async (search = '', status = 'All', page = 1, limit = 15) => {
+    const response = await api.get(`/orders?search=${search}&status=${status}&page=${page}&limit=${limit}`);
     return response.data;
   },
 
   updateOrderStatus: async (id, status, trackingNumber) => {
     const response = await api.put(`/orders/${id}/status`, { status, trackingNumber });
     return response.data;
+  },
+
+  markAsPaid: async (id) => {
+    const response = await api.put(`/orders/${id}/pay`);
+    return response.data;
+  },
+
+  getAdminStats: async (timeframe) => {
+    const response = await api.get(`/orders/stats?timeframe=${timeframe}`);
+    return response.data;
+  },
+  
+  exportOrdersCSV: () => {
+    // Return the string URL for direct anchor-tag downloading
+    return `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api'}/orders/export`;
   }
 };

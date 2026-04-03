@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+            <h2 class="mb-4" style="color: #C6A75E;">{{ _('Register') }}</h2>
+            <form method="post">
+                <div class="mb-3">
+                    <label>{{ _('Username') }}</label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Email') }}</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Password') }}</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Confirm Password') }}</label>
+                    <input type="password" name="confirm" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-gold w-100">{{ _('Register') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

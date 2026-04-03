@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://meloracantasi.com/sitemap.xml

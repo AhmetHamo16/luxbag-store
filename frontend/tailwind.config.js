@@ -4,12 +4,16 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: '#F8F5F2',
-        gold: '#C6A75E',
-        black: '#1E1E1E',
+        brand: 'var(--text-color)',
+        beige: 'var(--bg-color)',
+        gold: 'var(--accent)',
+        black: 'var(--footer-bg)',
+        white: 'var(--card-bg)',
+        nav: 'var(--nav-bg)',
       }
     },
   },

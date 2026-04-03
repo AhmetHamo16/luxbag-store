@@ -36,12 +36,16 @@ export const userService = {
     const response = await api.put(`/users/${id}/status`, { isActive });
     return response.data;
   },
-
   updateUserRole: async (id, role) => {
     const response = await api.put(`/users/${id}/role`, { role });
     return response.data;
   },
-  
+
+  updateUser: async (id, userData) => {
+    const response = await api.put(`/users/${id}`, userData);
+    return response.data;
+  },
+
   deleteUser: async (id) => {
     const response = await api.delete(`/users/${id}`);
     return response.data;

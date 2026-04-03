@@ -9,7 +9,11 @@ const categorySchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true },
   image: { type: String },
   icon: { type: String },
+  orderIndex: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
+
+categorySchema.index({ slug: 1 });
+categorySchema.index({ isActive: 1, orderIndex: 1 });
 
 module.exports = mongoose.model('Category', categorySchema);

@@ -4,13 +4,13 @@ import useAuthStore from '../../store/authStore';
 
 const Profile = () => {
   const { user } = useAuthStore(); 
-  const [formData, setFormData] = useState({ name: '', email: '' });
-  const [passwordData, setPasswordData] = useState({ oldPassword: '', newPassword: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '' });
 
   useEffect(() => {
     if (user) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFormData({ name: user.name, email: user.email });
+      setFormData({ name: user.name, email: user.email, phone: user.phone || '' });
     }
   }, [user]);
 
@@ -30,7 +30,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       await userService.changePassword(passwordData);
-      setPasswordData({ oldPassword: '', newPassword: '' });
+      setPasswordData({ currentPassword: '', newPassword: '' });
       alert('Password updated successfully.');
     } catch (err) {
       console.error(err);
@@ -54,6 +54,10 @@ const Profile = () => {
               <label className="block text-sm font-medium mb-1">Email</label>
               <input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} type="email" className="w-full border p-2 focus:outline-none focus:border-black text-sm text-gray-500 bg-white" readOnly />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Phone Number</label>
+              <input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} type="tel" className="w-full border p-2 focus:outline-none focus:border-black text-sm" placeholder="+1 (555) 000-0000" />
+            </div>
             <button type="submit" className="bg-black text-white px-6 py-2 text-sm font-medium hover:bg-gold transition-colors">
               Save Changes
             </button>
@@ -65,7 +69,7 @@ const Profile = () => {
           <form onSubmit={handlePasswordUpdate} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">Current Password</label>
-              <input type="password" value={passwordData.oldPassword} onChange={e => setPasswordData({...passwordData, oldPassword: e.target.value})} className="w-full border p-2 focus:outline-none focus:border-black text-sm" />
+              <input type="password" value={passwordData.currentPassword} onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} className="w-full border p-2 focus:outline-none focus:border-black text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">New Password</label>

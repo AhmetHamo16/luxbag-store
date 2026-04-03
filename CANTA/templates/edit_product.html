@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm p-4">
+            <h2 class="mb-4" style="color: #C6A75E;">{{ _('Edit Product') }}</h2>
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label>{{ _('Name (AR)') }}</label>
+                    <input type="text" name="name_ar" class="form-control" value="{{ product.name_ar }}" required>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Name (TR)') }}</label>
+                    <input type="text" name="name_tr" class="form-control" value="{{ product.name_tr }}" required>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Description (AR)') }}</label>
+                    <textarea name="description_ar" class="form-control" required>{{ product.description_ar }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Description (TR)') }}</label>
+                    <textarea name="description_tr" class="form-control" required>{{ product.description_tr }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Price') }}</label>
+                    <input type="number" name="price" class="form-control" value="{{ product.price }}" required step="0.01">
+                </div>
+                <div class="mb-3">
+                    <label>{{ _('Image') }}</label>
+                    <input type="file" name="image" class="form-control">
+                    <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="Current Image" height="80" class="mt-2">
+                </div>
+                <button type="submit" class="btn btn-gold w-100">{{ _('Update Product') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

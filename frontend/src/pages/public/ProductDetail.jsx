@@ -1,31 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Loader from '../../components/shared/Loader';
 import { productService } from '../../services/productService';
 import useCartStore from '../../store/cartStore';
 import useLangStore from '../../store/useLangStore';
 import { translations } from '../../i18n/translations';
+import useCurrencyStore from '../../store/useCurrencyStore';
+import { reviewService } from '../../services/reviewService';
+import useAuthStore from '../../store/authStore';
+import ProductCard from '../../components/product/ProductCard';
+import toast from 'react-hot-toast';
+import { contentService } from '../../services/contentService';
+import { getAvailableStock, getStockLevel, isAvailableForPurchase } from '../../utils/stock';
 
 const ProductDetail = () => {
   const { id } = useParams(); // URL param acts as slug/id
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mainImage, setMainImage] = useState('');
+  const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const { isAuthenticated } = useAuthStore();
   const addItem = useCartStore(state => state.addItem);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const { language } = useLangStore();
+  const formatPrice = useCurrencyStore(state => state.formatPrice);
+  const [recentItems, setRecentItems] = useState([]);
+  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const t = translations[language].product;
+  const resolveAssetUrl = useCallback((value) => {
+    if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
+    if (typeof value === 'object') return resolveAssetUrl(value.url);
+    if (typeof value === 'string' && value.includes('\\uploads\\')) {
+      return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
+    }
+    if (typeof value === 'string' && value.startsWith('/uploads/')) {
+      return `${backendOrigin}${value}`;
+    }
+    return value;
+  }, [backendOrigin]);
+  const stockMessages = {
+    en: {
+      backSoon: 'This design is currently unavailable, but it will be back very soon.',
+      notifyTone: 'Thank you for your patience. We are preparing a fresh restock for you.',
+      warehouse: 'Available in warehouse:',
+    },
+    ar: {
+      backSoon: 'هذا التصميم غير متوفر حاليًا، لكنه سيعود في أقرب وقت.',
+      notifyTone: 'شكرًا لصبرك، نحن نجهز إعادة التوفر لك بأجمل صورة.',
+      warehouse: 'المتوفر في المستودع:',
+    },
+    tr: {
+      backSoon: 'Bu tasarim su an tukendi, ancak cok yakinda yeniden stokta olacak.',
+      notifyTone: 'Sabiriniz icin tesekkurler. Yeni stok hazirlaniyor.',
+      warehouse: 'Depodaki adet:',
+    }
+  }[language] || {
+    backSoon: 'This design is currently unavailable, but it will be back very soon.',
+    notifyTone: 'Thank you for your patience. We are preparing a fresh restock for you.',
+    warehouse: 'Available in warehouse:',
+  };
+  const piecesIncluded = Number(product?.specs?.piecesIncluded || 1);
+  const productFacts = {
+    en: {
+      includedPieces: piecesIncluded > 1 ? `${piecesIncluded} coordinated pieces` : 'Single signature piece',
+      material: product?.specs?.material || 'Premium crafted finish',
+      dimensions: product?.specs?.dimensions?.width ? `${product.specs.dimensions.width} x ${product.specs.dimensions.height || '-'} x ${product.specs.dimensions.depth || '-'} cm` : 'Boutique-sized silhouette',
+      piecesLabel: 'Set Details',
+      materialLabel: 'Material',
+      dimensionsLabel: 'Dimensions',
+    },
+    ar: {
+      includedPieces: piecesIncluded > 1 ? `${piecesIncluded} قطع متناسقة` : 'قطعة أساسية واحدة',
+      material: product?.specs?.material || 'خامة فاخرة بتشطيب راقٍ',
+      dimensions: product?.specs?.dimensions?.width ? `${product.specs.dimensions.width} × ${product.specs.dimensions.height || '-'} × ${product.specs.dimensions.depth || '-'} سم` : 'حجم أنيق للمشاوير والسهرة',
+      piecesLabel: 'تفاصيل الطقم',
+      materialLabel: 'الخامة',
+      dimensionsLabel: 'الأبعاد',
+    },
+    tr: {
+      includedPieces: piecesIncluded > 1 ? `${piecesIncluded} uyumlu parca` : 'Tek imza parca',
+      material: product?.specs?.material || 'Premium iscilikli yuzey',
+      dimensions: product?.specs?.dimensions?.width ? `${product.specs.dimensions.width} x ${product.specs.dimensions.height || '-'} x ${product.specs.dimensions.depth || '-'} cm` : 'Zarif butik form',
+      piecesLabel: 'Set Detayi',
+      materialLabel: 'Malzeme',
+      dimensionsLabel: 'Olculer',
+    }
+  }[language] || {
+    includedPieces: piecesIncluded > 1 ? `${piecesIncluded} coordinated pieces` : 'Single signature piece',
+    material: product?.specs?.material || 'Premium crafted finish',
+    dimensions: product?.specs?.dimensions?.width ? `${product.specs.dimensions.width} x ${product.specs.dimensions.height || '-'} x ${product.specs.dimensions.depth || '-'} cm` : 'Boutique-sized silhouette',
+    piecesLabel: 'Set Details',
+    materialLabel: 'Material',
+    dimensionsLabel: 'Dimensions',
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const data = await productService.getProductBySlug(id);
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+        const [data, contentRes] = await Promise.all([
+          isObjectId ? productService.getProductById(id) : productService.getProductBySlug(id),
+          contentService.getContent()
+        ]);
+          
         const prodData = data.data;
         setProduct(prodData);
+        setContent(contentRes.data);
         if (prodData.images && prodData.images.length > 0) {
-          setMainImage(prodData.images[0]);
+          setMainImageIndex(0);
         }
+        if (prodData.variants && prodData.variants.length > 0) {
+          setSelectedVariant(prodData.variants[0]);
+        }
+        
+        if (prodData.category) {
+          const catId = typeof prodData.category === 'object' ? prodData.category._id : prodData.category;
+          productService.getProducts({ category: catId, limit: 5 }).then(res => {
+             setRelatedProducts(res.data.filter(p => p._id !== prodData._id).slice(0, 4));
+          }).catch(console.error);
+        }
+
+        try {
+          const revRes = await reviewService.getReviewsByProduct(prodData._id);
+          setReviews(revRes.data || []);
+        } catch (e) {
+          console.error("Failed to load reviews", e);
+        }
+        
       } catch (error) {
         console.error("Error fetching product", error);
       } finally {
@@ -35,13 +146,82 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    setLightboxZoom(1);
+  }, [mainImageIndex, product?._id]);
+
   const increment = () => {
-    if (product && quantity < product.stock) setQuantity(prev => prev + 1);
+    const maxAvailable = getAvailableStock(product, selectedVariant);
+    if (product && quantity < maxAvailable) setQuantity(prev => prev + 1);
   };
   
   const decrement = () => {
     if (quantity > 1) setQuantity(prev => prev - 1);
   };
+
+  // SEO & Dynamic Meta Tags
+  useEffect(() => {
+    if (product) {
+      const prodName = product.name?.en || 'Melora Bag';
+      document.title = `${prodName} | Melora`;
+      
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', (product.description?.en || '').substring(0, 160));
+      } else {
+        const desc = document.createElement('meta');
+        desc.name = "description";
+        desc.content = (product.description?.en || '').substring(0, 160);
+        document.head.appendChild(desc);
+      }
+
+      // JSON-LD Structured Data
+      let script = document.querySelector('#product-jsonld');
+      if (!script) {
+        script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = 'product-jsonld';
+        document.head.appendChild(script);
+      }
+      script.text = JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": prodName,
+        "image": product.images ? product.images.map((i) => resolveAssetUrl(i)) : [],
+        "description": product.description?.en || '',
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "TRY",
+          "price": product.salePrice || product.price,
+          "availability": getAvailableStock(product) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        }
+      });
+
+      // Save to Recently Viewed
+      try {
+        const recent = JSON.parse(localStorage.getItem('melora_recent') || '[]');
+        const existingIdx = recent.findIndex(r => r._id === product._id || r.id === product._id);
+        if (existingIdx > -1) recent.splice(existingIdx, 1);
+        recent.unshift({
+          _id: product._id,
+          slug: product.slug || product._id,
+          name: product.name,
+          images: product.images,
+          price: product.price,
+          salePrice: product.salePrice
+        });
+        if (recent.length > 10) recent.pop();
+        localStorage.setItem('melora_recent', JSON.stringify(recent));
+        setRecentItems(recent.filter(r => r._id !== product._id && r.slug !== product.slug));
+      } catch(e) { console.error('Recent sync error', e) }
+    }
+
+    return () => {
+      document.title = "Melora | Luxury Handbags";
+      const ld = document.querySelector('#product-jsonld');
+      if (ld) ld.remove();
+    };
+  }, [product, resolveAssetUrl]);
 
   if (loading) return <Loader />;
   if (!product) return <div className="text-center py-20 text-xl font-serif">Product Not Found</div>;
@@ -49,63 +229,283 @@ const ProductDetail = () => {
   // Extract multilingual fields
   const name = product.name?.[language] || product.name?.en || 'Unknown';
   const description = product.description?.[language] || product.description?.en || '';
-  const categoryName = product.category?.name?.[language] || product.category?.name?.en || 'Category';
+  const availableStock = getAvailableStock(product, selectedVariant);
+  const stockLevel = getStockLevel(availableStock);
+  const canPurchase = isAvailableForPurchase(product, selectedVariant);
 
-  const handleAddToCart = (e) => {
-    addItem(product, quantity);
-    const btn = e.target;
-    const oldText = btn.innerText;
-    btn.innerText = 'ADDED TO CART!';
-    setTimeout(() => { btn.innerText = oldText; }, 1500);
+
+  const handleAddToCart = () => {
+    if (!canPurchase) {
+      toast.error(stockMessages.backSoon);
+      return;
+    }
+
+    const itemToAdd = selectedVariant 
+      ? { ...product, selectedColor: selectedVariant.color, size: selectedVariant.size, price: selectedVariant.salePrice || selectedVariant.price || product.salePrice || product.price, _variantId: selectedVariant._id } 
+      : { ...product, price: product.salePrice || product.price };
+      
+    addItem(itemToAdd, quantity);
+    toast.success('Added to cart ✓', { duration: 2000 });
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setReviewSubmitting(true);
+      await reviewService.addReview({
+        product: product._id,
+        rating: Number(reviewForm.rating),
+        comment: reviewForm.comment
+      });
+      toast.success('Review submitted successfully!');
+      setReviewForm({ rating: 5, comment: '' });
+      const revRes = await reviewService.getReviewsByProduct(product._id);
+      setReviews(revRes.data || []);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit review');
+    } finally {
+      setReviewSubmitting(false);
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       
       {/* Breadcrumb */}
-      <nav className="text-sm mb-8 text-gray-500">
+      <nav className="text-sm mb-8 text-gray-500 flex items-center gap-2">
         <Link to="/" className="hover:text-black transition-colors">Home</Link>
-        <span className="mx-2">/</span>
+        <span>&gt;</span>
         <Link to="/shop" className="hover:text-black transition-colors">Shop</Link>
-        <span className="mx-2">/</span>
-        <span className="text-black">{categoryName}</span>
+        <span>&gt;</span>
+        <span className="text-black truncate">{name}</span>
       </nav>
 
       <div className="flex flex-col md:flex-row gap-12 lg:gap-20">
         
         {/* Image Gallery */}
-        <div className="w-full md:w-1/2 flex flex-col-reverse md:flex-row gap-4">
-          <div className="flex md:flex-col gap-4 overflow-x-auto md:w-24 shrink-0">
-            {product.images?.map((img, idx) => (
+        <div className="w-full md:w-1/2 flex flex-col-reverse md:flex-row gap-4 relative">
+          <div className="flex md:flex-col gap-4 overflow-x-auto md:w-24 shrink-0 custom-scrollbar">
+            {product.images?.map((img, idx) => {
+              const src = resolveAssetUrl(img);
+              return (
               <button 
                 key={idx} 
-                onClick={() => setMainImage(img)}
-                className={`border-2 ${mainImage === img ? 'border-gold' : 'border-transparent'} overflow-hidden transition-all`}
+                onClick={() => setMainImageIndex(idx)}
+                className={`overflow-hidden rounded-[22px] border bg-[#f8f1e8] shadow-sm transition-all duration-300 relative h-24 md:h-[110px] ${mainImageIndex === idx ? 'border-gold opacity-100 scale-[1.02] shadow-[0_16px_30px_rgba(78,48,24,0.14)]' : 'border-[#eadcc8] opacity-75 hover:opacity-100 hover:border-[#d9c0a2]'}`}
               >
-                <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-24 object-cover object-center" />
+                <img loading="lazy" src={src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover object-center" />
               </button>
-            ))}
+            )})}
           </div>
-          <div className="flex-1 bg-gray-100 aspect-4/5 relative overflow-hidden">
-            <img src={mainImage} className="absolute inset-0 w-full h-full object-cover object-center" alt={name} />
+          
+          <div 
+            className="flex-1 bg-[radial-gradient(circle_at_top,#fffdf9_0%,#f7efe5_55%,#efe2d2_100%)] aspect-[4/5] relative overflow-hidden group cursor-zoom-in rounded-[34px] border border-[#eadcc8] shadow-[0_25px_55px_rgba(66,42,18,0.09)]"
+            onClick={() => setIsLightboxOpen(true)}
+          >
+            {product.images?.map((img, idx) => {
+              const src = resolveAssetUrl(img);
+              return (
+                <img 
+                  key={idx}
+                  src={src} 
+                  loading={idx === 0 ? "eager" : "lazy"} 
+                  className={`absolute inset-0 h-full w-full object-contain p-6 md:p-8 transition-all duration-500 ease-out group-hover:scale-[1.015] ${mainImageIndex === idx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`} 
+                  alt={`${name} view ${idx + 1}`} 
+                />
+              )
+            })}
+            
+            {/* Image Counter Overlay */}
+            <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs font-medium px-3 py-1 rounded-full z-20 backdrop-blur-sm pointer-events-none">
+              {mainImageIndex + 1} / {product.images?.length || 1}
+            </div>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                setIsLightboxOpen(true);
+              }}
+              className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[#fffaf4]/92 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#2c1d12] shadow-[0_14px_34px_rgba(66,42,18,0.16)] backdrop-blur-md transition hover:bg-white"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="5.5" strokeWidth="1.8" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15.5 15.5L20 20" />
+              </svg>
+              View Detail
+            </button>
+            <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/35 via-black/0 to-transparent px-5 pb-5 pt-12 text-right text-[11px] font-medium tracking-[0.24em] text-white/90 opacity-100 md:opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              Open the full gallery
+            </div>
           </div>
         </div>
+
+        {/* Fullscreen Lightbox */}
+        {isLightboxOpen && (
+          <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center backdrop-blur-sm">
+            <button 
+              onClick={() => {
+                setIsLightboxOpen(false);
+                setLightboxZoom(1);
+              }}
+              className="absolute top-6 right-6 text-white text-4xl hover:text-gold transition-colors z-[110] focus:outline-none"
+            >
+              &times;
+            </button>
+            <div className="absolute top-6 left-6 z-[110] flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setLightboxZoom((prev) => Math.max(1, Number((prev - 0.25).toFixed(2))))}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/12 text-2xl text-white backdrop-blur-md transition hover:bg-white/20"
+              >
+                -
+              </button>
+              <button
+                type="button"
+                onClick={() => setLightboxZoom((prev) => Math.min(3, Number((prev + 0.25).toFixed(2))))}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/12 text-2xl text-white backdrop-blur-md transition hover:bg-white/20"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => setLightboxZoom(1)}
+                className="rounded-full bg-white/12 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white backdrop-blur-md transition hover:bg-white/20"
+              >
+                Reset
+              </button>
+            </div>
+            <div className="relative w-full h-full max-w-5xl max-h-screen flex items-center justify-center p-4">
+              <img loading="lazy" 
+                src={resolveAssetUrl(product.images?.[mainImageIndex])} 
+                className="max-w-full max-h-[90vh] object-contain select-none transition-transform duration-300"
+                style={{ transform: `scale(${lightboxZoom})` }}
+                alt={name}
+              />
+              {/* Prev Button */}
+              {product.images?.length > 1 && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setMainImageIndex(prev => prev === 0 ? product.images.length - 1 : prev - 1); }}
+                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all focus:outline-none z-[110]"
+                >
+                  &#10094;
+                </button>
+              )}
+              {/* Next Button */}
+              {product.images?.length > 1 && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setMainImageIndex(prev => prev === product.images.length - 1 ? 0 : prev + 1); }}
+                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all focus:outline-none z-[110]"
+                >
+                  &#10095;
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Product Details */}
         <div className="w-full md:w-1/2 flex flex-col justify-center">
           <h1 className="text-4xl font-serif mb-4 text-black">{name}</h1>
-          <div className="text-2xl font-medium text-black mb-6">${product.price}</div>
+          
+          {/* Star Rating Display */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex text-gold">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className={`w-4 h-4 ${i < Math.round(product.rating || 0) ? 'fill-current' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+              ))}
+            </div>
+            <span className="text-xs text-gray-500 font-medium">({product.reviewCount || 0} reviews)</span>
+          </div>
+
+          <div className="text-2xl font-medium text-black mb-6">
+            {formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product.salePrice || product.price)}
+          </div>
           
           <p className="text-gray-600 leading-relaxed mb-8 text-sm whitespace-pre-line">
             {description}
           </p>
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="rounded-[24px] border border-[#eadcc8] bg-[#fffaf3] px-5 py-4 shadow-[0_10px_30px_rgba(73,43,16,0.06)]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a6948]">{productFacts.piecesLabel}</p>
+              <p className="mt-2 text-sm font-medium text-[#2f2117]">{productFacts.includedPieces}</p>
+            </div>
+            <div className="rounded-[24px] border border-[#eadcc8] bg-[#fffaf3] px-5 py-4 shadow-[0_10px_30px_rgba(73,43,16,0.06)]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a6948]">{productFacts.materialLabel}</p>
+              <p className="mt-2 text-sm font-medium text-[#2f2117]">{productFacts.material}</p>
+            </div>
+            <div className="rounded-[24px] border border-[#eadcc8] bg-[#fffaf3] px-5 py-4 shadow-[0_10px_30px_rgba(73,43,16,0.06)]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a6948]">{productFacts.dimensionsLabel}</p>
+              <p className="mt-2 text-sm font-medium text-[#2f2117]">{productFacts.dimensions}</p>
+            </div>
+          </div>
+
+          {/* Share & Actions */}
+          <div className="flex items-center justify-between border-b border-gray-100 pb-6 mb-6">
+            <button 
+              onClick={() => {
+                 navigator.clipboard.writeText(window.location.href);
+                 toast.success('Link copied to clipboard!');
+              }} 
+              className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-gray-500 hover:text-brand transition-colors"
+            >
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+               Share
+            </button>
+            
+            <a href={`https://wa.me/905057777723?text=${encodeURIComponent(`Hey, check out this bag: ${window.location.href}`)}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
+               WhatsApp
+            </a>
+          </div>
 
           {/* Stock Display */}
-          <div className="mb-6">
-            <span className={`text-sm font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
-              {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+          <div className="mb-6 flex flex-col gap-3 text-start">
+            <span className={`text-sm font-medium ${canPurchase ? 'text-green-600' : 'text-red-500'}`}>
+              {canPurchase ? (t.inStock?.replace('{n}', availableStock) || `${availableStock} in stock`) : stockMessages.backSoon}
             </span>
+            {stockLevel === 'critical' && (
+              <span className="text-red-500 text-sm font-bold animate-pulse">
+                {t.onlyLeft?.replace('{n}', availableStock) || `Only ${availableStock} left in stock - order soon!`}
+              </span>
+            )}
+            {canPurchase && (
+              <span className="text-xs text-gray-500">
+                {stockMessages.warehouse} {availableStock}
+              </span>
+            )}
+            {!canPurchase && (
+              <div className="rounded-md border border-[#d8c0a6] bg-[#fbf4ed] px-4 py-3 text-sm text-[#7a5630]">
+                {stockMessages.notifyTone}
+              </div>
+            )}
+            {/* Fake Countdown Timer */}
+            {(product.salePrice || availableStock < 10) && canPurchase && (
+              <div className="flex items-center gap-2 text-sm font-bold text-brand bg-[#F5EFE6] px-4 py-3 w-fit border-l-4 border-gold">
+                <svg className="w-5 h-5 text-gold animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Offer Ends In: <span className="text-red-600 mx-1">04h 32m 15s</span>
+              </div>
+            )}
           </div>
+
+          {/* Variants Selector */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                 <h4 className="text-sm font-medium uppercase tracking-wide">Select Size & Color</h4>
+                 <button onClick={() => setIsSizeGuideOpen(true)} className="text-xs uppercase tracking-widest text-brand underline underline-offset-4 hover:text-gold transition-colors">Size Guide</button>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {product.variants.map((v) => (
+                  <button 
+                    key={v._id}
+                    onClick={() => setSelectedVariant(v)}
+                    className={`border px-4 py-2 text-xs font-medium uppercase tracking-wider transition-colors ${selectedVariant?._id === v._id ? 'border-brand bg-brand text-white' : 'border-gray-300 text-gray-700 hover:border-gray-500'}`}
+                  >
+                    {v.size} - {v.color}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-4 mb-10 border-t border-b border-gray-200 py-8">
             {/* Quantity Selector */}
@@ -115,25 +515,180 @@ const ProductDetail = () => {
               <button onClick={increment} className="px-4 py-3 hover:bg-gray-100 transition-colors">+</button>
             </div>
             
-            {/* Add to Cart - Wire this later */}
-            <button onClick={handleAddToCart} className="flex-1 bg-black text-white px-8 py-3 font-medium tracking-wide hover:bg-gold transition-colors duration-300">
-              {product.stock > 0 ? t.addToCart : t.outOfStock}
+            {/* Add to Cart */}
+            <button disabled={!canPurchase} onClick={handleAddToCart} className={`flex-1 px-6 md:px-8 py-3 font-bold tracking-wide transition-colors duration-300 border whitespace-nowrap ${canPurchase ? 'bg-brand text-beige dark:bg-gold dark:text-black hover:bg-beige hover:text-brand dark:hover:bg-white dark:hover:text-black border-brand dark:border-gold' : 'bg-gray-200 text-gray-500 border-gray-200 cursor-not-allowed'}`}>
+              {canPurchase ? (t.addToCart || 'Add to Cart') : stockMessages.backSoon}
             </button>
+            
+            <a 
+              href={`https://wa.me/905057777723?text=${encodeURIComponent(`Hello, I would like to order: ${name} for ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product.salePrice || product.price)}`)}`} 
+              target="_blank" 
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 md:px-6 py-3 font-medium tracking-wide hover:bg-[#128C7E] transition-colors duration-300 whitespace-nowrap"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.266 2.008.772 2.88l-1.01 3.692 3.774-.99a5.727 5.727 0 002.231.45h.001c3.18 0 5.767-2.586 5.767-5.766 0-3.181-2.588-5.766-5.767-5.766zm0 9.773c-.859 0-1.7-.231-2.435-.668l-.174-.103-1.808.474.484-1.763-.113-.18a4.8 4.8 0 01-.734-2.569c0-2.656 2.16-4.815 4.818-4.815 2.656 0 4.816 2.158 4.816 4.815-.001 2.657-2.16 4.815-4.816 4.815zm2.636-3.606c-.144-.072-.852-.42-984-.468-.132-.048-.228-.072-.324.072s-.372.468-.456.564-.168.108-.312.036-.607-.224-1.157-.714c-.428-.382-.716-.854-.8-1.022-.084-.168-.009-.259.063-.331.065-.065.144-.168.216-.252.072-.084.096-.144.144-.24a.455.455 0 00-.024-.432c-.048-.096-.324-.78-.444-1.068-.117-.281-.236-.243-.324-.248h-.276c-.096 0-.252.036-.384.18s-.504.492-.504 1.2.516 1.392.588 1.488c.072.096 1.016 1.55 2.46 2.174.344.148.613.237.822.303.345.11.659.094.907.057.279-.042.852-.348.972-.684.12-.336.12-.624.084-.684-.038-.059-.133-.083-.277-.155z"></path></svg>
+              Order via WhatsApp
+            </a>
+          </div>
+
+          {/* Trust Signals */}
+          <div className="flex flex-col gap-4 mb-10 text-start">
+            <div className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-4 rounded-sm">
+              <svg className="w-8 h-8 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              <div>
+                <h4 className="text-sm font-bold uppercase tracking-widest text-brand">{content?.productPage?.authenticText?.[language] || '100% Authentic Guaranteed'}</h4>
+                <p className="text-xs text-gray-500 mt-1">{content?.productPage?.authenticDesc?.[language] || 'Every Melora handbag passes strict quality control and originality verification.'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 bg-[#F5EFE6]/70 border border-brand/10 p-4 rounded-sm">
+              <svg className="w-8 h-8 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+              <div>
+                <h4 className="text-sm font-bold text-brand uppercase tracking-widest">{content?.productPage?.shippingText?.[language] || 'Free Express Shipping'}</h4>
+                <p className="text-xs text-gray-600 mt-1">{content?.productPage?.shippingDesc?.[language] || 'Enjoy complimentary local delivery on all orders over ₺500.'}</p>
+              </div>
+            </div>
           </div>
           
-          <div className="space-y-4 text-sm">
+          <div className="space-y-4 text-sm text-start">
             <div className="border-b border-gray-200 pb-4">
-              <h4 className="font-medium mb-2 uppercase tracking-wide">{t.features}</h4>
-              <p className="text-gray-500">100% Genuine Materials. Wipe clean with a soft, dry cloth.</p>
+              <h4 className="font-medium mb-2 uppercase tracking-wide">{content?.productPage?.featuresText?.[language] || t.features || 'Key Features'}</h4>
+              <p className="text-gray-500">{content?.productPage?.featuresDesc?.[language] || 'Premium materials with a refined finish made for daily elegance.'}</p>
             </div>
             <div className="border-b border-gray-200 pb-4">
-              <h4 className="font-medium mb-2 uppercase tracking-wide">Delivery & Returns</h4>
-              <p className="text-gray-500">Free standard shipping on all orders. Returns accepted within 30 days.</p>
+              <h4 className="font-medium mb-2 uppercase tracking-wide">{content?.productPage?.deliveryText?.[language] || t.deliveryReturns || 'Delivery & Returns'}</h4>
+              <p className="text-gray-500">{content?.productPage?.deliveryDesc?.[language] || 'Fast delivery and a smooth return process for a more confident shopping experience.'}</p>
             </div>
           </div>
         </div>
         
       </div>
+
+      {/* Related Products Section */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-24 border-t border-gray-100 pt-16">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-serif text-brand mb-4">You May Also Like</h2>
+            <div className="w-12 h-[2px] bg-gold mx-auto"></div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {relatedProducts.map(prod => (
+              <ProductCard key={prod._id} product={prod} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recently Viewed Section */}
+      {recentItems && recentItems.length > 0 && (
+        <div className="mt-24 border-t border-gray-100 pt-16">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-serif text-brand mb-4">Recently Viewed</h2>
+            <div className="w-12 h-[2px] bg-gold mx-auto"></div>
+          </div>
+          <div className="flex gap-6 overflow-x-auto pb-8 custom-scrollbar">
+            {recentItems.map(item => (
+              <div key={item._id} onClick={() => { window.scrollTo(0, 0); navigate(`/product/${item.slug || item._id}`); }} className="group cursor-pointer min-w-[200px] md:min-w-[250px] flex flex-col">
+                 <div className="aspect-square bg-gray-100 mb-4 overflow-hidden relative rounded-sm">
+                    <img loading="lazy" src={resolveAssetUrl(item.images?.[0]?.url || item.images?.[0])} alt={item.name?.en} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                 </div>
+                 <h3 className="font-serif text-brand text-sm md:text-md group-hover:text-gold transition-colors truncate">{item.name?.en || item.name}</h3>
+                 <p className="text-brand font-bold mt-1 uppercase text-sm">{formatPrice(item.salePrice || item.price)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Reviews Section */}
+      <div className="mt-24 border-t border-gray-100 pt-16">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-serif text-brand mb-4">Customer Reviews</h2>
+          <div className="w-12 h-[2px] bg-gold mx-auto"></div>
+        </div>
+        
+        <div className="max-w-4xl mx-auto space-y-8">
+          {reviews.length > 0 ? reviews.map(review => (
+            <div key={review._id} className="bg-white border border-gray-100 p-6 rounded-sm shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-brand text-beige rounded-full flex justify-center items-center font-serif text-lg">
+                    {review.user?.name?.charAt(0) || 'U'}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-brand text-sm">{review.user?.name || 'Verified Buyer'}</h4>
+                    <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className="flex text-gold">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>
+            </div>
+          )) : (
+            <p className="text-center text-gray-500 text-sm">No reviews yet. Be the first to review this product!</p>
+          )}
+
+          {isAuthenticated ? (
+            <div className="mt-12 bg-white border border-gray-200 p-8 shadow-sm">
+              <h3 className="text-xl font-serif text-brand mb-6">Write a Review</h3>
+              <form onSubmit={handleReviewSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                  <select value={reviewForm.rating} onChange={(e) => setReviewForm({...reviewForm, rating: e.target.value})} className="border border-gray-300 p-2 w-full max-w-xs focus:border-brand focus:outline-none">
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Very Good</option>
+                    <option value="3">3 - Average</option>
+                    <option value="2">2 - Poor</option>
+                    <option value="1">1 - Terrible</option>
+                  </select>
+                </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                  <textarea required value={reviewForm.comment} onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})} rows="4" className="w-full border border-gray-300 p-3 text-sm focus:border-brand focus:outline-none" placeholder="Share your thoughts about this product..."></textarea>
+                </div>
+                <button type="submit" disabled={reviewSubmitting} className="bg-brand text-beige px-6 py-2 uppercase tracking-widest text-xs font-bold hover:bg-gold transition-colors disabled:opacity-50">
+                  {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="text-center mt-8">
+              <Link to="/login" className="text-brand underline hover:text-gold text-sm font-medium">Log in to write a review</Link>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Size Guide Modal */}
+      {isSizeGuideOpen && (
+        <div className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsSizeGuideOpen(false)}>
+          <div className="bg-white p-8 max-w-2xl w-full relative shadow-2xl animate-fade-in" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setIsSizeGuideOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black text-3xl focus:outline-none">&times;</button>
+            <h3 className="text-2xl font-serif text-brand mb-6 text-center">Fit & Size Guide</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left border-collapse border border-gray-100">
+                <thead>
+                  <tr className="bg-[#F5EFE6] uppercase tracking-widest text-xs text-brand">
+                    <th className="p-4 border border-gray-100">Size</th>
+                    <th className="p-4 border border-gray-100">Dimensions (cm)</th>
+                    <th className="p-4 border border-gray-100">Strap Drop (cm)</th>
+                    <th className="p-4 border border-gray-100">Fit</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600">
+                  <tr className="hover:bg-gray-50"><td className="p-4 border border-gray-100 font-bold text-brand">Mini / Micro</td><td className="p-4 border border-gray-100">18 x 12 x 6</td><td className="p-4 border border-gray-100">50-55</td><td className="p-4 border border-gray-100">Phone, Cards, Keys</td></tr>
+                  <tr className="hover:bg-gray-50"><td className="p-4 border border-gray-100 font-bold text-brand">Medium</td><td className="p-4 border border-gray-100">25 x 16 x 8</td><td className="p-4 border border-gray-100">45-50</td><td className="p-4 border border-gray-100">Everyday essentials</td></tr>
+                  <tr className="hover:bg-gray-50"><td className="p-4 border border-gray-100 font-bold text-brand">Large / Tote</td><td className="p-4 border border-gray-100">32 x 22 x 12</td><td className="p-4 border border-gray-100">30-40</td><td className="p-4 border border-gray-100">Laptop, Makeup, Essentials</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-center text-gray-400 mt-6 mt-4 italic">* Measurements are approximate and may vary slightly by model.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

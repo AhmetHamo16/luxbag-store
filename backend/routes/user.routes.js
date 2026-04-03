@@ -4,11 +4,13 @@ const {
   getUserProfile, 
   updateUserProfile, 
   changePassword, 
-  manageAddresses, 
+  manageAddresses,
   toggleWishlist,
   getUsers,
   updateUserRole,
-  updateUserStatus
+  updateUserStatus,
+  adminUpdateUser,
+  adminDeleteUser
 } = require('../controllers/userController');
 const { protect } = require('../middleware/auth.middleware');
 const { admin } = require('../middleware/admin.middleware');
@@ -28,6 +30,11 @@ router.route('/')
   .get(admin, getUsers);
   
 router.put('/:id/role', admin, updateUserRole);
-router.put('/:id/status', admin, updateUserStatus);
+router.route('/:id/status')
+  .put(protect, admin, updateUserStatus);
+
+router.route('/:id')
+  .put(protect, admin, adminUpdateUser)
+  .delete(protect, admin, adminDeleteUser);
 
 module.exports = router;

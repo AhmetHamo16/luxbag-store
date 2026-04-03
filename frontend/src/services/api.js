@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api',
   withCredentials: true, // IMPORTANT for sending cookies (refreshToken)
   headers: {
     'Content-Type': 'application/json',
@@ -26,11 +26,21 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip refresh for these public routes — never retry them
+    const skipRefreshUrls = [
+      '/auth/login',
+      '/auth/refresh-token'
+    ];
+
+    const shouldSkip = skipRefreshUrls.some(url => 
+      originalRequest.url?.includes(url)
+    );
+
+    if (error.response?.status === 401 && !originalRequest._retry && !shouldSkip) {
       originalRequest._retry = true;
       try {
         // Assume /api/auth/refresh-token uses the httpOnly cookie to get a new access token
-        const { data } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh-token`, {}, { withCredentials: true });
+        const { data } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api'}/auth/refresh-token`, {}, { withCredentials: true });
         
         localStorage.setItem('accessToken', data.accessToken);
         
@@ -40,7 +50,10 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // Refresh failed (e.g., cookie expired), force logout
         localStorage.removeItem('accessToken');
-        window.location.href = '/login';
+        localStorage.removeItem('auth-storage');
+        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       }
     }

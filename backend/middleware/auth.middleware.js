@@ -19,10 +19,31 @@ const protect = async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ success: false, message: 'User making this request no longer exists.' });
     }
+    
+    // Check if user manually triggered "Logout All Sessions" after this token was natively issued
+    if (req.user.lastLogoutAllDate && decoded.iat) {
+      const issuedAt = decoded.iat * 1000;
+      if (issuedAt < req.user.lastLogoutAllDate.getTime()) {
+        return res.status(401).json({ success: false, message: 'Session expired by manual global logout. Please login again.' });
+      }
+    }
+    
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: 'Invalid or expired token, please login again' });
   }
 };
+const optionalAuth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id);
+    }
+  } catch (err) {
+    req.user = null;
+  }
+  next();
+};
 
-module.exports = { protect };
+module.exports = { protect, optionalAuth };

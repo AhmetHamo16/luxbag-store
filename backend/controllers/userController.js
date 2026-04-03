@@ -7,7 +7,12 @@ exports.getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-    res.status(200).json({ success: true, data: user });
+    const safeUser = user.toObject();
+    safeUser.addresses = (safeUser.addresses || []).map((address) => ({
+      ...address,
+      postalCode: address.postalCode || address.zipCode || ''
+    }));
+    res.status(200).json({ success: true, data: safeUser });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -58,9 +63,18 @@ exports.changePassword = async (req, res) => {
 exports.manageAddresses = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    user.addresses = req.body.addresses; // Expect array of addresses
+    user.addresses = (req.body.addresses || []).map((address) => ({
+      ...address,
+      zipCode: address.zipCode || address.postalCode || ''
+    }));
     await user.save();
-    res.status(200).json({ success: true, data: user.addresses });
+    res.status(200).json({
+      success: true,
+      data: user.addresses.map((address) => ({
+        ...address.toObject(),
+        postalCode: address.postalCode || address.zipCode || ''
+      }))
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -116,9 +130,6 @@ exports.updateUserRole = async (req, res) => {
   }
 };
 
-// @desc    Update user status (active/inactive)
-// @route   PUT /api/users/:id/status
-// @access  Private/Admin
 exports.updateUserStatus = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -127,6 +138,38 @@ exports.updateUserStatus = async (req, res) => {
     user.isActive = req.body.isActive;
     await user.save();
     res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Admin Edit User Details
+// @route   PUT /api/users/:id
+// @access  Private/Admin
+exports.adminUpdateUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    if (req.body.phone !== undefined) user.phone = req.body.phone;
+    
+    await user.save();
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Admin Delete User
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+exports.adminDeleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.status(200).json({ success: true, message: 'User deleted successfully' });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }

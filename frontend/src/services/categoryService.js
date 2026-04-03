@@ -2,7 +2,7 @@ import api from './api';
 
 export const categoryService = {
   getCategories: async () => {
-    const response = await api.get('/categories');
+    const response = await api.get('/categories?all=true');
     return response.data;
   },
 
@@ -22,6 +22,16 @@ export const categoryService = {
 
   deleteCategory: async (id) => {
     const response = await api.delete(`/categories/${id}`);
+    return response.data;
+  },
+
+  reorderCategories: async (orderedIds) => {
+    const response = await api.put('/categories/reorder', { orderedIds });
+    return response.data;
+  },
+
+  toggleCategoryStatus: async (id) => {
+    const response = await api.put(`/categories/${id}/toggle`);
     return response.data;
   }
 };

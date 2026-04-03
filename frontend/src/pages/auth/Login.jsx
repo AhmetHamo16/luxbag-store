@@ -1,25 +1,46 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import toast from 'react-hot-toast';
 
-const Login = () => {
+export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
-  const { login, isLoading, error: authError } = useAuthStore();
+  const location = useLocation();
+  const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const authError = useAuthStore((state) => state.error);
+  const redirectTo = location.state?.from;
 
   const onSubmit = async (data) => {
-    const success = await login(data);
+    const normalizedData = {
+      email: data.email.trim().toLowerCase(),
+      password: data.password
+    };
+    const success = await login(normalizedData);
     if (success) {
-      navigate('/');
+      toast.success('Successfully logged in!', { duration: 2500 });
+      const loggedInUser = useAuthStore.getState().user;
+      navigate(
+        redirectTo || (
+          loggedInUser?.role === 'admin'
+            ? '/admin'
+            : loggedInUser?.role === 'cashier'
+              ? '/cashier'
+              : '/'
+        ),
+        { replace: true }
+      );
     }
   };
 
   return (
-    <div className="flex flex-col justify-center py-20 sm:px-6 lg:px-8 bg-white min-h-[70vh]">
+    <div className="flex flex-col justify-center py-20 sm:px-6 lg:px-8 bg-beige min-h-screen">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <h2 className="text-4xl font-serif text-black mb-2">Welcome Back</h2>
-        <p className="text-sm text-gray-500">Sign in to access your Melora account.</p>
+        <img loading="lazy" src="/logo.png" className="mx-auto h-24 mb-6 object-contain" alt="Melora Logo" />
+        <h2 className="text-4xl font-serif text-brand mb-2">Welcome Back</h2>
+        <p className="text-sm text-brand/70">Sign in to access your Melora account.</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -34,6 +55,7 @@ const Login = () => {
               <input
                 id="email"
                 type="email"
+                autoComplete="username"
                 {...register("email", { 
                   required: "Email is required",
                   pattern: {
@@ -54,6 +76,7 @@ const Login = () => {
               <input
                 id="password"
                 type="password"
+                autoComplete="current-password"
                 {...register("password", { 
                   required: "Password is required",
                   minLength: { value: 6, message: "Password must be at least 6 characters" }
@@ -77,7 +100,7 @@ const Login = () => {
               </div>
 
               <div className="text-sm">
-                <Link to="#" className="font-medium text-black hover:text-gold transition-colors">
+                <Link to="/forgot-password" className="font-medium text-black hover:text-gold transition-colors">
                   Forgot your password?
                 </Link>
               </div>
@@ -94,7 +117,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-4 border border-transparent text-sm font-medium text-white bg-black hover:bg-gold transition-colors duration-300 uppercase tracking-widest disabled:opacity-50"
+                className="w-full flex justify-center py-4 border border-transparent text-sm font-medium text-white bg-[#1a1a2e] hover:bg-gold transition-colors duration-300 uppercase tracking-widest disabled:opacity-50"
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </button>
@@ -112,5 +135,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;

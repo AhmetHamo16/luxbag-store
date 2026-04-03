@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import toast from 'react-hot-toast';
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -14,6 +15,7 @@ const Register = () => {
   const onSubmit = async (data) => {
     const success = await registerUser({ name: data.name, email: data.email, password: data.password });
     if (success) {
+      toast.success('Account created successfully!', { duration: 3000 });
       navigate('/');
     }
   };

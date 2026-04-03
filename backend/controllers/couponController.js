@@ -1,11 +1,31 @@
 const Coupon = require('../models/Coupon');
 
+const calculateCouponDiscount = (coupon, purchaseAmount, shippingCost = 0) => {
+  if (!coupon) return 0;
+
+  if (coupon.discountType === 'percentage') {
+    return Number(((purchaseAmount * coupon.discountValue) / 100).toFixed(2));
+  }
+
+  if (coupon.discountType === 'fixed') {
+    return Math.min(Number(coupon.discountValue || 0), Number(purchaseAmount || 0));
+  }
+
+  if (coupon.discountType === 'free_shipping') {
+    return Number(shippingCost || 0);
+  }
+
+  return 0;
+};
+
 // @desc    Validate coupon
 // @route   POST /api/coupons/validate
 // @access  Private
 exports.validateCoupon = async (req, res) => {
   try {
-    const { code, purchaseAmount } = req.body;
+    const { code, purchaseAmount, shippingCost = 0 } = req.body;
+    const userId = req.user._id; // Guaranteed by auth middleware in Private routes
+    
     const coupon = await Coupon.findOne({ code, isActive: true });
     
     if (!coupon) return res.status(404).json({ success: false, message: 'Invalid or expired coupon' });
@@ -22,7 +42,19 @@ exports.validateCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: `Minimum purchase amount is ${coupon.minPurchaseAmount}` });
     }
 
-    res.status(200).json({ success: true, data: coupon });
+    // Check individual user limits
+    const userUsage = coupon.redeemedBy.find(r => r.user.toString() === userId.toString());
+    if (userUsage && userUsage.count >= coupon.maxUsesPerUser) {
+      return res.status(400).json({ success: false, message: `You have reached the maximum allowed uses (${coupon.maxUsesPerUser}) for this coupon` });
+    }
+
+    const discountAmount = calculateCouponDiscount(coupon, purchaseAmount, shippingCost);
+
+    res.status(200).json({
+      success: true,
+      data: coupon,
+      discountAmount
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -73,6 +105,23 @@ exports.deleteCoupon = async (req, res) => {
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
     if (!coupon) return res.status(404).json({ success: false, message: 'Coupon not found' });
     res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Toggle Coupon Status
+// @route   PUT /api/coupons/:id/toggle
+// @access  Private/Admin
+exports.toggleCouponStatus = async (req, res) => {
+  try {
+    const coupon = await Coupon.findById(req.params.id);
+    if (!coupon) return res.status(404).json({ success: false, message: 'Coupon not found' });
+    
+    coupon.isActive = !coupon.isActive;
+    await coupon.save();
+    
+    res.status(200).json({ success: true, data: coupon });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -5,22 +5,135 @@ const {
   getMyOrders, 
   getOrders, 
   updateOrderStatus, 
-  cancelOrder 
+  cancelOrder,
+  updateOrderToPaid,
+  getAdminStats,
+  getPosSummary,
+  getOrderAlerts,
+  getCurrentPosShift,
+  openPosShift,
+  closePosShift,
+  getPosShifts,
+  voidPosOrder,
+  exportOrdersCSV,
+  getOrderById,
+  createPosOrder
 } = require('../controllers/orderController');
-const { protect } = require('../middleware/auth.middleware');
-const { admin } = require('../middleware/admin.middleware');
+const { protect, optionalAuth } = require('../middleware/auth.middleware');
+const { admin, adminOrCashier } = require('../middleware/admin.middleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const receiptsDir = path.join(__dirname, '..', 'uploads', 'receipts');
+fs.mkdirSync(receiptsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, receiptsDir)
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype && file.mimetype.startsWith('image/')) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image uploads are allowed for receipts'));
+  }
+});
+
+router.route('/upload')
+  .post(protect, upload.single('image'), (req, res) => {
+    if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
+    // Keep backward compatibility for other places if they use /upload
+    res.status(200).json({ success: true, url: '/' + req.file.path.replace(/\\/g, '/') });
+  });
+
+const Order = require('../models/Order');
+
+// NEW PUBLIC ROUTE — no auth middleware at all
+router.post('/iban-submit', upload.single('receipt'), async (req, res) => {
+  try {
+    let orderData = JSON.parse(req.body.orderData);
+    
+    const newOrder = new Order({
+      user: null,
+      items: orderData.items,
+      shippingAddress: orderData.shippingAddress,
+      subtotal: orderData.subtotal,
+      shippingCost: orderData.shippingCost || 0,
+      discountAmount: orderData.discountAmount || 0,
+      total: orderData.total || orderData.totalPrice,
+      coupon: orderData.coupon || undefined,
+      payment: {
+        method: 'iban',
+        receiptImage: req.file ? `/uploads/receipts/${path.basename(req.file.path)}` : null,
+        status: 'pending_payment'
+      },
+      status: 'pending_payment',
+      notes: orderData.notes || ''
+    });
+
+    const saved = await newOrder.save();
+    res.status(201).json({ success: true, order: saved });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 router.route('/')
-  .post(protect, createOrder)
+  .post(optionalAuth, upload.single('receipt'), createOrder)
   .get(protect, admin, getOrders);
 
 router.route('/myorders')
   .get(protect, getMyOrders);
+
+router.route('/stats')
+  .get(protect, admin, getAdminStats);
+
+router.route('/pos/summary')
+  .get(protect, adminOrCashier, getPosSummary);
+
+router.route('/alerts')
+  .get(protect, adminOrCashier, getOrderAlerts);
+
+router.route('/pos/shift/current')
+  .get(protect, adminOrCashier, getCurrentPosShift);
+
+router.route('/pos/shift/open')
+  .post(protect, adminOrCashier, openPosShift);
+
+router.route('/pos/shift/close')
+  .post(protect, adminOrCashier, closePosShift);
+
+router.route('/pos/shifts')
+  .get(protect, admin, getPosShifts);
+
+router.route('/:id/void-pos')
+  .put(protect, adminOrCashier, voidPosOrder);
+
+router.route('/pos')
+  .post(protect, adminOrCashier, createPosOrder);
+
+router.route('/export')
+  .get(protect, admin, exportOrdersCSV);
+
+router.route('/:id')
+  .get(protect, getOrderById);
 
 router.route('/:id/status')
   .put(protect, admin, updateOrderStatus);
 
 router.route('/:id/cancel')
   .put(protect, cancelOrder);
+
+router.route('/:id/pay')
+  .put(protect, admin, updateOrderToPaid);
 
 module.exports = router;

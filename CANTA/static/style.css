@@ -1,0 +1,40 @@
+body {
+    background-color: #f8f8f8;
+    color: #222;
+    font-family: 'Playfair Display', serif;
+}
+
+.btn-gold {
+    background-color: #C6A75E;
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+.btn-gold:hover {
+    background-color: #b18a3a;
+    color: #fff;
+}
+.bg-gold {
+    background-color: #C6A75E !important;
+    color: #fff !important;
+}
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(198, 167, 94, 0.08);
+}
+input, textarea {
+    border-radius: 8px !important;
+}
+.table th, .table td {
+    vertical-align: middle;
+}
+.alert-success {
+    background-color: #C6A75E;
+    color: #fff;
+    border: none;
+}
+.alert-danger {
+    background-color: #222;
+    color: #fff;
+    border: none;
+}

@@ -1,0 +1,35 @@
+﻿
+> frontend@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 101 modules transformed.
+node.exe : [31mΓ£ù[39m Build failed in 761ms
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Fi
+les\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([31mΓ£ 
+   ù[39m Build failed in 761ms:String) [], RemoteE  
+  xception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31merror during build:
+[31mCould not resolve "../../services/adminService" 
+from "src/pages/admin/AdminProfile.jsx"[31m
+file: [36mC:/Users/Lenovo/Desktop/Melora/luxbag/fron
+tend/src/pages/admin/AdminProfile.jsx[31m
+    at getRollupError (file:///C:/Users/Lenovo/Deskto
+p/Melora/luxbag/frontend/node_modules/rollup/dist/es/
+shared/parseAst.js:402:41)
+    at error (file:///C:/Users/Lenovo/Desktop/Melora/
+luxbag/frontend/node_modules/rollup/dist/es/shared/pa
+rseAst.js:398:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///
+C:/Users/Lenovo/Desktop/Melora/luxbag/frontend/node_m
+odules/rollup/dist/es/shared/node-entry.js:21710:24)
+    at file:///C:/Users/Lenovo/Desktop/Melora/luxbag/
+frontend/node_modules/rollup/dist/es/shared/node-entr
+y.js:21670:26[39m

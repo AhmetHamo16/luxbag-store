@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center mb-4">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" height="80">
+    <h1 style="color: #C6A75E; font-weight: bold;">MELORA ÇANTASI</h1>
+</div>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm" style="border: none;">
+            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" class="card-img-top" alt="Bag" style="height: 220px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ product['name_' ~ lang] }}</h5>
+                <p class="card-text">{{ product['description_' ~ lang] }}</p>
+                <span class="badge bg-gold" style="font-size: 1.1em;">{{ product.price }} ₺</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

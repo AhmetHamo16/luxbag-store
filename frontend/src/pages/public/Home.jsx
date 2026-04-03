@@ -1,106 +1,344 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../../components/product/ProductCard';
-import Loader from '../../components/shared/Loader';
+import SkeletonCard from '../../components/shared/SkeletonCard';
+import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { productService } from '../../services/productService';
+import { contentService } from '../../services/contentService';
 import useTranslation from '../../hooks/useTranslation';
+import useLangStore from '../../store/useLangStore';
 
 const Home = () => {
+  const { language } = useLangStore();
+  const { t } = useTranslation('home');
+  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation('home');
+  const [content, setContent] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentCopy, setCurrentCopy] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
+
+  const homeCopy = {
+    en: {
+      collectionLabel: 'Melora Signature Collection',
+      viewCollection: 'Explore The Collection',
+      shopNow: 'Discover The Edit',
+      categoryEyebrow: 'Curated Houses',
+      categoryTitle: 'Shop by Category',
+      featuredTitle: 'Featured Arrivals',
+      noProducts: 'The collection is being refreshed. New icons will appear shortly.',
+      viewAllProducts: 'Explore All Pieces',
+      designs: 'Signature Pieces',
+      customers: 'Private Clients',
+      countries: 'Global Destinations'
+    },
+    ar: {
+      collectionLabel: 'تشكيلة ميلورا الموقعة',
+      viewCollection: 'اكتشفي التشكيلة',
+      shopNow: 'اكتشفي المختارات',
+      categoryEyebrow: 'اختيارات منتقاة',
+      categoryTitle: 'تسوقي حسب الفئة',
+      featuredTitle: 'أبرز الوصولات',
+      noProducts: 'نقوم الآن بتحديث التشكيلة. ستظهر القطع الجديدة قريبًا.',
+      viewAllProducts: 'استعرضي جميع القطع',
+      designs: 'قطع موقعة',
+      customers: 'عميلات مميزات',
+      countries: 'وجهات حول العالم'
+    },
+    tr: {
+      collectionLabel: 'Melora Imza Koleksiyonu',
+      viewCollection: 'Koleksiyonu Kesfet',
+      shopNow: 'Secili Parcalari Gor',
+      categoryEyebrow: 'Ozenle Secildi',
+      categoryTitle: 'Kategoriye Gore Kesfet',
+      featuredTitle: 'One Cikan Yeni Parcalar',
+      noProducts: 'Koleksiyon yenileniyor. Yeni seckiler cok yakinda burada olacak.',
+      viewAllProducts: 'Tum Parcalari Kesfet',
+      designs: 'Imza Parca',
+      customers: 'Seckin Musteri',
+      countries: 'Ulasilan Ulke'
+    }
+  };
+
+  const copy = homeCopy[language] || homeCopy.en;
+
+  const slides = [
+    {
+      lang: 'EN',
+      dir: 'ltr',
+      title: 'Crafted To Be Remembered.',
+      sub: 'Melora handbags are shaped for women who move with quiet confidence, rare taste, and lasting presence.'
+    },
+    {
+      lang: 'AR',
+      dir: 'rtl',
+      title: 'صُمِّمت لتُرى. وتُتذكَر.',
+      sub: 'حقائب ميلورا خُلقت لامرأة تعرف قيمة الحضور الهادئ، والذوق الرفيع، والانطباع الذي لا يبهت.'
+    },
+    {
+      lang: 'TR',
+      dir: 'ltr',
+      title: 'Gorulmek Icin Tasarlandi.',
+      sub: 'Melora cantalari; sakin bir guc, seckin bir zevk ve hatirda kalan bir durus icin tasarlandi.'
+    }
+  ];
+
+  const categories = [
+    { name: 'Classic', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600', link: '/shop?category=Classic' },
+    { name: 'Mini', img: 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=600', link: '/shop?category=Mini' },
+    { name: 'Shoulder', img: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600', link: '/shop?category=Shoulder' },
+    { name: 'Evening', img: 'https://images.unsplash.com/photo-1575032617751-6ddec2089882?w=600', link: '/shop?category=Evening' }
+  ];
+
+  const resolveAssetUrl = (value) => {
+    if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
+    if (typeof value === 'object') return resolveAssetUrl(value.url);
+    if (typeof value === 'string' && value.includes('\\uploads\\')) {
+      return backendOrigin + value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/');
+    }
+    if (typeof value === 'string' && value.startsWith('/uploads/')) {
+      return backendOrigin + value;
+    }
+    return value;
+  };
+
+  const getHeroTitle = (slide) => {
+    const rawTitle = content?.heroBanner?.title?.[slide.lang.toLowerCase()];
+    const normalized = (rawTitle || '').trim().toLowerCase();
+    const weakTitles = [
+      'own the room. leave the signature.',
+      'sahneyi sen al. izini birak.',
+      'welcome to melora',
+      'melora exclusive collection',
+      'احملي الحضور. واتركي توقيعك.',
+      'ساحنيي سن ال. إزيني بيراك.'
+    ];
+
+    if (!rawTitle || weakTitles.includes(normalized)) {
+      return slide.title;
+    }
+
+    return rawTitle;
+  };
+
+  const getHeroSubtitle = (slide) => {
+    const rawSubtitle = content?.heroBanner?.subtitle?.[slide.lang.toLowerCase()];
+    const normalized = (rawSubtitle || '').trim().toLowerCase();
+    const weakSubtitles = [
+      'redefining luxury.',
+      'luxury redefined.',
+      'yeniden tanimlanan luks.',
+      'luksu yeniden tanimlandi.',
+      'إعادة تعريف الفخامة.',
+      'الفخامة أُعيد تعريفها.',
+      'إعادة تعريف الفخامة.'
+    ];
+
+    if (!rawSubtitle || weakSubtitles.includes(normalized)) {
+      return slide.sub;
+    }
+
+    return rawSubtitle;
+  };
 
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
         setLoading(true);
-        // Using getProducts with limit=6 to represent featured/new arrivals
-        const data = await productService.getProducts({ limit: 6 });
-        setFeaturedProducts(data.data || []);
+        const [prodRes, contentRes] = await Promise.all([
+          productService.getProducts({ limit: 4 }),
+          contentService.getContent()
+        ]);
+        setFeaturedProducts(prodRes.data?.data || prodRes.data || []);
+        setContent(contentRes.data);
       } catch (error) {
-        console.error("Error fetching home products", error);
+        console.error('Error fetching home products', error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchHomeData();
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('animate-fade-in-up', 'opacity-100');
+        entry.target.classList.remove('opacity-0', 'translate-y-10');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.observe-fade').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [featuredProducts]);
+
+  useEffect(() => {
+    if (featuredProducts.length <= 1) return undefined;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % featuredProducts.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [featuredProducts]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setCurrentCopy((prev) => (prev + 1) % slides.length);
+        setVisible(true);
+      }, 500);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const handleLangClick = (idx) => {
+    if (idx === currentCopy || !visible) return;
+    setVisible(false);
+    setTimeout(() => {
+      setCurrentCopy(idx);
+      setVisible(true);
+    }, 500);
+  };
+
   return (
-    <div className="w-full">
-      {/* Hero Section */}
-      <section className="relative h-[85vh] w-full overflow-hidden">
-        <div className="absolute inset-0 bg-black/20 z-10"></div>
-        <img 
-          src="https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=1920&auto=format&fit=crop" 
-          alt="Luxury Bag Display" 
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        <div className="relative z-20 h-full flex flex-col items-center justify-center text-center px-4">
-          <span className="text-gold tracking-[0.2em] text-sm uppercase mb-4 block">{t.heroTitle}</span>
-          <h1 className="text-5xl md:text-7xl font-serif text-white mb-8 max-w-4xl mx-auto leading-tight">
-            {t.heroSubtitle}
-          </h1>
-          <Link 
-            to="/shop" 
-            className="bg-gold text-white px-10 py-4 uppercase tracking-widest text-sm font-medium hover:bg-white hover:text-black transition-all duration-500 ease-out inline-block"
-          >
-            {t.shopNow}
-          </Link>
+    <div className="w-full bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors">
+      <section className="relative min-h-screen w-full overflow-hidden bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_48%,#f2e5d5_100%)]">
+        <div className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 md:grid-cols-2">
+          <div className="relative flex flex-col justify-center px-8 pb-16 pt-24 md:px-16 lg:px-24">
+            <div className="absolute left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
+              <img loading="lazy" src="/logo.png" alt="Watermark" className="w-full h-auto object-contain" />
+            </div>
+            <div className="relative z-20 max-w-xl">
+              <div style={{ minHeight: '260px', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', direction: slides[currentCopy].dir, textAlign: slides[currentCopy].dir === 'rtl' ? 'right' : 'left' }}>
+                <span className="mb-6 block text-xs uppercase tracking-[0.35em] text-[#8b5e34] md:text-sm">{copy.collectionLabel}</span>
+                <h1 className="mb-6 font-serif text-4xl leading-[1.08] text-[#2f1f15] md:text-5xl lg:text-6xl">
+                  {getHeroTitle(slides[currentCopy])}
+                </h1>
+                <p className="max-w-md text-sm leading-7 text-[#6e5b48] md:text-base">
+                  {getHeroSubtitle(slides[currentCopy])}
+                </p>
+              </div>
+
+              <div className="mb-10 flex items-center gap-2 text-xs font-bold tracking-widest" dir="ltr">
+                {slides.map((slide, idx) => (
+                  <React.Fragment key={slide.lang}>
+                    <button type="button" onClick={() => handleLangClick(idx)} className={`${currentCopy === idx ? 'text-[#8b5e34]' : 'text-[#2f1f15]/45 hover:text-[#2f1f15]'}`}>
+                      {slide.lang}
+                    </button>
+                    {idx < slides.length - 1 && <span className="text-[#2f1f15]/25">•</span>}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <Link to="/shop" className="w-full border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-white transition-colors duration-300 hover:bg-[#8b5e34] hover:border-[#8b5e34] sm:w-auto">
+                  {content?.heroBanner?.buttonText?.[language] || copy.shopNow || t.shopNow || 'Shop Now'}
+                </Link>
+                <Link to="/categories" className="w-full border border-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#2f1f15] transition-colors duration-300 hover:bg-[#2f1f15] hover:text-white sm:w-auto">
+                  {copy.viewCollection}
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mt-10 min-h-[50vh] overflow-hidden md:mt-0 md:min-h-screen bg-[#e9d7c2]/25">
+            <div className="absolute inset-0 will-change-transform" style={{ transform: `translateY(${scrollY * 0.16}px)` }}>
+              {featuredProducts.length > 0 ? featuredProducts.map((prod, idx) => (
+                <div key={prod._id} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? 'opacity-100' : 'opacity-0'}`}>
+                  <img
+                    loading="lazy"
+                    src={resolveAssetUrl(prod.images?.[0]?.url || prod.images?.[0])}
+                    alt={prod.name?.en || 'Featured Luxury Bag'}
+                    className="h-full w-full object-cover object-center"
+                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200'; }}
+                  />
+                </div>
+              )) : (
+                <img loading="lazy" src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200" alt="Luxury Bag" className="h-full w-full object-cover object-center" />
+              )}
+            </div>
+
+            {featuredProducts.length > 1 && (
+              <div className="absolute bottom-12 left-1/2 z-20 flex -translate-x-1/2 gap-4">
+                {featuredProducts.map((prod, idx) => (
+                  <button key={prod._id || idx} onClick={() => setCurrentSlide(idx)} className={`rounded-full border border-[#2f1f15]/15 shadow-[0_0_6px_rgba(0,0,0,0.35)] transition-all ${currentSlide === idx ? 'h-4 w-4 bg-[#8b5e34]' : 'h-3 w-3 bg-white hover:bg-[#d7b690]'}`} aria-label={`Go to slide ${idx + 1}`} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-serif text-black mb-4">{t.featured}</h2>
-          <div className="w-24 h-0.5 bg-gold mx-auto"></div>
+      <section className="border-y border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-12 text-center md:grid-cols-3 lg:gap-24">
+            <AnimatedCounter target={500} text={copy.designs} />
+            <AnimatedCounter target={50000} text={copy.customers} />
+            <AnimatedCounter target={15} text={copy.countries} />
+          </div>
         </div>
-        
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mb-16 text-center observe-fade opacity-0 translate-y-10 transition-all duration-700">
+          <span className="mb-3 block text-xs font-medium uppercase tracking-widest text-brand">{copy.categoryEyebrow}</span>
+          <h2 className="mb-6 font-serif text-3xl text-brand md:text-4xl">{copy.categoryTitle}</h2>
+          <div className="mx-auto h-[2px] w-16 bg-gold"></div>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {categories.map((cat, idx) => (
+            <Link to={cat.link} key={cat.name} className="group relative block h-[450px] overflow-hidden rounded-sm shadow-md transition-shadow duration-500 hover:shadow-2xl observe-fade opacity-0 translate-y-10" style={{ transitionDelay: `${idx * 100}ms` }}>
+              <img loading="lazy" src={cat.img} alt={cat.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black/25 transition-colors duration-500 group-hover:bg-black/50"></div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                <h3 className="mb-3 font-serif text-2xl text-white drop-shadow-md">{cat.name}</h3>
+                <span className="translate-y-4 border-b border-transparent pb-1 text-[10px] font-bold uppercase tracking-widest text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:border-white group-hover:opacity-100">Explore</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl border-t border-brand/5 px-4 py-28 sm:px-6 lg:px-8">
+        <div className="mb-20 text-center observe-fade opacity-0 translate-y-10 transition-all duration-700">
+          <h2 className="mb-6 font-serif text-3xl text-brand md:text-4xl">{content?.homeSections?.featured?.[language] || copy.featuredTitle || t.featured || 'Featured Arrivals'}</h2>
+          <div className="mx-auto h-[2px] w-16 bg-gold"></div>
+        </div>
+
         {loading ? (
-          <Loader />
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4 lg:gap-8">
+            {Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.length > 0 ? featuredProducts.map(product => (
-              <ProductCard key={product._id} product={product} />
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4 lg:gap-8">
+            {featuredProducts.length > 0 ? featuredProducts.map((product, i) => (
+              <div key={product._id} className="observe-fade opacity-0 translate-y-10 transition-all duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
+                <ProductCard product={product} />
+              </div>
             )) : (
-              <p className="col-span-full text-center text-gray-500">No products available at the moment.</p>
+              <p className="col-span-full text-center text-gray-500">{copy.noProducts}</p>
             )}
           </div>
         )}
-        
-        <div className="text-center mt-16">
-          <Link to="/shop" className="inline-block border-b-2 border-black pb-1 text-sm font-medium tracking-widest uppercase hover:text-gold hover:border-gold transition-colors duration-300">
-            View All Products
-          </Link>
-        </div>
-      </section>
 
-      {/* Why Choose Us */}
-      <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-            <div>
-              <div className="w-16 h-16 mx-auto bg-white flex items-center justify-center rounded-full mb-6">
-                <span className="text-2xl text-gold">★</span>
-              </div>
-              <h3 className="text-lg font-serif mb-3">Premium Quality</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Crafted with the finest materials and meticulous attention to detail.</p>
-            </div>
-            <div>
-              <div className="w-16 h-16 mx-auto bg-white flex items-center justify-center rounded-full mb-6">
-                <span className="text-2xl text-gold">✈</span>
-              </div>
-              <h3 className="text-lg font-serif mb-3">Free Worldwide Shipping</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Enjoy complimentary express delivery on all orders over $500.</p>
-            </div>
-            <div>
-              <div className="w-16 h-16 mx-auto bg-white flex items-center justify-center rounded-full mb-6">
-                <span className="text-2xl text-gold">↺</span>
-              </div>
-              <h3 className="text-lg font-serif mb-3">30-Day Returns</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Not completely satisfied? Return it within 30 days for a full refund.</p>
-            </div>
-          </div>
+        <div className="mt-20 text-center observe-fade opacity-0 translate-y-10 transition-all duration-700">
+          <Link to="/shop" className="inline-block border border-brand bg-white px-10 py-4 text-center text-xs font-bold uppercase tracking-widest text-brand shadow-sm transition-colors duration-500 hover:bg-brand hover:text-beige hover:shadow-xl">
+            {copy.viewAllProducts}
+          </Link>
         </div>
       </section>
     </div>
@@ -108,3 +346,4 @@ const Home = () => {
 };
 
 export default Home;
+

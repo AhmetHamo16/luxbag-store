@@ -1,0 +1,17 @@
+﻿
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\Lenovo\Desktop\Melora\luxbag\frontend\src\pages\admin\Categories\CategoryManager.jsx
+  3:10  error  Parsing error: Identifier 'categoryService' has already been declared
+
+C:\Users\Lenovo\Desktop\Melora\luxbag\frontend\src\pages\admin\Orders\OrderDetails.jsx
+  30:6   warning  React Hook useEffect has a missing dependency: 'fetchOrder'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  55:17  error    'err' is defined but never used                                                                                no-unused-vars
+
+C:\Users\Lenovo\Desktop\Melora\luxbag\frontend\src\pages\admin\Orders\OrderList.jsx
+  38:6  warning  React Hook useEffect has a missing dependency: 'fetchOrders'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Γ£û 4 problems (2 errors, 2 warnings)
+

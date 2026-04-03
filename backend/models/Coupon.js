@@ -2,11 +2,16 @@ const mongoose = require('mongoose');
 
 const couponSchema = new mongoose.Schema({
   code: { type: String, required: true, unique: true },
-  discountType: { type: String, enum: ['percentage', 'fixed'], required: true },
+  discountType: { type: String, enum: ['percentage', 'fixed', 'free_shipping'], required: true },
   discountValue: { type: Number, required: true },
   expiryDate: { type: Date, required: true },
   maxUses: { type: Number, required: true },
   usedCount: { type: Number, default: 0 },
+  maxUsesPerUser: { type: Number, default: 1 },
+  redeemedBy: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    count: { type: Number, default: 0 }
+  }],
   minPurchaseAmount: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });

@@ -3,9 +3,9 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  role: { type: String, enum: ['user', 'admin', 'cashier'], default: 'user' },
   avatar: String,
   phone: String,
   isVerified: { type: Boolean, default: false },
@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema({
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  lastLogoutAllDate: Date,
 }, { timestamps: true });
+
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1, isActive: 1 });
 
 // Hash password
 userSchema.pre('save', async function() {

@@ -1,6 +1,11 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, type, data }) => {
+  if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn(`Email skipped for "${subject}" because email environment variables are not fully configured.`);
+    return false;
+  }
+
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT || 465,
@@ -29,7 +34,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
           <h2 style="color: #1E1E1E;">Order Received</h2>
           <p>Thank you for your purchase, ${data.name}!</p>
           <p><strong>Order ID:</strong> ${data.orderId}</p>
-          <p><strong>Total Amount:</strong> $${data.total}</p>
+          <p><strong>Total Amount:</strong> ${data.total}</p>
           <p>We will notify you once it ships.</p>
         </div>
       `;
@@ -49,6 +54,18 @@ const sendEmail = async ({ to, subject, type, data }) => {
           <h2 style="color: #1E1E1E;">Password Reset Request</h2>
           <p>Click the button below to reset your password. This link is valid for 1 hour.</p>
           <a href="${data.resetUrl}" style="background-color: #1E1E1E; color: white; padding: 12px 24px; text-decoration: none; display: inline-block; margin-top: 20px;">Reset Password</a>
+        </div>
+      `;
+      break;
+    case 'adminBankTransferAlert':
+      htmlContent = `
+        <div style="font-family: Arial, sans-serif;">
+          <h2 style="color: #1E1E1E;">New IBAN Order Submitted</h2>
+          <p><strong>Order ID:</strong> ${data.orderId}</p>
+          <p><strong>Customer:</strong> ${data.customerName || 'Guest customer'}</p>
+          <p><strong>Phone:</strong> ${data.customerPhone || 'N/A'}</p>
+          <p><strong>Total:</strong> ${data.total}</p>
+          <p><strong>Receipt:</strong> ${data.receiptImage || 'Uploaded to server'}</p>
         </div>
       `;
       break;

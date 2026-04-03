@@ -26,7 +26,7 @@ const Addresses = () => {
   const handleAddAddress = async (e) => {
     e.preventDefault();
     try {
-      const newAddresses = [...addresses, formData];
+      const newAddresses = [...addresses, { ...formData, zipCode: formData.postalCode }];
       await userService.manageAddresses(newAddresses);
       setFormData({ street: '', city: '', postalCode: '', country: '' });
       fetchAddresses();
@@ -66,7 +66,7 @@ const Addresses = () => {
                 <div key={idx} className="bg-white p-4 shadow-sm border border-gray-100 rounded flex justify-between items-start">
                   <div>
                     <p className="text-sm font-medium">{addr.street}</p>
-                    <p className="text-sm text-gray-500">{addr.city}, {addr.postalCode}</p>
+                    <p className="text-sm text-gray-500">{addr.city}, {addr.postalCode || addr.zipCode}</p>
                     <p className="text-sm text-gray-500">{addr.country}</p>
                   </div>
                   <button onClick={() => handleDeleteAddress(idx)} className="text-red-500 text-sm font-medium hover:text-red-700">Delete</button>
