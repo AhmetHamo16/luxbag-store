@@ -2,11 +2,13 @@
   "name": "luxbag-root",
   "version": "1.0.0",
   "scripts": {
+    "postinstall": "npm install --prefix backend --omit=dev",
     "start": "node backend/server.js",
     "server": "npm run dev --prefix backend",
     "client": "npm run dev --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm run build --prefix frontend",
+    "build": "echo Railway backend build skipped",
+    "build:web": "npm run build --prefix frontend",
     "lint": "npm run lint --prefix frontend",
     "start:pm2": "pm2 start ecosystem.config.cjs"
   },
