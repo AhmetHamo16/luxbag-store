@@ -10,6 +10,25 @@ const extractPublicId = (url) => {
   return fileWithExtension.split('.')[0];
 };
 
+const getUploadedFileUrl = (file) => {
+  if (!file) return '';
+  if (file.path && /^https?:\/\//i.test(file.path)) {
+    return file.path;
+  }
+  if (file.filename) {
+    return `/uploads/products/${file.filename}`;
+  }
+  if (file.path) {
+    const normalized = file.path.replace(/\\/g, '/');
+    const marker = '/uploads/';
+    const markerIndex = normalized.lastIndexOf(marker);
+    if (markerIndex >= 0) {
+      return normalized.slice(markerIndex);
+    }
+  }
+  return '';
+};
+
 // Helper to safely parse JSON from FormData
 const parseJSONFields = (body) => {
   const parsed = { ...body };
@@ -193,7 +212,7 @@ exports.createProduct = async (req, res) => {
     let uploadedImages = [];
     if (req.files && req.files.length > 0) {
       uploadedImages = req.files.map((file, index) => ({
-        url: file.path,
+        url: getUploadedFileUrl(file),
         altText: productData.name?.en || 'Product Image',
         isMain: index === 0 && existingImages.length === 0, // First uploaded is main if no existing
         sortOrder: existingImages.length + index
@@ -250,7 +269,7 @@ exports.updateProduct = async (req, res) => {
 
     if (req.files && req.files.length > 0) {
       const addedImages = req.files.map((file, index) => ({
-        url: file.path,
+        url: getUploadedFileUrl(file),
         altText: updateData.name?.en || 'Product Image',
         isMain: existingImages.length === 0 && index === 0,
         sortOrder: existingImages.length + index

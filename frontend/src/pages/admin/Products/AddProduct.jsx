@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 const AddProduct = () => {
   const { t } = useTranslation('admin');
   const navigate = useNavigate();
+  const currencySymbol = '₺';
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [activeTab, setActiveTab] = useState('general');
@@ -263,15 +264,15 @@ const AddProduct = () => {
                   <input type="text" name="sku" value={formData.sku} onChange={handleChange} placeholder="Optional, auto-generated" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Base Price (â‚º) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{`Base Price (${currencySymbol}) *`}</label>
                   <input required type="number" name="price" value={formData.price} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sale Price (â‚º)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{`Sale Price (${currencySymbol})`}</label>
                   <input type="number" name="salePrice" value={formData.salePrice} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Cost Price (â‚º)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{`Cost Price (${currencySymbol})`}</label>
                   <input type="number" name="costPrice" value={formData.costPrice} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
             </div>
@@ -436,7 +437,7 @@ const AddProduct = () => {
                         <input required type="number" min="0" value={variant.stock} onChange={(e) => updateVariant(i, 'stock', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <div className="w-full md:w-1/5">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Sale Price Override ($)</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{`Sale Price Override (${currencySymbol})`}</label>
                         <input type="number" value={variant.salePrice} onChange={(e) => updateVariant(i, 'salePrice', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <button type="button" onClick={() => removeVariant(i)} className="text-red-500 hover:text-red-700 font-medium text-sm px-2">
