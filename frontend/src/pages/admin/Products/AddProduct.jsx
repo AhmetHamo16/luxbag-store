@@ -6,9 +6,130 @@ import useTranslation from '../../../hooks/useTranslation';
 import toast from 'react-hot-toast';
 
 const AddProduct = () => {
-  const { t } = useTranslation('admin');
+  const { t, language } = useTranslation('admin');
   const navigate = useNavigate();
   const currencySymbol = '₺';
+  const copy = {
+    en: {
+      tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
+      basicDetails: 'Basic Details',
+      descEn: 'Description (EN) *',
+      category: 'Category *',
+      basePrice: 'Base Price',
+      salePrice: 'Sale Price',
+      costPrice: 'Cost Price',
+      select: 'Select...',
+      baseSku: 'Base SKU',
+      bagType: 'Bag Type',
+      general: 'General',
+      women: 'Women',
+      men: 'Men',
+      travel: 'Travel',
+      evening: 'Evening',
+      backpack: 'Backpack',
+      barcode: 'Barcode For POS',
+      barcodeHint: 'This barcode will be used directly by the cashier for fast sales and scanner lookup.',
+      barcodePlaceholder: 'Use scanner code or generate a new one',
+      generateBarcode: 'Generate Barcode',
+      publishNow: 'Publish Immediately',
+      featureHomepage: 'Feature on Homepage',
+      productBadges: 'Product Badges',
+      failedAdd: 'Failed to add product',
+      requiredName: 'English product name is required.',
+      requiredDescription: 'English description is required.',
+      requiredPrice: 'Base price is required.',
+      requiredCategory: 'Please choose a category.',
+    },
+    ar: {
+      tabs: { general: 'عام', specs: 'المواصفات', variants: 'المتغيرات والمخزون', images: 'الصور', seo: 'السيو' },
+      basicDetails: 'البيانات الأساسية',
+      descEn: 'الوصف (EN) *',
+      category: 'الفئة *',
+      basePrice: 'السعر الأساسي',
+      salePrice: 'سعر التخفيض',
+      costPrice: 'سعر التكلفة',
+      select: 'اختر...',
+      baseSku: 'رمز SKU الأساسي',
+      bagType: 'نوع الحقيبة',
+      general: 'عام',
+      women: 'نسائي',
+      men: 'رجالي',
+      travel: 'سفر',
+      evening: 'سهرة',
+      backpack: 'ظهر',
+      barcode: 'باركود لنقطة البيع',
+      barcodeHint: 'سيُستخدم هذا الباركود مباشرة من قبل الكاشير لتسريع البيع والبحث عبر الماسح.',
+      barcodePlaceholder: 'استخدم رمز الماسح أو أنشئ واحدًا جديدًا',
+      generateBarcode: 'إنشاء باركود',
+      publishNow: 'نشر مباشرة',
+      featureHomepage: 'إظهاره في الصفحة الرئيسية',
+      productBadges: 'شارات المنتج',
+      failedAdd: 'فشل في إضافة المنتج',
+      requiredName: 'اسم المنتج بالإنجليزية مطلوب.',
+      requiredDescription: 'الوصف بالإنجليزية مطلوب.',
+      requiredPrice: 'السعر الأساسي مطلوب.',
+      requiredCategory: 'يرجى اختيار الفئة.',
+    },
+    tr: {
+      tabs: { general: 'Genel', specs: 'Ozellikler', variants: 'Varyantlar ve Stok', images: 'Gorseller', seo: 'SEO' },
+      basicDetails: 'Temel Bilgiler',
+      descEn: 'Aciklama (EN) *',
+      category: 'Kategori *',
+      basePrice: 'Temel Fiyat',
+      salePrice: 'Indirimli Fiyat',
+      costPrice: 'Maliyet Fiyati',
+      select: 'Sec...',
+      baseSku: 'Temel SKU',
+      bagType: 'Canta Turu',
+      general: 'Genel',
+      women: 'Kadin',
+      men: 'Erkek',
+      travel: 'Seyahat',
+      evening: 'Gece',
+      backpack: 'Sirt Cantasi',
+      barcode: 'POS Icin Barkod',
+      barcodeHint: 'Bu barkod, kasiyer tarafinda hizli satis ve tarayici aramasi icin dogrudan kullanilacaktir.',
+      barcodePlaceholder: 'Tarayici kodunu kullanin veya yeni bir tane olusturun',
+      generateBarcode: 'Barkod Uret',
+      publishNow: 'Hemen Yayinla',
+      featureHomepage: 'Ana sayfada one cikar',
+      productBadges: 'Urun Rozetleri',
+      failedAdd: 'Urun eklenemedi',
+      requiredName: 'Ingilizce urun adi gereklidir.',
+      requiredDescription: 'Ingilizce aciklama gereklidir.',
+      requiredPrice: 'Temel fiyat gereklidir.',
+      requiredCategory: 'Lutfen bir kategori secin.',
+    },
+  }[language] || {
+    tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
+    basicDetails: 'Basic Details',
+    descEn: 'Description (EN) *',
+    category: 'Category *',
+    basePrice: 'Base Price',
+    salePrice: 'Sale Price',
+    costPrice: 'Cost Price',
+    select: 'Select...',
+    baseSku: 'Base SKU',
+    bagType: 'Bag Type',
+    general: 'General',
+    women: 'Women',
+    men: 'Men',
+    travel: 'Travel',
+    evening: 'Evening',
+    backpack: 'Backpack',
+    barcode: 'Barcode For POS',
+    barcodeHint: 'This barcode will be used directly by the cashier for fast sales and scanner lookup.',
+    barcodePlaceholder: 'Use scanner code or generate a new one',
+    generateBarcode: 'Generate Barcode',
+    publishNow: 'Publish Immediately',
+    featureHomepage: 'Feature on Homepage',
+    productBadges: 'Product Badges',
+    failedAdd: 'Failed to add product',
+    requiredName: 'English product name is required.',
+    requiredDescription: 'English description is required.',
+    requiredPrice: 'Base price is required.',
+    requiredCategory: 'Please choose a category.',
+  };
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [activeTab, setActiveTab] = useState('general');
@@ -101,8 +222,21 @@ const AddProduct = () => {
     }
   };
 
+  const getFriendlyError = (error) => {
+    const message = error?.response?.data?.message || '';
+    if (message.includes('description.en')) return copy.requiredDescription;
+    if (message.includes('name.en')) return copy.requiredName;
+    if (message.includes('price')) return copy.requiredPrice;
+    if (message.includes('category')) return copy.requiredCategory;
+    return message || copy.failedAdd;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.nameEn.trim()) return toast.error(copy.requiredName);
+    if (!formData.descEn.trim()) return toast.error(copy.requiredDescription);
+    if (!String(formData.price).trim()) return toast.error(copy.requiredPrice);
+    if (!formData.category) return toast.error(copy.requiredCategory);
     setLoading(true);
     try {
       const data = new FormData();
@@ -181,18 +315,18 @@ const AddProduct = () => {
       navigate('/admin/products');
     } catch (error) {
       console.error("Failed to add product", error);
-      toast.error(error.response?.data?.message || 'Failed to add product');
+      toast.error(getFriendlyError(error));
     } finally {
       setLoading(false);
     }
   };
 
   const tabs = [
-    { id: 'general', label: 'General' },
-    { id: 'specs', label: 'Specifications' },
-    { id: 'variants', label: 'Variants & Stock' },
-    { id: 'images', label: 'Images' },
-    { id: 'seo', label: 'SEO' },
+    { id: 'general', label: copy.tabs.general },
+    { id: 'specs', label: copy.tabs.specs },
+    { id: 'variants', label: copy.tabs.variants },
+    { id: 'images', label: copy.tabs.images },
+    { id: 'seo', label: copy.tabs.seo },
   ];
 
   return (
@@ -228,7 +362,7 @@ const AddProduct = () => {
         {/* --- GENERAL TAB --- */}
         {activeTab === 'general' && (
           <div className="space-y-6 bg-white p-6 rounded shadow-sm border border-gray-100 animate-fadeIn">
-            <h2 className="text-lg font-medium text-black mb-4">Basic Details</h2>
+            <h2 className="text-lg font-medium text-black mb-4">{copy.basicDetails}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Name (EN) *</label>
@@ -245,48 +379,48 @@ const AddProduct = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description (EN) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{copy.descEn}</label>
               <textarea required rows="3" name="descEn" value={formData.descEn} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black"></textarea>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.category}</label>
                   <select required name="category" value={formData.category} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black bg-white">
-                    <option value="">Select...</option>
+                    <option value="">{copy.select}</option>
                     {categories.map(cat => (
                       <option key={cat._id} value={cat._id}>{getCategoryLabel(cat)}</option>
                     ))}
                   </select>
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Base SKU</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.baseSku}</label>
                   <input type="text" name="sku" value={formData.sku} onChange={handleChange} placeholder="Optional, auto-generated" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{`Base Price (${currencySymbol}) *`}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{`${copy.basePrice} (${currencySymbol}) *`}</label>
                   <input required type="number" name="price" value={formData.price} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{`Sale Price (${currencySymbol})`}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{`${copy.salePrice} (${currencySymbol})`}</label>
                   <input type="number" name="salePrice" value={formData.salePrice} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{`Cost Price (${currencySymbol})`}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{`${copy.costPrice} (${currencySymbol})`}</label>
                   <input type="number" name="costPrice" value={formData.costPrice} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bag Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{copy.bagType}</label>
                 <select name="bagType" value={formData.bagType} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black bg-white">
-                  <option value="general">General</option>
-                  <option value="women">Women</option>
-                  <option value="men">Men</option>
-                  <option value="travel">Travel</option>
-                  <option value="evening">Evening</option>
-                  <option value="backpack">Backpack</option>
+                  <option value="general">{copy.general}</option>
+                  <option value="women">{copy.women}</option>
+                  <option value="men">{copy.men}</option>
+                  <option value="travel">{copy.travel}</option>
+                  <option value="evening">{copy.evening}</option>
+                  <option value="backpack">{copy.backpack}</option>
                 </select>
               </div>
             </div>
@@ -294,12 +428,12 @@ const AddProduct = () => {
             <div className="rounded-2xl border border-[#e8d8c5] bg-[#fbf5ee] p-5">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Barcode For POS</label>
-                  <input type="text" name="barcode" value={formData.barcode} onChange={handleChange} placeholder="Use scanner code or generate a new one" className="w-full border border-gray-300 bg-white p-3 text-sm focus:outline-none focus:border-black" />
-                  <p className="mt-2 text-xs text-gray-500">This barcode will be used directly by the cashier for fast sales and scanner lookup.</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.barcode}</label>
+                  <input type="text" name="barcode" value={formData.barcode} onChange={handleChange} placeholder={copy.barcodePlaceholder} className="w-full border border-gray-300 bg-white p-3 text-sm focus:outline-none focus:border-black" />
+                  <p className="mt-2 text-xs text-gray-500">{copy.barcodeHint}</p>
                 </div>
                 <button type="button" onClick={generateBarcode} className="rounded-xl border border-black px-4 py-3 text-sm font-medium text-black transition-colors hover:bg-black hover:text-white">
-                  Generate Barcode
+                  {copy.generateBarcode}
                 </button>
               </div>
             </div>
@@ -307,16 +441,16 @@ const AddProduct = () => {
             <div className="pt-4 border-t border-gray-100 flex flex-wrap gap-6">
                <label className="flex items-center space-x-2">
                  <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} className="accent-black w-4 h-4" />
-                 <span className="text-sm font-medium text-gray-700">Publish Immediately</span>
+                 <span className="text-sm font-medium text-gray-700">{copy.publishNow}</span>
                </label>
                <label className="flex items-center space-x-2">
                  <input type="checkbox" name="isFeatured" checked={formData.isFeatured} onChange={handleChange} className="accent-black w-4 h-4" />
-                 <span className="text-sm font-medium text-gray-700">Feature on Homepage</span>
+                 <span className="text-sm font-medium text-gray-700">{copy.featureHomepage}</span>
                </label>
             </div>
 
             <div className="pt-4 border-t border-gray-100">
-               <label className="block text-sm font-medium text-gray-700 mb-3">Product Badges</label>
+               <label className="block text-sm font-medium text-gray-700 mb-3">{copy.productBadges}</label>
                <div className="flex gap-4">
                  {['Featured', 'New', 'Sale', 'Best Seller'].map(badge => (
                    <button

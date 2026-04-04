@@ -266,6 +266,17 @@ const AdminLayout = () => {
       currentPath += `/${p}`;
       let name = p.charAt(0).toUpperCase() + p.slice(1);
       if (p === 'admin' && idx === 0) name = ui.dashboard;
+      if (p === 'products') name = ui.products;
+      if (p === 'orders') name = ui.orders;
+      if (p === 'users') name = ui.users;
+      if (p === 'categories') name = ui.categories;
+      if (p === 'coupons') name = ui.coupons;
+      if (p === 'content') name = ui.content;
+      if (p === 'settings') name = ui.settings;
+      if (p === 'profile') name = ui.profile;
+      if (p === 'security') name = ui.security;
+      if (p === 'add') name = ui.addNew;
+      if (p === 'edit') name = ui.edit;
       if (p.length === 24) name = ui.details;
       breadcrumbs.push({ name, path: currentPath });
     });
