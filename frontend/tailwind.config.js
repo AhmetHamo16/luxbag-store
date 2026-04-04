@@ -11,8 +11,8 @@ export default {
         brand: 'var(--text-color)',
         beige: 'var(--bg-color)',
         gold: 'var(--accent)',
-        black: 'var(--footer-bg)',
-        white: 'var(--card-bg)',
+        card: 'var(--card-bg)',
+        footer: 'var(--footer-bg)',
         nav: 'var(--nav-bg)',
       }
     },

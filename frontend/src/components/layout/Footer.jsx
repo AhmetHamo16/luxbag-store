@@ -8,6 +8,47 @@ const Footer = () => {
   const { t } = useTranslation('footer');
   const { language } = useLangStore();
   const [content, setContent] = React.useState(null);
+  const copy = {
+    en: {
+      shopAll: 'Shop All',
+      classicCollection: 'Classic Collection',
+      ourStory: 'Our Story',
+      customerCare: 'Customer Care',
+      newsletter: 'Newsletter',
+      newsletterText: 'Subscribe to receive exclusive offers, early access to new collections, and styling tips.',
+      emailPlaceholder: 'Your email address',
+      join: 'Join',
+    },
+    ar: {
+      shopAll: 'تسوقي الكل',
+      classicCollection: 'مجموعة الكلاسيك',
+      ourStory: 'قصتنا',
+      customerCare: 'خدمة العملاء',
+      newsletter: 'النشرة البريدية',
+      newsletterText: 'اشتركي للحصول على العروض الحصرية والوصول المبكر إلى التشكيلات الجديدة ونصائح الأناقة.',
+      emailPlaceholder: 'بريدك الإلكتروني',
+      join: 'اشتراك',
+    },
+    tr: {
+      shopAll: 'Tum Urunler',
+      classicCollection: 'Klasik Koleksiyon',
+      ourStory: 'Hikayemiz',
+      customerCare: 'Musteri Hizmetleri',
+      newsletter: 'Bulten',
+      newsletterText: 'Ozel teklifler, yeni koleksiyonlara erken erisim ve stil onerileri icin abone olun.',
+      emailPlaceholder: 'E-posta adresiniz',
+      join: 'Katil',
+    },
+  }[language] || {
+    shopAll: 'Shop All',
+    classicCollection: 'Classic Collection',
+    ourStory: 'Our Story',
+    customerCare: 'Customer Care',
+    newsletter: 'Newsletter',
+    newsletterText: 'Subscribe to receive exclusive offers, early access to new collections, and styling tips.',
+    emailPlaceholder: 'Your email address',
+    join: 'Join',
+  };
 
   React.useEffect(() => {
     contentService.getContent().then(res => setContent(res.data)).catch(() => {});
@@ -31,16 +72,16 @@ const Footer = () => {
           <div>
             <h3 className="text-sm font-serif text-white tracking-widest uppercase mb-6">{t.quickLinks || 'Explore'}</h3>
             <ul className="space-y-4 text-sm text-beige/70">
-              <li><Link to="/shop" className="hover:text-gold transition-colors duration-300">Shop All</Link></li>
-              <li><Link to="/categories" className="hover:text-gold transition-colors duration-300">Classic Collection</Link></li>
-              <li><Link to="/about" className="hover:text-gold transition-colors duration-300">Our Story</Link></li>
+              <li><Link to="/shop" className="hover:text-gold transition-colors duration-300">{copy.shopAll}</Link></li>
+              <li><Link to="/categories" className="hover:text-gold transition-colors duration-300">{copy.classicCollection}</Link></li>
+              <li><Link to="/about" className="hover:text-gold transition-colors duration-300">{copy.ourStory}</Link></li>
               <li><Link to="/contact" className="hover:text-gold transition-colors duration-300">{t.contact || 'Contact'}</Link></li>
             </ul>
           </div>
           
           {/* Customer Service */}
           <div>
-            <h3 className="text-sm font-serif text-white tracking-widest uppercase mb-6">Customer Care</h3>
+            <h3 className="text-sm font-serif text-white tracking-widest uppercase mb-6">{copy.customerCare}</h3>
             <ul className="space-y-4 text-sm text-beige/70">
               <li><Link to="/faq" className="hover:text-gold transition-colors duration-300">FAQ</Link></li>
               <li><Link to="/shipping" className="hover:text-gold transition-colors duration-300">Shipping & Returns</Link></li>
@@ -51,19 +92,19 @@ const Footer = () => {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-sm font-serif text-white tracking-widest uppercase mb-6">Newsletter</h3>
-            <p className="text-beige/70 text-sm mb-4 leading-relaxed">Subscribe to receive exclusive offers, early access to new collections, and styling tips.</p>
+            <h3 className="text-sm font-serif text-white tracking-widest uppercase mb-6">{copy.newsletter}</h3>
+            <p className="text-beige/70 text-sm mb-4 leading-relaxed">{copy.newsletterText}</p>
             <form className="flex flex-col space-y-4 relative">
               <input 
                 type="email" 
-                placeholder="Your email address" 
+                placeholder={copy.emailPlaceholder}
                 className="bg-transparent border-b border-beige/30 text-white px-0 py-2 focus:outline-none focus:border-gold transition-colors text-sm w-full placeholder-beige/40"
               />
               <button 
                 type="submit" 
                 className="absolute right-0 top-1 text-gold hover:text-white transition-colors uppercase text-xs tracking-widest font-bold"
               >
-                Join
+                {copy.join}
               </button>
             </form>
           </div>

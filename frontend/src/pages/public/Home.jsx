@@ -8,6 +8,7 @@ import { contentService } from '../../services/contentService';
 import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
 import useLangStore from '../../store/useLangStore';
+import { resolveProductImage } from '../../utils/assets';
 
 const Home = () => {
   const { language } = useLangStore();
@@ -32,6 +33,7 @@ const Home = () => {
       featuredTitle: 'Featured Arrivals',
       noProducts: 'The collection is being refreshed. New icons will appear shortly.',
       viewAllProducts: 'Explore All Pieces',
+      explore: 'Explore',
       designs: 'Signature Pieces',
       customers: 'Private Clients',
       countries: 'Global Destinations'
@@ -45,6 +47,7 @@ const Home = () => {
       featuredTitle: 'أبرز الوصولات',
       noProducts: 'نقوم الآن بتحديث التشكيلة. ستظهر القطع الجديدة قريبًا.',
       viewAllProducts: 'استعرضي جميع القطع',
+      explore: 'استكشفي',
       designs: 'قطع موقعة',
       customers: 'عميلات مميزات',
       countries: 'وجهات حول العالم'
@@ -58,6 +61,7 @@ const Home = () => {
       featuredTitle: 'One Cikan Yeni Parcalar',
       noProducts: 'Koleksiyon yenileniyor. Yeni seckiler cok yakinda burada olacak.',
       viewAllProducts: 'Tum Parcalari Kesfet',
+      explore: 'Kesfet',
       designs: 'Imza Parca',
       customers: 'Seckin Musteri',
       countries: 'Ulasilan Ulke'
@@ -262,10 +266,10 @@ const Home = () => {
               </div>
 
               <div className="flex flex-col gap-4 sm:flex-row">
-                <Link to="/shop" className="w-full border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-white transition-colors duration-300 hover:bg-[#8b5e34] hover:border-[#8b5e34] sm:w-auto">
+                <Link to="/shop" className="w-full border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#fffaf4] transition-colors duration-300 hover:bg-[#8b5e34] hover:border-[#8b5e34] dark:border-gold dark:bg-gold dark:text-[#120c08] dark:hover:bg-[#e3c08a] sm:w-auto">
                   {content?.heroBanner?.buttonText?.[language] || copy.shopNow || t.shopNow || 'Shop Now'}
                 </Link>
-                <Link to="/categories" className="w-full border border-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#2f1f15] transition-colors duration-300 hover:bg-[#2f1f15] hover:text-white sm:w-auto">
+                <Link to="/categories" className="w-full border border-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#2f1f15] transition-colors duration-300 hover:bg-[#2f1f15] hover:text-[#fffaf4] dark:border-[var(--border-color)] dark:text-[var(--text-primary)] dark:hover:bg-[var(--bg-card)] dark:hover:text-[var(--text-primary)] sm:w-auto">
                   {copy.viewCollection}
                 </Link>
               </div>
@@ -278,7 +282,7 @@ const Home = () => {
                 <div key={prod._id} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? 'opacity-100' : 'opacity-0'}`}>
                   <img
                     loading="lazy"
-                    src={resolveAssetUrl(prod.images?.[0]?.url || prod.images?.[0])}
+                    src={resolveProductImage(prod, 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200')}
                     alt={prod.name?.en || 'Featured Luxury Bag'}
                     className="h-full w-full object-cover object-center"
                     onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200'; }}
@@ -323,7 +327,7 @@ const Home = () => {
               <div className="absolute inset-0 bg-black/25 transition-colors duration-500 group-hover:bg-black/50"></div>
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                 <h3 className="mb-3 font-serif text-2xl text-white drop-shadow-md">{cat.name}</h3>
-                <span className="translate-y-4 border-b border-transparent pb-1 text-[10px] font-bold uppercase tracking-widest text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:border-white group-hover:opacity-100">Explore</span>
+                <span className="translate-y-4 border-b border-transparent pb-1 text-[10px] font-bold uppercase tracking-widest text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:border-white group-hover:opacity-100">{copy.explore}</span>
               </div>
             </Link>
           ))}
@@ -353,7 +357,7 @@ const Home = () => {
         )}
 
         <div className="mt-20 text-center observe-fade opacity-0 translate-y-10 transition-all duration-700">
-          <Link to="/shop" className="inline-block border border-brand bg-white px-10 py-4 text-center text-xs font-bold uppercase tracking-widest text-brand shadow-sm transition-colors duration-500 hover:bg-brand hover:text-beige hover:shadow-xl">
+          <Link to="/shop" className="inline-block border border-brand bg-white px-10 py-4 text-center text-xs font-bold uppercase tracking-widest text-brand shadow-sm transition-colors duration-500 hover:bg-brand hover:text-[#fffaf4] hover:shadow-xl dark:border-[var(--border-color)] dark:bg-[var(--bg-card)] dark:text-[var(--text-primary)] dark:hover:bg-gold dark:hover:text-[#120c08]">
             {copy.viewAllProducts}
           </Link>
         </div>

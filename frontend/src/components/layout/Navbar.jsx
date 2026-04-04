@@ -40,6 +40,55 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchResults, setSearchResults] = React.useState([]);
   const formatPrice = useCurrencyStore(state => state.formatPrice);
+  const copy = {
+    en: {
+      about: 'About Us',
+      menu: 'Menu',
+      language: 'Language',
+      wishlist: 'Wishlist',
+      cart: 'Cart',
+      searchPlaceholder: 'Search products...',
+      searchResults: 'Products',
+      viewAllResults: 'View all results',
+      account: 'Account',
+      close: 'Close',
+    },
+    ar: {
+      about: 'من نحن',
+      menu: 'القائمة',
+      language: 'اللغة',
+      wishlist: 'المفضلة',
+      cart: 'السلة',
+      searchPlaceholder: 'ابحثي عن المنتجات...',
+      searchResults: 'المنتجات',
+      viewAllResults: 'عرض كل النتائج',
+      account: 'الحساب',
+      close: 'إغلاق',
+    },
+    tr: {
+      about: 'Hakkimizda',
+      menu: 'Menu',
+      language: 'Dil',
+      wishlist: 'Favoriler',
+      cart: 'Sepet',
+      searchPlaceholder: 'Urun ara...',
+      searchResults: 'Urunler',
+      viewAllResults: 'Tum sonuclari gor',
+      account: 'Hesap',
+      close: 'Kapat',
+    },
+  }[language] || {
+    about: 'About Us',
+    menu: 'Menu',
+    language: 'Language',
+    wishlist: 'Wishlist',
+    cart: 'Cart',
+    searchPlaceholder: 'Search products...',
+    searchResults: 'Products',
+    viewAllResults: 'View all results',
+    account: 'Account',
+    close: 'Close',
+  };
 
   React.useEffect(() => {
     const handleEsc = (e) => {
@@ -114,7 +163,7 @@ const Navbar = () => {
               {t.home || 'Home'}
             </Link>
             <Link to="/about" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
-              About Us
+              {copy.about}
             </Link>
             <Link to="/shop" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
               {t.shop}
@@ -171,7 +220,7 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="text-brand hover:text-gold transition-colors duration-300 shrink-0 cursor-pointer" aria-label="Account">
+              <Link to="/login" className="text-brand hover:text-gold transition-colors duration-300 shrink-0 cursor-pointer" aria-label={copy.account}>
                 <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </Link>
             )}
@@ -201,7 +250,7 @@ const Navbar = () => {
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden text-brand hover:text-gold transition-colors shrink-0 cursor-pointer"
-              aria-label="Toggle Mobile Menu"
+              aria-label={copy.menu}
             >
               {isMobileMenuOpen ? (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -223,14 +272,14 @@ const Navbar = () => {
               autoFocus={isSearchOpen}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products..." 
+              placeholder={copy.searchPlaceholder}
               className="w-full border-b-2 border-brand dark:border-gray-700 text-lg py-3 pr-10 focus:outline-none focus:border-gold dark:focus:border-gold bg-[var(--bg-secondary)] dark:bg-[#1a1a1a] text-[var(--text-primary)] dark:text-gray-100 placeholder-gray-400 transition-colors"
             />
             <button type="submit" className="absolute right-2 top-4 text-brand hover:text-gold transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </button>
             <button type="button" onClick={() => setIsSearchOpen(false)} className="absolute -right-8 top-4 text-gray-400 hover:text-brand transition-colors hidden md:block">
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{copy.close}</span>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </form>
@@ -238,7 +287,7 @@ const Navbar = () => {
           {/* Search Dropdown Results */}
           {searchResults.length > 0 && isSearchOpen && (
             <div className="mt-4 max-h-96 overflow-y-auto rounded border border-[var(--border-color)] bg-[var(--bg-card)] shadow-lg">
-              <div className="border-b border-[var(--border-color)] px-4 p-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">Products</div>
+              <div className="border-b border-[var(--border-color)] px-4 p-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">{copy.searchResults}</div>
               {searchResults.map((prod) => {
                 const img = resolveProductImage(prod, 'https://via.placeholder.com/60');
                 return (
@@ -252,7 +301,7 @@ const Navbar = () => {
                 );
               })}
               <div className="cursor-pointer bg-[var(--bg-secondary)] p-3 text-center transition-colors hover:opacity-90" onClick={handleSearchSubmit}>
-                <span className="text-xs font-bold uppercase tracking-widest text-brand">View all results</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-brand">{copy.viewAllResults}</span>
               </div>
             </div>
           )}
@@ -268,7 +317,7 @@ const Navbar = () => {
 
     <div className={`fixed top-16 bottom-0 right-0 w-[88%] max-w-sm bg-beige dark:bg-[#0a0a0a] dark:border-l dark:border-gold/20 shadow-2xl z-[110] transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
-          <span className="font-serif text-lg text-brand font-bold">Menu</span>
+          <span className="font-serif text-lg text-brand font-bold">{copy.menu}</span>
           <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
@@ -277,7 +326,7 @@ const Navbar = () => {
         <div className="h-[calc(100vh-4rem-73px)] overflow-y-auto overscroll-contain p-4 flex flex-col gap-6">
           <div className="rounded-3xl border border-[var(--border-primary)]/60 bg-white/60 dark:bg-white/5 px-4 py-3">
             <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-brand/60">
-              Language
+              {copy.language}
             </div>
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => setLanguage('tr')} className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${language === 'tr' ? 'bg-brand text-white' : 'bg-transparent text-brand hover:text-gold'}`}>TR</button>
@@ -287,14 +336,14 @@ const Navbar = () => {
           </div>
 
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">{t.home}</Link>
-          <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">About Us</Link>
+          <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">{copy.about}</Link>
           <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">{t.shop}</Link>
           <Link to="/categories" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">{t.categories || 'Categories'}</Link>
           
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
           
-          <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium flex items-center justify-between text-lg">Wishlist {wishlistCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{wishlistCount}</span>}</Link>
-          <button type="button" onClick={() => { setIsMobileMenuOpen(false); openDrawer(); }} className="text-brand hover:text-gold transition-colors font-medium text-left flex items-center justify-between w-full text-lg">Cart {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
+          <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium flex items-center justify-between text-lg">{copy.wishlist} {wishlistCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{wishlistCount}</span>}</Link>
+          <button type="button" onClick={() => { setIsMobileMenuOpen(false); openDrawer(); }} className="text-brand hover:text-gold transition-colors font-medium text-left flex items-center justify-between w-full text-lg">{copy.cart} {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
           
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
         </div>
