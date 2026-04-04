@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useCartStore from '../../store/cartStore';
 import useLangStore from '../../store/useLangStore';
 import useCurrencyStore from '../../store/useCurrencyStore';
@@ -11,6 +11,7 @@ const CartDrawer = () => {
   const { language } = useLangStore();
   const formatPrice = useCurrencyStore((state) => state.formatPrice);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const copy = {
     en: {
@@ -65,6 +66,12 @@ const CartDrawer = () => {
     viewCart: 'View Full Cart',
     unknownItem: 'Unknown Item',
   };
+
+  React.useEffect(() => {
+    if (isDrawerOpen) {
+      closeDrawer();
+    }
+  }, [location.pathname, isDrawerOpen, closeDrawer]);
 
   if (!isDrawerOpen) return null;
 
