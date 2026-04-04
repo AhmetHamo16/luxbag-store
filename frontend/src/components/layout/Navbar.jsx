@@ -79,18 +79,18 @@ const Navbar = () => {
   return (
     <>
     <nav className={`sticky top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'backdrop-blur-md shadow-sm dark:border-b dark:border-gold' : 'bg-transparent dark:bg-transparent'} bg-[var(--navbar-bg)] text-[var(--text-primary)]`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           
-          {/* Logo */}
-          <div className="shrink-0 flex items-center">
+          {/* Logo (allowed to shrink so icons on right are protected) */}
+          <div className="shrink flex items-center min-w-[50px]">
             <Link to="/">
-              <img loading="lazy" src="/logo.png" className={`w-auto object-contain opacity-0 animate-fade-in hover:scale-105 hover:drop-shadow-md dark:hover:drop-shadow-[0_0_8px_#8B6914] transition-all duration-500 ease-out ${isScrolled ? 'h-8' : 'h-12'}`} alt="Melora Logo" />
+              <img loading="lazy" src="/logo.png" className={`w-auto max-w-[100px] sm:max-w-none object-contain opacity-0 animate-fade-in hover:scale-105 hover:drop-shadow-md dark:hover:drop-shadow-[0_0_8px_#8B6914] transition-all duration-500 ease-out ${isScrolled ? 'h-6 sm:h-8' : 'h-7 sm:h-12'}`} alt="Melora Logo" />
             </Link>
           </div>
           
           {/* Main Navigation - Desktop */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8 shrink-0">
             <Link to="/" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
               {t.home || 'Home'}
             </Link>
@@ -105,71 +105,73 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Icons Grid */}
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+          {/* Icons Grid (Strict shrink-0 to preserve hitboxes) */}
+          <div className="flex items-center gap-1.5 sm:gap-4 md:gap-6 shrink-0 relative z-10 w-auto justify-end">
+            
             {/* Language Switcher */}
-            <div className="flex items-center gap-1 md:gap-2 border-r border-gray-200 dark:border-gray-700 rtl:border-l rtl:border-r-0 pr-1 md:pr-4 rtl:pl-1 md:rtl:pl-4 rtl:pr-0 mr-1 md:mr-0 rtl:ml-1 md:rtl:ml-0 rtl:mr-0">
-              <button onClick={() => setLanguage('en')} className={`text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors ${language === 'en' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>EN</button>
-              <button onClick={() => setLanguage('ar')} className={`text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors ${language === 'ar' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>AR</button>
-              <button onClick={() => setLanguage('tr')} className={`text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors ${language === 'tr' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>TR</button>
+            <div className="flex items-center shrink-0 gap-1 md:gap-2 border-r border-gray-200 dark:border-gray-700 rtl:border-l rtl:border-r-0 pr-1 md:pr-4 rtl:pl-1 md:rtl:pl-4 rtl:pr-0 mr-1 md:mr-0 rtl:ml-1 md:rtl:ml-0 rtl:mr-0">
+              <button type="button" onClick={() => setLanguage('en')} className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors cursor-pointer ${language === 'en' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>EN</button>
+              <button type="button" onClick={() => setLanguage('ar')} className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors cursor-pointer ${language === 'ar' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>AR</button>
+              <button type="button" onClick={() => setLanguage('tr')} className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors cursor-pointer ${language === 'tr' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>TR</button>
             </div>
 
-            <button className="relative text-brand hover:text-gold transition-colors block" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+            <button type="button" className="relative text-brand hover:text-gold transition-colors block shrink-0 cursor-pointer" onClick={() => setIsSearchOpen(!isSearchOpen)}>
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </button>
-            <Link to="/wishlist" className="relative text-brand hover:text-gold transition-colors hidden md:block">
+            <Link to="/wishlist" className="relative text-brand hover:text-gold transition-colors hidden md:block shrink-0 cursor-pointer">
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                {wishlistCount > 0 && <span className="absolute -top-1 -right-2 bg-gold text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full leading-none">{wishlistCount}</span>}
             </Link>
-            <button onClick={openDrawer} className="relative text-brand hover:text-gold transition-colors block focus:outline-none">
+            <button type="button" onClick={openDrawer} className="relative text-brand hover:text-gold transition-colors block focus:outline-none shrink-0 cursor-pointer">
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                {cartItemCount > 0 && <span className="absolute -top-1 -right-2 bg-gold text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full leading-none">{cartItemCount}</span>}
             </button>
             
             {isAuthenticated ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
                 {user?.role === 'admin' ? (
-                  <div className="flex items-center gap-4">
-                    <Link to="/admin" className="text-sm font-medium hover:text-gold transition-colors duration-300">
+                  <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
+                    <Link to="/admin" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">
                       {t.admin}
                     </Link>
-                    <Link to="/cashier" className="text-sm font-medium hover:text-gold transition-colors duration-300">
+                    <Link to="/cashier" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300 hidden sm:block">
                       {language === 'ar' ? 'الكاشير' : language === 'tr' ? 'Kasiyer' : 'Cashier'}
                     </Link>
                   </div>
                 ) : user?.role === 'cashier' ? (
-                  <Link to="/cashier" className="text-sm font-medium hover:text-gold transition-colors duration-300">
+                  <Link to="/cashier" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">
                     {language === 'ar' ? 'الكاشير' : language === 'tr' ? 'Kasiyer' : 'Cashier'}
                   </Link>
                 ) : (
-                  <Link to="/user/dashboard" className="text-sm font-medium hover:text-gold transition-colors duration-300">
+                  <Link to="/user/dashboard" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">
                     {t.dashboard}
                   </Link>
                 )}
-                <button onClick={handleLogout} className="text-brand hover:text-gold transition-colors duration-300 text-sm font-medium">
+                <button type="button" onClick={handleLogout} className="text-brand hover:text-gold transition-colors duration-300 text-[10px] sm:text-sm font-medium shrink-0">
                   {t.logout}
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="text-brand hover:text-gold transition-colors duration-300" aria-label="Account">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              <Link to="/login" className="text-brand hover:text-gold transition-colors duration-300 shrink-0 cursor-pointer" aria-label="Account">
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </Link>
             )}
 
             {/* Dark Mode Toggle */}
             <button 
+              type="button"
               onClick={() => setTheme(colorTheme)}
-              className="text-brand hover:text-gold transition-colors md:ml-2"
+              className="text-brand hover:text-gold transition-colors shrink-0 cursor-pointer"
               aria-label="Toggle Dark Mode"
             >
               {colorTheme === 'light' ? (
                 // Sun Icon (when currently dark, next is light)
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               ) : (
                 // Moon Icon (when currently light, next is dark)
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
               )}
@@ -177,8 +179,9 @@ const Navbar = () => {
 
             {/* Mobile Hamburger Toggle */}
             <button 
+              type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-brand hover:text-gold transition-colors md:ml-2"
+              className="md:hidden text-brand hover:text-gold transition-colors shrink-0 cursor-pointer"
               aria-label="Toggle Mobile Menu"
             >
               {isMobileMenuOpen ? (
@@ -247,7 +250,7 @@ const Navbar = () => {
     <div className={`fixed inset-y-0 right-0 w-4/5 max-w-sm bg-beige dark:bg-[#0a0a0a] dark:border-l dark:border-gold/20 shadow-2xl z-[60] transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
           <span className="font-serif text-lg text-brand font-bold">Menu</span>
-          <button onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors">
+          <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
@@ -261,10 +264,9 @@ const Navbar = () => {
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
           
           <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium flex items-center justify-between text-lg">Wishlist {wishlistCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{wishlistCount}</span>}</Link>
-          <button onClick={() => { setIsMobileMenuOpen(false); openDrawer(); }} className="text-brand hover:text-gold transition-colors font-medium text-left flex items-center justify-between w-full text-lg">Cart {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
+          <button type="button" onClick={() => { setIsMobileMenuOpen(false); openDrawer(); }} className="text-brand hover:text-gold transition-colors font-medium text-left flex items-center justify-between w-full text-lg">Cart {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
           
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
-          
         </div>
       </div>
     </>
