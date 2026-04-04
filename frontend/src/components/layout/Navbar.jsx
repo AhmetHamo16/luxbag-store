@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
@@ -106,7 +106,7 @@ const Navbar = () => {
           </div>
 
           {/* Icons Grid */}
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
             <button className="relative text-brand hover:text-gold transition-colors block" onClick={() => setIsSearchOpen(!isSearchOpen)}>
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </button>
@@ -150,7 +150,7 @@ const Navbar = () => {
             )}
             
             {/* Language Switcher */}
-            <div className="hidden md:flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 rtl:border-r rtl:border-l-0 pl-4 rtl:pr-4 rtl:pl-0 ml-2 rtl:mr-2 rtl:ml-0">
+            <div className="flex items-center gap-1.5 md:gap-2 border-l border-gray-200 dark:border-gray-700 rtl:border-r rtl:border-l-0 pl-1.5 md:pl-4 rtl:pr-1.5 md:rtl:pr-4 rtl:pl-0 ml-0.5 md:ml-2 rtl:mr-0.5 md:rtl:mr-2 rtl:ml-0">
               <button onClick={() => setLanguage('en')} className={`text-sm font-medium transition-colors ${language === 'en' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>EN</button>
               <button onClick={() => setLanguage('ar')} className={`text-sm font-medium transition-colors ${language === 'ar' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>AR</button>
               <button onClick={() => setLanguage('tr')} className={`text-sm font-medium transition-colors ${language === 'tr' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>TR</button>
