@@ -162,7 +162,7 @@ exports.createOrder = async (req, res) => {
       orderData = req.body;
     }
 
-    const receiptImage = req.file ? `/uploads/receipts/${req.file.filename}` : null;
+    const receiptImage = req.file ? req.file.path : null;
 
     if (!receiptImage && orderData?.payment?.method === 'iban') {
       return res.status(400).json({ message: 'Receipt image is required' });

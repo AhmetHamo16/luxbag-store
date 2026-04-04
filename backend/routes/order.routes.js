@@ -23,23 +23,19 @@ const {
 const { protect, optionalAuth } = require('../middleware/auth.middleware');
 const { admin, adminOrCashier } = require('../middleware/admin.middleware');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-const receiptsDir = path.join(__dirname, '..', 'uploads', 'receipts');
-fs.mkdirSync(receiptsDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, receiptsDir)
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'melora/receipts',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname))
-  }
 });
 
 const upload = multer({
-  storage,
+  storage: storage,
   fileFilter: (req, file, cb) => {
     if (file.mimetype && file.mimetype.startsWith('image/')) {
       return cb(null, true);
@@ -51,8 +47,7 @@ const upload = multer({
 router.route('/upload')
   .post(protect, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
-    // Keep backward compatibility for other places if they use /upload
-    res.status(200).json({ success: true, url: '/' + req.file.path.replace(/\\/g, '/') });
+    res.status(200).json({ success: true, url: req.file.path });
   });
 
 const Order = require('../models/Order');
@@ -73,7 +68,7 @@ router.post('/iban-submit', upload.single('receipt'), async (req, res) => {
       coupon: orderData.coupon || undefined,
       payment: {
         method: 'iban',
-        receiptImage: req.file ? `/uploads/receipts/${path.basename(req.file.path)}` : null,
+        receiptImage: req.file ? req.file.path : null,
         status: 'pending_payment'
       },
       status: 'pending_payment',
