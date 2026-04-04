@@ -107,6 +107,13 @@ const Navbar = () => {
 
           {/* Icons Grid */}
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1 md:gap-2 border-r border-gray-200 dark:border-gray-700 rtl:border-l rtl:border-r-0 pr-1 md:pr-4 rtl:pl-1 md:rtl:pl-4 rtl:pr-0 mr-1 md:mr-0 rtl:ml-1 md:rtl:ml-0 rtl:mr-0">
+              <button onClick={() => setLanguage('en')} className={`text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors ${language === 'en' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>EN</button>
+              <button onClick={() => setLanguage('ar')} className={`text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors ${language === 'ar' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>AR</button>
+              <button onClick={() => setLanguage('tr')} className={`text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors ${language === 'tr' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>TR</button>
+            </div>
+
             <button className="relative text-brand hover:text-gold transition-colors block" onClick={() => setIsSearchOpen(!isSearchOpen)}>
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </button>
@@ -148,18 +155,11 @@ const Navbar = () => {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </Link>
             )}
-            
-            {/* Language Switcher */}
-            <div className="flex items-center gap-1.5 md:gap-2 border-l border-gray-200 dark:border-gray-700 rtl:border-r rtl:border-l-0 pl-1.5 md:pl-4 rtl:pr-1.5 md:rtl:pr-4 rtl:pl-0 ml-0.5 md:ml-2 rtl:mr-0.5 md:rtl:mr-2 rtl:ml-0">
-              <button onClick={() => setLanguage('en')} className={`text-sm font-medium transition-colors ${language === 'en' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>EN</button>
-              <button onClick={() => setLanguage('ar')} className={`text-sm font-medium transition-colors ${language === 'ar' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>AR</button>
-              <button onClick={() => setLanguage('tr')} className={`text-sm font-medium transition-colors ${language === 'tr' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>TR</button>
-            </div>
 
             {/* Dark Mode Toggle */}
             <button 
               onClick={() => setTheme(colorTheme)}
-              className="text-brand hover:text-gold transition-colors ml-2"
+              className="text-brand hover:text-gold transition-colors md:ml-2"
               aria-label="Toggle Dark Mode"
             >
               {colorTheme === 'light' ? (
@@ -178,7 +178,7 @@ const Navbar = () => {
             {/* Mobile Hamburger Toggle */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-brand hover:text-gold transition-colors ml-2"
+              className="md:hidden text-brand hover:text-gold transition-colors md:ml-2"
               aria-label="Toggle Mobile Menu"
             >
               {isMobileMenuOpen ? (
@@ -265,14 +265,6 @@ const Navbar = () => {
           
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
           
-          <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Language</span>
-            <div className="flex gap-4">
-              <button onClick={() => { setLanguage('en'); setIsMobileMenuOpen(false); }} className={`font-medium ${language === 'en' ? 'text-brand' : 'text-gray-400'}`}>EN</button>
-              <button onClick={() => { setLanguage('ar'); setIsMobileMenuOpen(false); }} className={`font-medium ${language === 'ar' ? 'text-brand' : 'text-gray-400'}`}>AR</button>
-              <button onClick={() => { setLanguage('tr'); setIsMobileMenuOpen(false); }} className={`font-medium ${language === 'tr' ? 'text-brand' : 'text-gray-400'}`}>TR</button>
-            </div>
-          </div>
         </div>
       </div>
     </>
@@ -280,4 +272,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
