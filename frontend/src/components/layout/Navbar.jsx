@@ -215,7 +215,7 @@ const Navbar = () => {
       </div>
 
       {/* Slide Down Search Bar */}
-      <div className={`absolute top-full left-0 z-[130] w-full bg-white shadow-md border-t border-gray-100 transition-all duration-300 ease-in-out transform origin-top ${isSearchOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
+      <div className={`absolute top-full left-0 z-[130] w-full border-t border-[var(--border-color)] bg-[var(--bg-card)] shadow-md transition-all duration-300 ease-in-out transform origin-top ${isSearchOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
         <div className="max-w-3xl mx-auto px-4 py-6">
           <form onSubmit={handleSearchSubmit} className="relative">
             <input 
@@ -237,12 +237,12 @@ const Navbar = () => {
 
           {/* Search Dropdown Results */}
           {searchResults.length > 0 && isSearchOpen && (
-            <div className="mt-4 bg-white rounded shadow-lg border border-gray-100 max-h-96 overflow-y-auto">
-              <div className="p-2 text-xs font-bold text-gray-400 uppercase tracking-widest px-4 border-b border-gray-100">Products</div>
+            <div className="mt-4 max-h-96 overflow-y-auto rounded border border-[var(--border-color)] bg-[var(--bg-card)] shadow-lg">
+              <div className="border-b border-[var(--border-color)] px-4 p-2 text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">Products</div>
               {searchResults.map((prod) => {
                 const img = resolveProductImage(prod, 'https://via.placeholder.com/60');
                 return (
-                  <div key={prod._id} onClick={() => { setIsSearchOpen(false); navigate(`/product/${prod.slug || prod._id || prod.id}`); }} className="flex items-center gap-4 p-4 hover:bg-gray-50 border-b border-gray-100 last:border-0 cursor-pointer transition-colors">
+                  <div key={prod._id} onClick={() => { setIsSearchOpen(false); navigate(`/product/${prod.slug || prod._id || prod.id}`); }} className="flex cursor-pointer items-center gap-4 border-b border-[var(--border-color)] p-4 transition-colors last:border-0 hover:bg-[var(--bg-secondary)]">
                     <img loading="lazy" src={img} alt={prod.name?.en} className="w-12 h-12 object-cover rounded shadow-sm" />
                     <div className="flex-1">
                       <h4 className="text-sm font-medium text-brand">{language === 'ar' ? prod.name?.ar : language === 'tr' ? prod.name?.tr : prod.name?.en}</h4>
@@ -251,7 +251,7 @@ const Navbar = () => {
                   </div>
                 );
               })}
-              <div className="p-3 text-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" onClick={handleSearchSubmit}>
+              <div className="cursor-pointer bg-[var(--bg-secondary)] p-3 text-center transition-colors hover:opacity-90" onClick={handleSearchSubmit}>
                 <span className="text-xs font-bold uppercase tracking-widest text-brand">View all results</span>
               </div>
             </div>

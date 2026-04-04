@@ -18,8 +18,14 @@
     --text-primary: #2C1810;
     --text-secondary: #6B5744;
     --border-color: #E8DDD4;
+    --border-primary: #E8DDD4;
     --navbar-bg: #F5EFE6;
     --footer-bg: #4A2C17;
+    --accent: #8B6914;
+    --text-color: var(--text-primary);
+    --bg-color: var(--bg-primary);
+    --card-bg: var(--bg-card);
+    --nav-bg: var(--navbar-bg);
   }
 
   .dark {
@@ -29,8 +35,14 @@
     --text-primary: #f0ece4;
     --text-secondary: #a89880;
     --border-color: #2a2a2a;
+    --border-primary: #2a2a2a;
     --navbar-bg: #0a0a0a;
     --footer-bg: #050505;
+    --accent: #caa167;
+    --text-color: var(--text-primary);
+    --bg-color: var(--bg-primary);
+    --card-bg: var(--bg-card);
+    --nav-bg: var(--navbar-bg);
   }
 
   html {
@@ -38,6 +50,12 @@
   }
   body {
     @apply bg-beige text-brand antialiased transition-colors duration-300;
+  }
+
+  #root {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
 }
 
