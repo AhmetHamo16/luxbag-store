@@ -5,29 +5,19 @@ import App from './App.jsx'
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
-    const isLocalDev = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
 
-    if (isLocalDev) {
-      try {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map((registration) => registration.unregister()));
-
-        if ('caches' in window) {
-          const keys = await window.caches.keys();
-          await Promise.all(keys.map((key) => window.caches.delete(key)));
-        }
-
-        console.log('Local dev detected: service workers and caches cleared');
-      } catch (err) {
-        console.error('Failed to clear local service worker cache', err);
+      if ('caches' in window) {
+        const keys = await window.caches.keys();
+        await Promise.all(keys.map((key) => window.caches.delete(key)));
       }
-      return;
-    }
 
-    navigator.serviceWorker.register('/sw.js').then(
-      (reg) => console.log('SW registered', reg),
-      (err) => console.error('SW Error', err)
-    );
+      console.log('Melora caches cleared and service workers unregistered');
+    } catch (err) {
+      console.error('Failed to clear service worker cache', err);
+    }
   });
 }
 
