@@ -21,6 +21,12 @@ const Shop = () => {
   
   const [dbCategories, setDbCategories] = useState([]);
 
+  const getCategoryName = (category) => {
+    if (!category) return 'Unknown';
+    if (typeof category === 'string') return category;
+    return category.name?.[language] || category.name?.en || category.name || 'Unknown';
+  };
+
   const fetchProductsAndCategories = async () => {
     try {
       setLoading(true);
@@ -32,7 +38,7 @@ const Shop = () => {
       
       const categoryRows = Array.isArray(catRes.data) ? catRes.data : (catRes.data?.data || []);
       const cats = [{ name: t.allCategories || 'All', value: '' }, ...categoryRows.map(c => ({
-        name: c.name?.en || c.name || 'Unknown',
+        name: getCategoryName(c),
         value: c._id
       }))];
       

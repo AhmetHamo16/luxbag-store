@@ -5,6 +5,7 @@ import SkeletonCard from '../../components/shared/SkeletonCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { productService } from '../../services/productService';
 import { contentService } from '../../services/contentService';
+import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
 import useLangStore from '../../store/useLangStore';
 
@@ -13,6 +14,7 @@ const Home = () => {
   const { t } = useTranslation('home');
   const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -85,12 +87,15 @@ const Home = () => {
     }
   ];
 
-  const categories = [
-    { name: 'Classic', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600', link: '/shop?category=Classic' },
-    { name: 'Mini', img: 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=600', link: '/shop?category=Mini' },
-    { name: 'Shoulder', img: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600', link: '/shop?category=Shoulder' },
-    { name: 'Evening', img: 'https://images.unsplash.com/photo-1575032617751-6ddec2089882?w=600', link: '/shop?category=Evening' }
-  ];
+  const categoryFallbackImages = {
+    classic: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600',
+    mini: 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=600',
+    shoulder: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600',
+    evening: 'https://images.unsplash.com/photo-1575032617751-6ddec2089882?w=600',
+    glasses: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600',
+    perfumes: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600',
+    watches: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600'
+  };
 
   const resolveAssetUrl = (value) => {
     if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
@@ -103,6 +108,13 @@ const Home = () => {
     }
     return value;
   };
+
+  const categoryCards = categories.map((category) => ({
+    name: category?.name?.[language] || category?.name?.en || 'Category',
+    img: resolveAssetUrl(category?.image) || categoryFallbackImages[category?.slug] || categoryFallbackImages.classic,
+    link: `/shop?category=${category?._id || category?.slug}`,
+    key: category?._id || category?.slug || category?.name?.en
+  }));
 
   const getHeroTitle = (slide) => {
     const rawTitle = content?.heroBanner?.title?.[slide.lang.toLowerCase()];
@@ -147,12 +159,14 @@ const Home = () => {
     const fetchHomeData = async () => {
       try {
         setLoading(true);
-        const [prodRes, contentRes] = await Promise.all([
+        const [prodRes, contentRes, categoryRes] = await Promise.all([
           productService.getProducts({ limit: 4 }),
-          contentService.getContent()
+          contentService.getContent(),
+          categoryService.getCategories()
         ]);
         setFeaturedProducts(prodRes.data?.data || prodRes.data || []);
         setContent(contentRes.data);
+        setCategories(categoryRes?.data || []);
       } catch (error) {
         console.error('Error fetching home products', error);
       } finally {
@@ -300,8 +314,8 @@ const Home = () => {
           <div className="mx-auto h-[2px] w-16 bg-gold"></div>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {categories.map((cat, idx) => (
-            <Link to={cat.link} key={cat.name} className="group relative block h-[450px] overflow-hidden rounded-sm shadow-md transition-shadow duration-500 hover:shadow-2xl observe-fade opacity-0 translate-y-10" style={{ transitionDelay: `${idx * 100}ms` }}>
+          {categoryCards.map((cat, idx) => (
+            <Link to={cat.link} key={cat.key} className="group relative block h-[450px] overflow-hidden rounded-sm shadow-md transition-shadow duration-500 hover:shadow-2xl observe-fade opacity-0 translate-y-10" style={{ transitionDelay: `${idx * 100}ms` }}>
               <img loading="lazy" src={cat.img} alt={cat.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/25 transition-colors duration-500 group-hover:bg-black/50"></div>
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">

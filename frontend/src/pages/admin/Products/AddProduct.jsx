@@ -36,6 +36,13 @@ const AddProduct = () => {
   const [variants, setVariants] = useState([]);
   const [images, setImages] = useState([]);
 
+  const getCategoryLabel = (category) => {
+    const en = category?.name?.en || 'Unnamed';
+    const ar = category?.name?.ar || '';
+    const tr = category?.name?.tr || '';
+    return [en, ar, tr].filter(Boolean).join(' / ');
+  };
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -247,7 +254,7 @@ const AddProduct = () => {
                   <select required name="category" value={formData.category} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black bg-white">
                     <option value="">Select...</option>
                     {categories.map(cat => (
-                      <option key={cat._id} value={cat._id}>{cat.name?.en || 'Unnamed'}</option>
+                      <option key={cat._id} value={cat._id}>{getCategoryLabel(cat)}</option>
                     ))}
                   </select>
                </div>
