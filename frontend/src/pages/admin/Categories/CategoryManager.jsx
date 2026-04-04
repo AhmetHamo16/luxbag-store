@@ -37,7 +37,7 @@ const CategoryManager = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await categoryService.getCategories();
+      const res = await categoryService.getCategories(true);
       setCategories(res.data);
     } catch (error) {
       console.error(error);

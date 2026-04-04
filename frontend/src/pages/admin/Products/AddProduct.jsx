@@ -46,7 +46,7 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await categoryService.getCategories();
+        const data = await categoryService.getCategories(true);
         setCategories(data.data || []);
       } catch (error) {
         console.error("Failed to fetch categories", error);

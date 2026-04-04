@@ -1,8 +1,8 @@
 import api from './api';
 
 export const categoryService = {
-  getCategories: async () => {
-    const response = await api.get('/categories?all=true');
+  getCategories: async (includeAll = false) => {
+    const response = await api.get(includeAll ? '/categories?all=true' : '/categories');
     return response.data;
   },
 

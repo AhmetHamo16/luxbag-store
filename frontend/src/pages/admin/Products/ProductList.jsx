@@ -53,7 +53,7 @@ const ProductList = () => {
       setLoading(true);
       const [prodRes, catRes] = await Promise.all([
         productService.getProducts({ limit: 1000, includeInactive: true }),
-        categoryService.getCategories()
+        categoryService.getCategories(true)
       ]);
       setProducts(prodRes.data || prodRes.products || []);
       setCategories(catRes.data || []);

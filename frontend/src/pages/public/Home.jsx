@@ -109,12 +109,15 @@ const Home = () => {
     return value;
   };
 
-  const categoryCards = categories.map((category) => ({
-    name: category?.name?.[language] || category?.name?.en || 'Category',
-    img: resolveAssetUrl(category?.image) || categoryFallbackImages[category?.slug] || categoryFallbackImages.classic,
-    link: `/shop?category=${category?._id || category?.slug}`,
-    key: category?._id || category?.slug || category?.name?.en
-  }));
+  const categoryCards = categories.map((category) => {
+    const resolvedImage = category?.image ? resolveAssetUrl(category.image) : '';
+    return {
+      name: category?.name?.[language] || category?.name?.en || 'Category',
+      img: resolvedImage || categoryFallbackImages[category?.slug] || categoryFallbackImages.classic,
+      link: `/shop?category=${category?._id || category?.slug}`,
+      key: category?._id || category?.slug || category?.name?.en
+    };
+  });
 
   const getHeroTitle = (slide) => {
     const rawTitle = content?.heroBanner?.title?.[slide.lang.toLowerCase()];

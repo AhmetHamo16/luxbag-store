@@ -1,4 +1,4 @@
-const CACHE_NAME = 'melora-cache-v2';
+const CACHE_NAME = 'melora-cache-v3';
 const URLS_TO_CACHE = [
   '/',
   '/index.html',
@@ -13,6 +13,16 @@ self.addEventListener('install', event => {
         return cache.addAll(URLS_TO_CACHE);
       })
   );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+    )
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {

@@ -53,7 +53,7 @@ const EditProduct = () => {
       try {
         setFetching(true);
         const [catRes, prodRes] = await Promise.all([
-          categoryService.getCategories(),
+          categoryService.getCategories(true),
           productService.getProductBySlug(id) // Finds by ID or Slug due to backend architecture
         ]);
         
