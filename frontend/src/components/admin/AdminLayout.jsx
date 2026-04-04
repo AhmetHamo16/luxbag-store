@@ -301,8 +301,10 @@ const AdminLayout = () => {
     return p.split('/').pop() || ui.dashboard;
   };
 
+  const isRtl = language === 'ar';
+
   return (
-    <div className="flex h-screen bg-white flex-col md:flex-row font-sans">
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="flex h-screen bg-white flex-col md:flex-row font-sans">
       <div className="md:hidden bg-[#1a1a2e] dark:bg-[#111111] text-beige p-4 flex justify-between items-center z-30 relative">
         <Link to="/admin" className="text-xl font-serif text-[#8B6914] tracking-widest uppercase">
           {t?.sidebar?.adminPortal || 'Melora Admin'}
@@ -432,7 +434,7 @@ const AdminLayout = () => {
             ))}
           </nav>
 
-          <div className="flex items-center space-x-6">
+          <div className={`flex items-center ${isRtl ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
             <Link to="/" className="text-xs font-bold text-brand hover:text-gold uppercase tracking-widest px-3 py-1.5 border border-brand/20 hover:border-gold rounded transition-colors hidden lg:block">
               {ui.viewStore}
             </Link>
@@ -526,7 +528,7 @@ const AdminLayout = () => {
             <div className="relative">
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center space-x-2 focus:outline-none"
+                className={`flex items-center focus:outline-none ${isRtl ? 'space-x-reverse space-x-2' : 'space-x-2'}`}
               >
                 <span className="text-sm font-medium text-gray-600 hover:text-black transition-colors">{user?.name || 'Admin'}</span>
                 <div className="w-8 h-8 bg-[#1a1a2e] rounded-full flex items-center justify-center text-[#8B6914] shadow-sm font-serif">
@@ -537,7 +539,7 @@ const AdminLayout = () => {
               {isProfileDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-10 block" onClick={() => setIsProfileDropdownOpen(false)}></div>
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-20">
+                  <div className={`absolute mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-20 ${isRtl ? 'left-0' : 'right-0'}`}>
                     <div className="px-4 py-2 border-b border-gray-50">
                       <p className="text-sm font-medium text-black truncate">{user?.name}</p>
                       <p className="text-xs text-gray-500 truncate">{user?.email}</p>
@@ -545,7 +547,7 @@ const AdminLayout = () => {
                     <Link to="/admin/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand" onClick={() => setIsProfileDropdownOpen(false)}>{ui.myProfile}</Link>
                     <Link to="/admin/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand" onClick={() => setIsProfileDropdownOpen(false)}>{ui.accountSettings}</Link>
                     <div className="border-t border-gray-50 mt-1"></div>
-                    <button onClick={() => { setIsProfileDropdownOpen(false); handleLogout(); }} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">{ui.logout}</button>
+                    <button onClick={() => { setIsProfileDropdownOpen(false); handleLogout(); }} className={`block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>{ui.logout}</button>
                   </div>
                 </>
               )}
@@ -553,7 +555,7 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        <main className="flex-1 p-4 pt-6 md:p-8 md:pt-10">
+        <main className={`flex-1 p-4 pt-6 md:p-8 md:pt-10 ${isRtl ? 'text-right' : 'text-left'}`}>
           <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
             <h1 className="text-2xl font-serif text-black capitalize tracking-wide">{getPageTitle()}</h1>
           </div>

@@ -41,6 +41,41 @@ const EditProduct = () => {
       publishNow: 'Publish Immediately',
       featureHomepage: 'Feature on Homepage',
       productBadges: 'Product Badges',
+      specifications: 'Specifications',
+      variantsTitle: 'Product Variants',
+      addVariant: 'Add Variant',
+      noVariants: 'No variants created. The product will use base parameters.',
+      warehouseQty: 'Warehouse Quantity',
+      stockHint: 'If stock becomes 1 or 2 pieces, the admin dashboard will raise an alert automatically.',
+      color: 'Color *',
+      size: 'Size *',
+      sku: 'SKU *',
+      stockQty: 'Stock Qty *',
+      remove: 'Remove',
+      mediaGallery: 'Media Gallery',
+      noImages: 'No images selected.',
+      thumbnail: 'Thumbnail',
+      newLabel: 'NEW',
+      seoTitle: 'Search Engine Optimization',
+      metaTitle: 'Meta Title',
+      metaDescription: 'Meta Description',
+      urlSlug: 'URL Slug',
+      autoSlug: 'Auto-generated from English name',
+      brand: 'Brand',
+      material: 'Material',
+      weight: 'Weight (kg)',
+      includedPieces: 'Included Pieces',
+      barcodeField: 'Barcode',
+      origin: 'Country of Origin',
+      strapType: 'Strap Type',
+      dimensions: 'Dimensions (cm)',
+      height: 'Height',
+      width: 'Width',
+      depth: 'Depth',
+      colors: 'Available Colors (comma separated)',
+      sizes: 'Available Sizes (comma separated)',
+      colorsPlaceholder: 'Red, Blue, Gold',
+      sizesPlaceholder: 'S, M, L, XL',
       failedEdit: 'Failed to edit product',
       failedFetch: 'Failed fetching product details',
       requiredName: 'English product name is required.',
@@ -77,6 +112,41 @@ const EditProduct = () => {
       publishNow: 'نشر مباشرة',
       featureHomepage: 'إظهاره في الصفحة الرئيسية',
       productBadges: 'شارات المنتج',
+      specifications: 'المواصفات',
+      variantsTitle: 'متغيرات المنتج',
+      addVariant: 'إضافة متغير',
+      noVariants: 'لا توجد متغيرات بعد. سيستخدم المنتج الإعدادات الأساسية.',
+      warehouseQty: 'كمية المستودع',
+      stockHint: 'إذا أصبح المخزون 1 أو 2 فستظهر تنبيه تلقائيًا في لوحة الإدارة.',
+      color: 'اللون *',
+      size: 'المقاس *',
+      sku: 'رمز SKU *',
+      stockQty: 'كمية المخزون *',
+      remove: 'حذف',
+      mediaGallery: 'معرض الصور',
+      noImages: 'لا توجد صور محددة.',
+      thumbnail: 'الصورة الرئيسية',
+      newLabel: 'جديد',
+      seoTitle: 'تهيئة محركات البحث',
+      metaTitle: 'عنوان الميتا',
+      metaDescription: 'وصف الميتا',
+      urlSlug: 'الرابط المختصر',
+      autoSlug: 'يُنشأ تلقائيًا من الاسم الإنجليزي',
+      brand: 'العلامة التجارية',
+      material: 'الخامة',
+      weight: 'الوزن (كغ)',
+      includedPieces: 'عدد القطع',
+      barcodeField: 'الباركود',
+      origin: 'بلد المنشأ',
+      strapType: 'نوع الحمالة',
+      dimensions: 'الأبعاد (سم)',
+      height: 'الارتفاع',
+      width: 'العرض',
+      depth: 'العمق',
+      colors: 'الألوان المتاحة (مفصولة بفواصل)',
+      sizes: 'المقاسات المتاحة (مفصولة بفواصل)',
+      colorsPlaceholder: 'أحمر، أزرق، ذهبي',
+      sizesPlaceholder: 'S, M, L, XL',
       failedEdit: 'فشل في تعديل المنتج',
       failedFetch: 'تعذر تحميل بيانات المنتج',
       requiredName: 'اسم المنتج بالإنجليزية مطلوب.',
@@ -113,6 +183,41 @@ const EditProduct = () => {
       publishNow: 'Hemen Yayinla',
       featureHomepage: 'Ana sayfada one cikar',
       productBadges: 'Urun Rozetleri',
+      specifications: 'Ozellikler',
+      variantsTitle: 'Urun Varyantlari',
+      addVariant: 'Varyant Ekle',
+      noVariants: 'Henuz varyant yok. Urun temel parametrelerle kullanilacak.',
+      warehouseQty: 'Depo Adedi',
+      stockHint: 'Stok 1 veya 2 adede dustugunde yonetim paneli otomatik uyari verir.',
+      color: 'Renk *',
+      size: 'Beden *',
+      sku: 'SKU *',
+      stockQty: 'Stok Adedi *',
+      remove: 'Kaldir',
+      mediaGallery: 'Medya Galerisi',
+      noImages: 'Secili gorsel yok.',
+      thumbnail: 'Kapak Gorseli',
+      newLabel: 'YENI',
+      seoTitle: 'Arama Motoru Optimizasyonu',
+      metaTitle: 'Meta Basligi',
+      metaDescription: 'Meta Aciklamasi',
+      urlSlug: 'URL Slug',
+      autoSlug: 'Ingilizce addan otomatik olusturulur',
+      brand: 'Marka',
+      material: 'Malzeme',
+      weight: 'Agirlik (kg)',
+      includedPieces: 'Parca Sayisi',
+      barcodeField: 'Barkod',
+      origin: 'Mensei',
+      strapType: 'Askı Tipi',
+      dimensions: 'Olculer (cm)',
+      height: 'Yukseklik',
+      width: 'Genislik',
+      depth: 'Derinlik',
+      colors: 'Mevcut Renkler (virgulle ayirin)',
+      sizes: 'Mevcut Bedenler (virgulle ayirin)',
+      colorsPlaceholder: 'Kirmizi, Mavi, Altin',
+      sizesPlaceholder: 'S, M, L, XL',
       failedEdit: 'Urun duzenlenemedi',
       failedFetch: 'Urun verileri yuklenemedi',
       requiredName: 'Ingilizce urun adi gereklidir.',
@@ -149,6 +254,41 @@ const EditProduct = () => {
     publishNow: 'Publish Immediately',
     featureHomepage: 'Feature on Homepage',
     productBadges: 'Product Badges',
+    specifications: 'Specifications',
+    variantsTitle: 'Product Variants',
+    addVariant: 'Add Variant',
+    noVariants: 'No variants created. The product will use base parameters.',
+    warehouseQty: 'Warehouse Quantity',
+    stockHint: 'If stock becomes 1 or 2 pieces, the admin dashboard will raise an alert automatically.',
+    color: 'Color *',
+    size: 'Size *',
+    sku: 'SKU *',
+    stockQty: 'Stock Qty *',
+    remove: 'Remove',
+    mediaGallery: 'Media Gallery',
+    noImages: 'No images selected.',
+    thumbnail: 'Thumbnail',
+    newLabel: 'NEW',
+    seoTitle: 'Search Engine Optimization',
+    metaTitle: 'Meta Title',
+    metaDescription: 'Meta Description',
+    urlSlug: 'URL Slug',
+    autoSlug: 'Auto-generated from English name',
+    brand: 'Brand',
+    material: 'Material',
+    weight: 'Weight (kg)',
+    includedPieces: 'Included Pieces',
+    barcodeField: 'Barcode',
+    origin: 'Country of Origin',
+    strapType: 'Strap Type',
+    dimensions: 'Dimensions (cm)',
+    height: 'Height',
+    width: 'Width',
+    depth: 'Depth',
+    colors: 'Available Colors (comma separated)',
+    sizes: 'Available Sizes (comma separated)',
+    colorsPlaceholder: 'Red, Blue, Gold',
+    sizesPlaceholder: 'S, M, L, XL',
     failedEdit: 'Failed to edit product',
     failedFetch: 'Failed fetching product details',
     requiredName: 'English product name is required.',
@@ -575,62 +715,62 @@ const EditProduct = () => {
         {/* --- SPECS TAB --- */}
         {activeTab === 'specs' && (
           <div className="space-y-6 bg-white p-6 rounded shadow-sm border border-gray-100 animate-fadeIn">
-             <h2 className="text-lg font-medium text-black mb-4">Specifications</h2>
+             <h2 className="text-lg font-medium text-black mb-4">{copy.specifications}</h2>
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.brand}</label>
                   <input type="text" name="brand" value={formData.brand} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Material</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.material}</label>
                   <input type="text" name="material" value={formData.material} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.weight}</label>
                   <input type="number" step="0.01" name="weight" value={formData.weight} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Included Pieces</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.includedPieces}</label>
                   <input type="number" min="1" name="piecesIncluded" value={formData.piecesIncluded} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Barcode</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.barcodeField}</label>
                   <input type="text" name="barcode" value={formData.barcode} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Country of Origin</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.origin}</label>
                   <input type="text" name="origin" value={formData.origin} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Strap Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.strapType}</label>
                   <input type="text" name="strapType" value={formData.strapType} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
              </div>
 
-             <h3 className="text-sm font-medium text-gray-700 mt-6 mb-4">Dimensions (cm)</h3>
+             <h3 className="text-sm font-medium text-gray-700 mt-6 mb-4">{copy.dimensions}</h3>
              <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Height</label>
+                  <label className="block text-xs text-gray-500 mb-1">{copy.height}</label>
                   <input type="number" name="dimH" value={formData.dimH} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Width</label>
+                  <label className="block text-xs text-gray-500 mb-1">{copy.width}</label>
                   <input type="number" name="dimW" value={formData.dimW} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Depth</label>
+                  <label className="block text-xs text-gray-500 mb-1">{copy.depth}</label>
                   <input type="number" name="dimD" value={formData.dimD} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
              </div>
              
              <div className="pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Available Colors (comma separated)</label>
-                  <input type="text" value={availableColors} onChange={(e) => setAvailableColors(e.target.value)} placeholder="Red, Blue, Gold" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.colors}</label>
+                  <input type="text" value={availableColors} onChange={(e) => setAvailableColors(e.target.value)} placeholder={copy.colorsPlaceholder} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Available Sizes (comma separated)</label>
-                  <input type="text" value={availableSizes} onChange={(e) => setAvailableSizes(e.target.value)} placeholder="S, M, L, XL" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{copy.sizes}</label>
+                  <input type="text" value={availableSizes} onChange={(e) => setAvailableSizes(e.target.value)} placeholder={copy.sizesPlaceholder} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
                 </div>
              </div>
           </div>
@@ -640,19 +780,19 @@ const EditProduct = () => {
         {activeTab === 'variants' && (
           <div className="space-y-6 bg-white p-6 rounded shadow-sm border border-gray-100 animate-fadeIn">
             <div className="flex justify-between items-center mb-4">
-               <h2 className="text-lg font-medium text-black">Product Variants</h2>
+               <h2 className="text-lg font-medium text-black">{copy.variantsTitle}</h2>
                <button type="button" onClick={addVariant} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium text-black rounded transition-colors">
-                  + Add Variant
+                  + {copy.addVariant}
                </button>
             </div>
             
             {variants.length === 0 ? (
                <div className="space-y-4">
-                 <p className="text-sm text-gray-500 italic p-4 border border-dashed text-center">No variants created. The product will use base parameters.</p>
+                 <p className="text-sm text-gray-500 italic p-4 border border-dashed text-center">{copy.noVariants}</p>
                  <div className="max-w-sm">
-                   <label className="block text-sm font-medium text-gray-700 mb-2">Warehouse Quantity</label>
+                   <label className="block text-sm font-medium text-gray-700 mb-2">{copy.warehouseQty}</label>
                    <input type="number" min="0" name="stock" value={formData.stock} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
-                   <p className="mt-2 text-xs text-gray-500">If stock becomes 1 or 2 pieces, the admin dashboard will raise an alert automatically.</p>
+                   <p className="mt-2 text-xs text-gray-500">{copy.stockHint}</p>
                  </div>
                </div>
             ) : (
@@ -660,19 +800,19 @@ const EditProduct = () => {
                  {variants.map((variant, i) => (
                    <div key={i} className="flex flex-wrap md:flex-nowrap gap-4 items-end bg-gray-50 p-4 border border-gray-200 rounded relative">
                       <div className="w-full md:w-1/5">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Color *</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{copy.color}</label>
                         <input required type="text" value={variant.color} onChange={(e) => updateVariant(i, 'color', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <div className="w-full md:w-1/5">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Size *</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{copy.size}</label>
                         <input required type="text" value={variant.size} onChange={(e) => updateVariant(i, 'size', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <div className="w-full md:w-1/5">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">SKU *</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{copy.sku}</label>
                         <input required type="text" value={variant.sku} onChange={(e) => updateVariant(i, 'sku', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <div className="w-full md:w-1/5">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Stock Qty *</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{copy.stockQty}</label>
                         <input required type="number" min="0" value={variant.stock || 0} onChange={(e) => updateVariant(i, 'stock', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <div className="w-full md:w-1/5">
@@ -680,7 +820,7 @@ const EditProduct = () => {
                         <input type="number" value={variant.salePrice || ''} onChange={(e) => updateVariant(i, 'salePrice', e.target.value)} className="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-black" />
                       </div>
                       <button type="button" onClick={() => removeVariant(i)} className="text-red-500 hover:text-red-700 font-medium text-sm px-2">
-                        Remove
+                        {copy.remove}
                       </button>
                    </div>
                  ))}
@@ -693,7 +833,7 @@ const EditProduct = () => {
         {activeTab === 'images' && (
           <div className="bg-white p-6 md:p-8 rounded shadow-sm border border-gray-100 animate-fadeIn">
             <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-black">Media Gallery</h2>
+              <h2 className="text-lg font-medium text-black">{copy.mediaGallery}</h2>
             </div>
             
             <input type="file" multiple onChange={handleFileChange} accept="image/jpeg,image/png,image/webp" className="w-full border border-dashed border-gray-300 p-8 text-center cursor-pointer mb-6 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors" />
@@ -711,14 +851,14 @@ const EditProduct = () => {
                {images.map((file, i) => (
                  <div key={`new-${i}`} className="group relative bg-blue-50 aspect-square rounded overflow-hidden shadow-sm">
                    <img loading="lazy" src={URL.createObjectURL(file)} alt="new preview" className="w-full h-full object-cover opacity-80" />
-                   <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded shadow">NEW</div>
+                   <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded shadow">{copy.newLabel}</div>
                    <button type="button" onClick={() => removeNewImage(i)} className="absolute top-1 right-1 bg-white text-red-500 p-1 rounded-full text-xs shadow hover:bg-red-50">&times;</button>
                  </div>
                ))}
             </div>
             
             {existingImages.length === 0 && images.length === 0 && (
-               <p className="text-sm text-center text-gray-500 py-6">No images selected.</p>
+               <p className="text-sm text-center text-gray-500 py-6">{copy.noImages}</p>
             )}
           </div>
         )}
@@ -727,22 +867,22 @@ const EditProduct = () => {
         {activeTab === 'seo' && (
           <div className="space-y-6 bg-white p-6 rounded shadow-sm border border-gray-100 animate-fadeIn">
             <div className="mb-4">
-               <h2 className="text-lg font-medium text-black">Search Engine Optimization</h2>
+               <h2 className="text-lg font-medium text-black">{copy.seoTitle}</h2>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{copy.metaTitle}</label>
               <input type="text" name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="50-60 characters" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{copy.metaDescription}</label>
               <textarea rows="3" name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="150-160 characters" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black"></textarea>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">URL Slug</label>
-              <input type="text" name="slug" value={formData.slug} readOnly placeholder="Auto-generated from English name" className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black font-mono bg-gray-50 text-gray-500" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">{copy.urlSlug}</label>
+              <input type="text" name="slug" value={formData.slug} readOnly placeholder={copy.autoSlug} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black font-mono bg-gray-50 text-gray-500" />
             </div>
           </div>
         )}
