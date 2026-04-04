@@ -13,60 +13,53 @@ const OrderSuccess = () => {
       description: 'تم استلام طلبك بنجاح. سنراجع تفاصيل الطلب ونرسل لك التحديثات قريبًا.',
       paymentReference: 'مرجع الدفع',
       viewOrders: 'عرض طلباتي',
-      continueShopping: 'متابعة التسوق'
+      continueShopping: 'متابعة التسوق',
     },
     tr: {
       title: 'Siparisiniz Icin Tesekkurler!',
       description: 'Siparisiniz basariyla alindi. Siparis detaylarinizi yakinda sizinle paylasacagiz.',
       paymentReference: 'Odeme Referansi',
       viewOrders: 'Siparislerimi Gor',
-      continueShopping: 'Alisverise Devam Et'
+      continueShopping: 'Alisverise Devam Et',
     },
     en: {
       title: 'Thank You For Your Order!',
       description: "Your order has been successfully placed. We'll review it and send you updates shortly.",
       paymentReference: 'Payment Reference',
       viewOrders: 'View My Orders',
-      continueShopping: 'Continue Shopping'
-    }
+      continueShopping: 'Continue Shopping',
+    },
   }[language] || {
     title: 'Thank You For Your Order!',
     description: "Your order has been successfully placed. We'll review it and send you updates shortly.",
     paymentReference: 'Payment Reference',
     viewOrders: 'View My Orders',
-    continueShopping: 'Continue Shopping'
+    continueShopping: 'Continue Shopping',
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
-      <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-8">
-        <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center text-[var(--text-primary)]">
+      <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+        <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
         </svg>
       </div>
-      <h1 className="text-4xl font-serif text-black mb-4">{content.title}</h1>
-      <p className="text-gray-600 mb-8 max-w-md">
-        {content.description}
-      </p>
+
+      <h1 className="mb-4 text-4xl font-serif text-[var(--text-primary)]">{content.title}</h1>
+      <p className="mb-8 max-w-md text-[var(--text-secondary)]">{content.description}</p>
 
       {paymentIntent && (
-        <div className="bg-white p-6 rounded border border-gray-200 mb-8 w-full max-w-sm text-left">
-          <p className="text-sm text-gray-500 mb-1">{content.paymentReference}</p>
-          <p className="font-medium text-black truncate">{paymentIntent.id}</p>
+        <div className="mb-8 w-full max-w-sm rounded border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left">
+          <p className="mb-1 text-sm text-[var(--text-secondary)]">{content.paymentReference}</p>
+          <p className="truncate font-medium text-[var(--text-primary)]">{paymentIntent.id}</p>
         </div>
       )}
 
       <div className="space-x-4">
-        <Link 
-          to="/user/dashboard" 
-          className="inline-block bg-black text-white px-8 py-3 font-medium uppercase tracking-widest hover:bg-gold transition-colors"
-        >
+        <Link to="/user/dashboard" className="inline-block bg-[#2f1f15] px-8 py-3 font-medium uppercase tracking-widest text-white transition-colors hover:bg-gold">
           {content.viewOrders}
         </Link>
-        <Link 
-          to="/shop" 
-          className="inline-block border border-gray-300 px-8 py-3 font-medium uppercase tracking-widest hover:bg-white transition-colors"
-        >
+        <Link to="/shop" className="inline-block border border-[var(--border-color)] bg-[var(--bg-card)] px-8 py-3 font-medium uppercase tracking-widest transition-colors hover:opacity-90">
           {content.continueShopping}
         </Link>
       </div>

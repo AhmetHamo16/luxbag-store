@@ -36,6 +36,7 @@ const ProductDetail = () => {
   const [recentItems, setRecentItems] = useState([]);
   const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const t = translations[language].product;
+  const localizedName = product?.name?.[language] || product?.name?.en || product?.name?.ar || product?.name?.tr || 'Unknown';
   const resolveAssetUrl = useCallback((value) => {
     if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
     if (typeof value === 'object') return resolveAssetUrl(value.url);
@@ -101,6 +102,200 @@ const ProductDetail = () => {
     piecesLabel: 'Set Details',
     materialLabel: 'Material',
     dimensionsLabel: 'Dimensions',
+  };
+  const ui = {
+    en: {
+      notFound: 'Product Not Found',
+      home: 'Home',
+      shop: 'Shop',
+      detailView: 'View Detail',
+      openGallery: 'Open the full gallery',
+      reset: 'Reset',
+      copied: 'Link copied to clipboard!',
+      share: 'Share',
+      whatsapp: 'WhatsApp',
+      offerEnds: 'Offer Ends In:',
+      selectVariant: 'Select Size & Color',
+      sizeGuide: 'Size Guide',
+      orderViaWhatsapp: 'Order via WhatsApp',
+      related: 'You May Also Like',
+      recentlyViewed: 'Recently Viewed',
+      reviews: 'Customer Reviews',
+      verifiedBuyer: 'Verified Buyer',
+      noReviews: 'No reviews yet. Be the first to review this product!',
+      writeReview: 'Write a Review',
+      rating: 'Rating',
+      yourReview: 'Your Review',
+      reviewPlaceholder: 'Share your thoughts about this product...',
+      submitting: 'Submitting...',
+      submitReview: 'Submit Review',
+      loginToReview: 'Log in to write a review',
+      fitGuide: 'Fit & Size Guide',
+      dimensionsCm: 'Dimensions (cm)',
+      strapDrop: 'Strap Drop (cm)',
+      measurementsNote: '* Measurements are approximate and may vary slightly by model.',
+      size: 'Size',
+      fit: 'Fit',
+      reviewSuccess: 'Review submitted successfully!',
+      reviewError: 'Failed to submit review',
+      addSuccess: 'Added to cart',
+      orderMessage: `Hello, I would like to order: ${localizedName} for ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product?.salePrice || product?.price || 0)}`,
+      shareMessage: `Hey, check out this bag: ${typeof window !== 'undefined' ? window.location.href : ''}`,
+    },
+    ar: {
+      notFound: 'المنتج غير موجود',
+      home: 'الرئيسية',
+      shop: 'المتجر',
+      detailView: 'عرض التفاصيل',
+      openGallery: 'افتحي المعرض الكامل',
+      reset: 'إعادة الضبط',
+      copied: 'تم نسخ الرابط',
+      share: 'مشاركة',
+      whatsapp: 'واتساب',
+      offerEnds: 'ينتهي العرض خلال:',
+      selectVariant: 'اختاري المقاس واللون',
+      sizeGuide: 'دليل المقاسات',
+      orderViaWhatsapp: 'اطلبي عبر واتساب',
+      related: 'قد يعجبك أيضًا',
+      recentlyViewed: 'شوهدت مؤخرًا',
+      reviews: 'آراء العملاء',
+      verifiedBuyer: 'مشتري موثق',
+      noReviews: 'لا توجد تقييمات بعد. كوني أول من يراجع هذا المنتج!',
+      writeReview: 'اكتبي تقييمًا',
+      rating: 'التقييم',
+      yourReview: 'تقييمك',
+      reviewPlaceholder: 'شاركي رأيك حول هذا المنتج...',
+      submitting: 'جارٍ الإرسال...',
+      submitReview: 'إرسال التقييم',
+      loginToReview: 'سجلي الدخول لكتابة تقييم',
+      fitGuide: 'دليل المقاس',
+      dimensionsCm: 'الأبعاد (سم)',
+      strapDrop: 'طول الحمالة (سم)',
+      measurementsNote: '* المقاسات تقريبية وقد تختلف قليلًا حسب الموديل.',
+      size: 'المقاس',
+      fit: 'الملاءمة',
+      reviewSuccess: 'تم إرسال التقييم بنجاح!',
+      reviewError: 'فشل إرسال التقييم',
+      addSuccess: 'تمت الإضافة إلى السلة',
+      orderMessage: `مرحبًا، أود طلب: ${localizedName} بسعر ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product?.salePrice || product?.price || 0)}`,
+      shareMessage: `مرحبًا، شاهدي هذه الحقيبة: ${typeof window !== 'undefined' ? window.location.href : ''}`,
+    },
+    tr: {
+      notFound: 'Urun bulunamadi',
+      home: 'Ana Sayfa',
+      shop: 'Magaza',
+      detailView: 'Detayi Gor',
+      openGallery: 'Tum galeriyi ac',
+      reset: 'Sifirla',
+      copied: 'Baglanti kopyalandi',
+      share: 'Paylas',
+      whatsapp: 'WhatsApp',
+      offerEnds: 'Teklifin bitmesine:',
+      selectVariant: 'Boyut ve Renk Sec',
+      sizeGuide: 'Beden Rehberi',
+      orderViaWhatsapp: 'WhatsApp ile Siparis Ver',
+      related: 'Bunlari da begenebilirsiniz',
+      recentlyViewed: 'Son Goruntulenenler',
+      reviews: 'Musteri Yorumlari',
+      verifiedBuyer: 'Dogrulanmis Alici',
+      noReviews: 'Henuz yorum yok. Bu urune ilk yorumu siz yapin!',
+      writeReview: 'Yorum Yaz',
+      rating: 'Puan',
+      yourReview: 'Yorumunuz',
+      reviewPlaceholder: 'Bu urun hakkindaki dusuncelerinizi paylasin...',
+      submitting: 'Gonderiliyor...',
+      submitReview: 'Yorumu Gonder',
+      loginToReview: 'Yorum yazmak icin giris yapin',
+      fitGuide: 'Olcu Rehberi',
+      dimensionsCm: 'Olculer (cm)',
+      strapDrop: 'Aski Uzunlugu (cm)',
+      measurementsNote: '* Olculer yaklasiktir ve modele gore kucuk farkliliklar gosterebilir.',
+      size: 'Boyut',
+      fit: 'Kullanim',
+      reviewSuccess: 'Yorum basariyla gonderildi!',
+      reviewError: 'Yorum gonderilemedi',
+      addSuccess: 'Sepete eklendi',
+      orderMessage: `Merhaba, su urunu siparis vermek istiyorum: ${localizedName} - ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product?.salePrice || product?.price || 0)}`,
+      shareMessage: `Merhaba, bu cantaya bak: ${typeof window !== 'undefined' ? window.location.href : ''}`,
+    }
+  }[language] || {
+    notFound: 'Product Not Found',
+    home: 'Home',
+    shop: 'Shop',
+    detailView: 'View Detail',
+    openGallery: 'Open the full gallery',
+    reset: 'Reset',
+    copied: 'Link copied to clipboard!',
+    share: 'Share',
+    whatsapp: 'WhatsApp',
+    offerEnds: 'Offer Ends In:',
+    selectVariant: 'Select Size & Color',
+    sizeGuide: 'Size Guide',
+    orderViaWhatsapp: 'Order via WhatsApp',
+    related: 'You May Also Like',
+    recentlyViewed: 'Recently Viewed',
+    reviews: 'Customer Reviews',
+    verifiedBuyer: 'Verified Buyer',
+    noReviews: 'No reviews yet. Be the first to review this product!',
+    writeReview: 'Write a Review',
+    rating: 'Rating',
+    yourReview: 'Your Review',
+    reviewPlaceholder: 'Share your thoughts about this product...',
+    submitting: 'Submitting...',
+    submitReview: 'Submit Review',
+    loginToReview: 'Log in to write a review',
+    fitGuide: 'Fit & Size Guide',
+    dimensionsCm: 'Dimensions (cm)',
+    strapDrop: 'Strap Drop (cm)',
+    measurementsNote: '* Measurements are approximate and may vary slightly by model.',
+    size: 'Size',
+    fit: 'Fit',
+    reviewSuccess: 'Review submitted successfully!',
+    reviewError: 'Failed to submit review',
+    addSuccess: 'Added to cart',
+    orderMessage: `Hello, I would like to order: ${localizedName} for ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product?.salePrice || product?.price || 0)}`,
+    shareMessage: `Hey, check out this bag: ${typeof window !== 'undefined' ? window.location.href : ''}`,
+  };
+  const trustCopy = {
+    en: {
+      authenticTitle: '100% Authentic Guaranteed',
+      authenticDesc: 'Every Melora handbag passes strict quality control and originality verification.',
+      shippingTitle: 'Free Express Shipping',
+      shippingDesc: 'Enjoy complimentary local delivery on all orders over ₺500.',
+      featuresTitle: 'Key Features',
+      featuresDesc: 'Premium materials with a refined finish made for daily elegance.',
+      deliveryTitle: 'Delivery & Returns',
+      deliveryDesc: 'Fast delivery and a smooth return process for a more confident shopping experience.',
+    },
+    ar: {
+      authenticTitle: 'ضمان الأصالة 100%',
+      authenticDesc: 'كل حقيبة من Melora تمر بمراحل تدقيق جودة وتحقيق من الأصالة.',
+      shippingTitle: 'شحن سريع مجاني',
+      shippingDesc: 'استمتعي بشحن محلي مجاني للطلبات التي تزيد عن 500 ليرة تركية.',
+      featuresTitle: 'أبرز المميزات',
+      featuresDesc: 'خامات فاخرة وتشطيب راقٍ مصمم للاستخدام اليومي بأناقة.',
+      deliveryTitle: 'التوصيل والإرجاع',
+      deliveryDesc: 'توصيل سريع وإرجاع سلس لتجربة شراء أكثر راحة.',
+    },
+    tr: {
+      authenticTitle: 'Yuzde 100 Orijinallik Garantisi',
+      authenticDesc: 'Her Melora canta, kalite kontrol ve orijinallik dogrulamasindan gecer.',
+      shippingTitle: 'Ucretsiz Hizli Kargo',
+      shippingDesc: '500 TL uzeri tum siparislerde ucretsiz yerel teslimatin keyfini cikarın.',
+      featuresTitle: 'One Cikan Ozellikler',
+      featuresDesc: 'Gunluk zarafet icin rafine yuzeyli premium malzemeler.',
+      deliveryTitle: 'Teslimat ve Iade',
+      deliveryDesc: 'Daha guvenli bir alisveris deneyimi icin hizli teslimat ve kolay iade sureci.',
+    },
+  }[language] || {
+    authenticTitle: '100% Authentic Guaranteed',
+    authenticDesc: 'Every Melora handbag passes strict quality control and originality verification.',
+    shippingTitle: 'Free Express Shipping',
+    shippingDesc: 'Enjoy complimentary local delivery on all orders over ₺500.',
+    featuresTitle: 'Key Features',
+    featuresDesc: 'Premium materials with a refined finish made for daily elegance.',
+    deliveryTitle: 'Delivery & Returns',
+    deliveryDesc: 'Fast delivery and a smooth return process for a more confident shopping experience.',
   };
 
   useEffect(() => {
@@ -224,7 +419,7 @@ const ProductDetail = () => {
   }, [product, resolveAssetUrl]);
 
   if (loading) return <Loader />;
-  if (!product) return <div className="text-center py-20 text-xl font-serif">Product Not Found</div>;
+  if (!product) return <div className="text-center py-20 text-xl font-serif">{ui.notFound}</div>;
 
   // Extract multilingual fields
   const name = product.name?.[language] || product.name?.en || 'Unknown';
@@ -245,7 +440,7 @@ const ProductDetail = () => {
       : { ...product, price: product.salePrice || product.price };
       
     addItem(itemToAdd, quantity);
-    toast.success('Added to cart ✓', { duration: 2000 });
+    toast.success(ui.addSuccess, { duration: 2000 });
   };
 
   const handleReviewSubmit = async (e) => {
@@ -257,12 +452,12 @@ const ProductDetail = () => {
         rating: Number(reviewForm.rating),
         comment: reviewForm.comment
       });
-      toast.success('Review submitted successfully!');
+      toast.success(ui.reviewSuccess);
       setReviewForm({ rating: 5, comment: '' });
       const revRes = await reviewService.getReviewsByProduct(product._id);
       setReviews(revRes.data || []);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to submit review');
+      toast.error(err.response?.data?.message || ui.reviewError);
     } finally {
       setReviewSubmitting(false);
     }
@@ -273,9 +468,9 @@ const ProductDetail = () => {
       
       {/* Breadcrumb */}
       <nav className="text-sm mb-8 text-gray-500 flex items-center gap-2">
-        <Link to="/" className="hover:text-black transition-colors">Home</Link>
+        <Link to="/" className="hover:text-black transition-colors">{ui.home}</Link>
         <span>&gt;</span>
-        <Link to="/shop" className="hover:text-black transition-colors">Shop</Link>
+        <Link to="/shop" className="hover:text-black transition-colors">{ui.shop}</Link>
         <span>&gt;</span>
         <span className="text-black truncate">{name}</span>
       </nav>
@@ -331,10 +526,10 @@ const ProductDetail = () => {
                 <circle cx="11" cy="11" r="5.5" strokeWidth="1.8" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15.5 15.5L20 20" />
               </svg>
-              View Detail
+              {ui.detailView}
             </button>
             <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/35 via-black/0 to-transparent px-5 pb-5 pt-12 text-right text-[11px] font-medium tracking-[0.24em] text-white/90 opacity-100 md:opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              Open the full gallery
+              {ui.openGallery}
             </div>
           </div>
         </div>
@@ -371,7 +566,7 @@ const ProductDetail = () => {
                 onClick={() => setLightboxZoom(1)}
                 className="rounded-full bg-white/12 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white backdrop-blur-md transition hover:bg-white/20"
               >
-                Reset
+                {ui.reset}
               </button>
             </div>
             <div className="relative w-full h-full max-w-5xl max-h-screen flex items-center justify-center p-4">
@@ -444,16 +639,16 @@ const ProductDetail = () => {
             <button 
               onClick={() => {
                  navigator.clipboard.writeText(window.location.href);
-                 toast.success('Link copied to clipboard!');
+                 toast.success(ui.copied);
               }} 
               className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-gray-500 hover:text-brand transition-colors"
             >
                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-               Share
+               {ui.share}
             </button>
             
-            <a href={`https://wa.me/905057777723?text=${encodeURIComponent(`Hey, check out this bag: ${window.location.href}`)}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
-               WhatsApp
+            <a href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.shareMessage)}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
+               {ui.whatsapp}
             </a>
           </div>
 
@@ -481,7 +676,7 @@ const ProductDetail = () => {
             {(product.salePrice || availableStock < 10) && canPurchase && (
               <div className="flex items-center gap-2 text-sm font-bold text-brand bg-[#F5EFE6] px-4 py-3 w-fit border-l-4 border-gold">
                 <svg className="w-5 h-5 text-gold animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Offer Ends In: <span className="text-red-600 mx-1">04h 32m 15s</span>
+                {ui.offerEnds} <span className="text-red-600 mx-1">04h 32m 15s</span>
               </div>
             )}
           </div>
@@ -490,8 +685,8 @@ const ProductDetail = () => {
           {product.variants && product.variants.length > 0 && (
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
-                 <h4 className="text-sm font-medium uppercase tracking-wide">Select Size & Color</h4>
-                 <button onClick={() => setIsSizeGuideOpen(true)} className="text-xs uppercase tracking-widest text-brand underline underline-offset-4 hover:text-gold transition-colors">Size Guide</button>
+                 <h4 className="text-sm font-medium uppercase tracking-wide">{ui.selectVariant}</h4>
+                 <button onClick={() => setIsSizeGuideOpen(true)} className="text-xs uppercase tracking-widest text-brand underline underline-offset-4 hover:text-gold transition-colors">{ui.sizeGuide}</button>
               </div>
               <div className="flex flex-wrap gap-3">
                 {product.variants.map((v) => (
@@ -521,13 +716,13 @@ const ProductDetail = () => {
             </button>
             
             <a 
-              href={`https://wa.me/905057777723?text=${encodeURIComponent(`Hello, I would like to order: ${name} for ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product.salePrice || product.price)}`)}`} 
+              href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`} 
               target="_blank" 
               rel="noreferrer"
               className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 md:px-6 py-3 font-medium tracking-wide hover:bg-[#128C7E] transition-colors duration-300 whitespace-nowrap"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.266 2.008.772 2.88l-1.01 3.692 3.774-.99a5.727 5.727 0 002.231.45h.001c3.18 0 5.767-2.586 5.767-5.766 0-3.181-2.588-5.766-5.767-5.766zm0 9.773c-.859 0-1.7-.231-2.435-.668l-.174-.103-1.808.474.484-1.763-.113-.18a4.8 4.8 0 01-.734-2.569c0-2.656 2.16-4.815 4.818-4.815 2.656 0 4.816 2.158 4.816 4.815-.001 2.657-2.16 4.815-4.816 4.815zm2.636-3.606c-.144-.072-.852-.42-984-.468-.132-.048-.228-.072-.324.072s-.372.468-.456.564-.168.108-.312.036-.607-.224-1.157-.714c-.428-.382-.716-.854-.8-1.022-.084-.168-.009-.259.063-.331.065-.065.144-.168.216-.252.072-.084.096-.144.144-.24a.455.455 0 00-.024-.432c-.048-.096-.324-.78-.444-1.068-.117-.281-.236-.243-.324-.248h-.276c-.096 0-.252.036-.384.18s-.504.492-.504 1.2.516 1.392.588 1.488c.072.096 1.016 1.55 2.46 2.174.344.148.613.237.822.303.345.11.659.094.907.057.279-.042.852-.348.972-.684.12-.336.12-.624.084-.684-.038-.059-.133-.083-.277-.155z"></path></svg>
-              Order via WhatsApp
+              {ui.orderViaWhatsapp}
             </a>
           </div>
 
@@ -536,27 +731,27 @@ const ProductDetail = () => {
             <div className="flex items-center gap-4 bg-gray-50 border border-gray-100 p-4 rounded-sm">
               <svg className="w-8 h-8 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
               <div>
-                <h4 className="text-sm font-bold uppercase tracking-widest text-brand">{content?.productPage?.authenticText?.[language] || '100% Authentic Guaranteed'}</h4>
-                <p className="text-xs text-gray-500 mt-1">{content?.productPage?.authenticDesc?.[language] || 'Every Melora handbag passes strict quality control and originality verification.'}</p>
+                <h4 className="text-sm font-bold uppercase tracking-widest text-brand">{content?.productPage?.authenticText?.[language] || trustCopy.authenticTitle}</h4>
+                <p className="text-xs text-gray-500 mt-1">{content?.productPage?.authenticDesc?.[language] || trustCopy.authenticDesc}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-[#F5EFE6]/70 border border-brand/10 p-4 rounded-sm">
               <svg className="w-8 h-8 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
               <div>
-                <h4 className="text-sm font-bold text-brand uppercase tracking-widest">{content?.productPage?.shippingText?.[language] || 'Free Express Shipping'}</h4>
-                <p className="text-xs text-gray-600 mt-1">{content?.productPage?.shippingDesc?.[language] || 'Enjoy complimentary local delivery on all orders over ₺500.'}</p>
+                <h4 className="text-sm font-bold text-brand uppercase tracking-widest">{content?.productPage?.shippingText?.[language] || trustCopy.shippingTitle}</h4>
+                <p className="text-xs text-gray-600 mt-1">{content?.productPage?.shippingDesc?.[language] || trustCopy.shippingDesc}</p>
               </div>
             </div>
           </div>
           
           <div className="space-y-4 text-sm text-start">
             <div className="border-b border-gray-200 pb-4">
-              <h4 className="font-medium mb-2 uppercase tracking-wide">{content?.productPage?.featuresText?.[language] || t.features || 'Key Features'}</h4>
-              <p className="text-gray-500">{content?.productPage?.featuresDesc?.[language] || 'Premium materials with a refined finish made for daily elegance.'}</p>
+              <h4 className="font-medium mb-2 uppercase tracking-wide">{content?.productPage?.featuresText?.[language] || t.features || trustCopy.featuresTitle}</h4>
+              <p className="text-gray-500">{content?.productPage?.featuresDesc?.[language] || trustCopy.featuresDesc}</p>
             </div>
             <div className="border-b border-gray-200 pb-4">
-              <h4 className="font-medium mb-2 uppercase tracking-wide">{content?.productPage?.deliveryText?.[language] || t.deliveryReturns || 'Delivery & Returns'}</h4>
-              <p className="text-gray-500">{content?.productPage?.deliveryDesc?.[language] || 'Fast delivery and a smooth return process for a more confident shopping experience.'}</p>
+              <h4 className="font-medium mb-2 uppercase tracking-wide">{content?.productPage?.deliveryText?.[language] || t.deliveryReturns || trustCopy.deliveryTitle}</h4>
+              <p className="text-gray-500">{content?.productPage?.deliveryDesc?.[language] || trustCopy.deliveryDesc}</p>
             </div>
           </div>
         </div>
@@ -567,7 +762,7 @@ const ProductDetail = () => {
       {relatedProducts.length > 0 && (
         <div className="mt-24 border-t border-gray-100 pt-16">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-serif text-brand mb-4">You May Also Like</h2>
+            <h2 className="text-3xl font-serif text-brand mb-4">{ui.related}</h2>
             <div className="w-12 h-[2px] bg-gold mx-auto"></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -582,7 +777,7 @@ const ProductDetail = () => {
       {recentItems && recentItems.length > 0 && (
         <div className="mt-24 border-t border-gray-100 pt-16">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-serif text-brand mb-4">Recently Viewed</h2>
+            <h2 className="text-3xl font-serif text-brand mb-4">{ui.recentlyViewed}</h2>
             <div className="w-12 h-[2px] bg-gold mx-auto"></div>
           </div>
           <div className="flex gap-6 overflow-x-auto pb-8 custom-scrollbar">
@@ -602,7 +797,7 @@ const ProductDetail = () => {
       {/* Reviews Section */}
       <div className="mt-24 border-t border-gray-100 pt-16">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-serif text-brand mb-4">Customer Reviews</h2>
+          <h2 className="text-3xl font-serif text-brand mb-4">{ui.reviews}</h2>
           <div className="w-12 h-[2px] bg-gold mx-auto"></div>
         </div>
         
@@ -615,7 +810,7 @@ const ProductDetail = () => {
                     {review.user?.name?.charAt(0) || 'U'}
                   </div>
                   <div>
-                    <h4 className="font-medium text-brand text-sm">{review.user?.name || 'Verified Buyer'}</h4>
+                    <h4 className="font-medium text-brand text-sm">{review.user?.name || ui.verifiedBuyer}</h4>
                     <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -628,15 +823,15 @@ const ProductDetail = () => {
               <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>
             </div>
           )) : (
-            <p className="text-center text-gray-500 text-sm">No reviews yet. Be the first to review this product!</p>
+            <p className="text-center text-gray-500 text-sm">{ui.noReviews}</p>
           )}
 
           {isAuthenticated ? (
             <div className="mt-12 bg-white border border-gray-200 p-8 shadow-sm">
-              <h3 className="text-xl font-serif text-brand mb-6">Write a Review</h3>
+              <h3 className="text-xl font-serif text-brand mb-6">{ui.writeReview}</h3>
               <form onSubmit={handleReviewSubmit}>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{ui.rating}</label>
                   <select value={reviewForm.rating} onChange={(e) => setReviewForm({...reviewForm, rating: e.target.value})} className="border border-gray-300 p-2 w-full max-w-xs focus:border-brand focus:outline-none">
                     <option value="5">5 - Excellent</option>
                     <option value="4">4 - Very Good</option>
@@ -646,17 +841,17 @@ const ProductDetail = () => {
                   </select>
                 </div>
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
-                  <textarea required value={reviewForm.comment} onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})} rows="4" className="w-full border border-gray-300 p-3 text-sm focus:border-brand focus:outline-none" placeholder="Share your thoughts about this product..."></textarea>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{ui.yourReview}</label>
+                  <textarea required value={reviewForm.comment} onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})} rows="4" className="w-full border border-gray-300 p-3 text-sm focus:border-brand focus:outline-none" placeholder={ui.reviewPlaceholder}></textarea>
                 </div>
                 <button type="submit" disabled={reviewSubmitting} className="bg-brand text-beige px-6 py-2 uppercase tracking-widest text-xs font-bold hover:bg-gold transition-colors disabled:opacity-50">
-                  {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                  {reviewSubmitting ? ui.submitting : ui.submitReview}
                 </button>
               </form>
             </div>
           ) : (
             <div className="text-center mt-8">
-              <Link to="/login" className="text-brand underline hover:text-gold text-sm font-medium">Log in to write a review</Link>
+              <Link to="/login" className="text-brand underline hover:text-gold text-sm font-medium">{ui.loginToReview}</Link>
             </div>
           )}
         </div>
@@ -667,15 +862,15 @@ const ProductDetail = () => {
         <div className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsSizeGuideOpen(false)}>
           <div className="bg-white p-8 max-w-2xl w-full relative shadow-2xl animate-fade-in" onClick={e => e.stopPropagation()}>
             <button onClick={() => setIsSizeGuideOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black text-3xl focus:outline-none">&times;</button>
-            <h3 className="text-2xl font-serif text-brand mb-6 text-center">Fit & Size Guide</h3>
+            <h3 className="text-2xl font-serif text-brand mb-6 text-center">{ui.fitGuide}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left border-collapse border border-gray-100">
                 <thead>
                   <tr className="bg-[#F5EFE6] uppercase tracking-widest text-xs text-brand">
-                    <th className="p-4 border border-gray-100">Size</th>
-                    <th className="p-4 border border-gray-100">Dimensions (cm)</th>
-                    <th className="p-4 border border-gray-100">Strap Drop (cm)</th>
-                    <th className="p-4 border border-gray-100">Fit</th>
+                    <th className="p-4 border border-gray-100">{ui.size}</th>
+                    <th className="p-4 border border-gray-100">{ui.dimensionsCm}</th>
+                    <th className="p-4 border border-gray-100">{ui.strapDrop}</th>
+                    <th className="p-4 border border-gray-100">{ui.fit}</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600">
@@ -685,7 +880,7 @@ const ProductDetail = () => {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-center text-gray-400 mt-6 mt-4 italic">* Measurements are approximate and may vary slightly by model.</p>
+            <p className="text-xs text-center text-gray-400 mt-6 mt-4 italic">{ui.measurementsNote}</p>
           </div>
         </div>
       )}
@@ -694,3 +889,4 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+

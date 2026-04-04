@@ -107,6 +107,31 @@ const Checkout = () => {
       accountHolderLabel: 'Hesap sahibi',
     },
   }[language];
+  const feedbackCopy = {
+    en: {
+      couponApplied: 'Coupon applied successfully!',
+      couponInvalid: 'Invalid coupon code.',
+      uploadReceiptRequired: 'Please upload your transfer receipt before submitting.',
+      createOrderFailed: 'Failed to create order, please try again.',
+    },
+    ar: {
+      couponApplied: 'تم تطبيق الكوبون بنجاح',
+      couponInvalid: 'رمز الكوبون غير صحيح',
+      uploadReceiptRequired: 'ارفعي إيصال التحويل قبل إرسال الطلب',
+      createOrderFailed: 'تعذر إنشاء الطلب، حاولي مرة أخرى',
+    },
+    tr: {
+      couponApplied: 'Kupon basariyla uygulandi!',
+      couponInvalid: 'Gecersiz kupon kodu.',
+      uploadReceiptRequired: 'Siparisi gondermeden once transfer dekontunu yukleyin.',
+      createOrderFailed: 'Siparis olusturulamadi, lutfen tekrar deneyin.',
+    },
+  }[language] || {
+    couponApplied: 'Coupon applied successfully!',
+    couponInvalid: 'Invalid coupon code.',
+    uploadReceiptRequired: 'Please upload your transfer receipt before submitting.',
+    createOrderFailed: 'Failed to create order, please try again.',
+  };
 
   const subtotal = getTotal();
   const [adminSettings, setAdminSettings] = useState(null);
@@ -153,11 +178,11 @@ const Checkout = () => {
     }).then((response) => {
       setDiscountAmount(Number(response.discountAmount || 0));
       setAppliedCoupon(response.data || null);
-      toast.success('Coupon applied successfully!');
+      toast.success(feedbackCopy.couponApplied);
     }).catch((error) => {
       setDiscountAmount(0);
       setAppliedCoupon(null);
-      toast.error(error?.response?.data?.message || 'Invalid coupon code.');
+      toast.error(error?.response?.data?.message || feedbackCopy.couponInvalid);
     });
   };
 
@@ -172,7 +197,7 @@ const Checkout = () => {
 
   const handleIBANSubmit = async () => {
     try {
-      if (!receiptFile) return toast.error(t.uploadReceiptRequired || 'Please upload your transfer receipt before submitting.');
+      if (!receiptFile) return toast.error(t.uploadReceiptRequired || feedbackCopy.uploadReceiptRequired);
       setIsUploading(true);
       
       const rawItems = cartItems || [];
@@ -226,7 +251,7 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("=== CHECKOUT SUBMIT ERROR ===", error.response?.data || error.message);
-      toast.error(error.response?.data?.message || 'Failed to create order, please try again.');
+      toast.error(error.response?.data?.message || feedbackCopy.createOrderFailed);
     } finally {
       setIsUploading(false);
     }

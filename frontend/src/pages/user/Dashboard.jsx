@@ -1,11 +1,55 @@
 import React from 'react';
-import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import useLangStore from '../../store/useLangStore';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuthStore();
+  const { language } = useLangStore();
+
+  const copy = {
+    en: {
+      orders: 'Dashboard (Orders)',
+      profile: 'Profile Details',
+      wishlist: 'My Wishlist',
+      addresses: 'Addresses',
+      account: 'My Account',
+      welcome: 'Welcome back',
+      user: 'User',
+      signOut: 'Sign Out',
+    },
+    ar: {
+      orders: 'لوحة الطلبات',
+      profile: 'بيانات الحساب',
+      wishlist: 'المفضلة',
+      addresses: 'العناوين',
+      account: 'حسابي',
+      welcome: 'مرحبًا بعودتك',
+      user: 'المستخدم',
+      signOut: 'تسجيل الخروج',
+    },
+    tr: {
+      orders: 'Panel (Siparisler)',
+      profile: 'Profil Bilgileri',
+      wishlist: 'Favorilerim',
+      addresses: 'Adresler',
+      account: 'Hesabim',
+      welcome: 'Tekrar hos geldiniz',
+      user: 'Kullanici',
+      signOut: 'Cikis Yap',
+    },
+  }[language] || {
+    orders: 'Dashboard (Orders)',
+    profile: 'Profile Details',
+    wishlist: 'My Wishlist',
+    addresses: 'Addresses',
+    account: 'My Account',
+    welcome: 'Welcome back',
+    user: 'User',
+    signOut: 'Sign Out',
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -13,42 +57,39 @@ const Dashboard = () => {
   };
 
   const navLinks = [
-    { name: 'Dashboard (Orders)', path: '/user/dashboard' },
-    { name: 'Profile Details', path: '/user/dashboard/profile' },
-    { name: 'My Wishlist', path: '/user/dashboard/wishlist' },
-    { name: 'Addresses', path: '/user/dashboard/addresses' },
+    { name: copy.orders, path: '/user/dashboard' },
+    { name: copy.profile, path: '/user/dashboard/profile' },
+    { name: copy.wishlist, path: '/user/dashboard/wishlist' },
+    { name: copy.addresses, path: '/user/dashboard/addresses' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 min-h-[70vh]">
-      
-      {/* Header */}
-      <div className="flex justify-between items-center mb-12 border-b border-gray-200 pb-6">
+    <div className="mx-auto min-h-[70vh] max-w-7xl px-4 py-16 text-[var(--text-primary)] sm:px-6 lg:px-8">
+      <div className="mb-12 flex items-center justify-between border-b border-[var(--border-color)] pb-6">
         <div>
-          <h1 className="text-3xl font-serif text-black mb-2">My Account</h1>
-          <p className="text-gray-500 text-sm">Welcome back, {user?.name || 'User'}!</p>
+          <h1 className="mb-2 text-3xl font-serif text-[var(--text-primary)]">{copy.account}</h1>
+          <p className="text-sm text-[var(--text-secondary)]">{copy.welcome}, {user?.name || copy.user}!</p>
         </div>
-        <button 
+        <button
+          type="button"
           onClick={handleLogout}
-          className="text-sm font-medium text-black border-b border-black pb-1 hover:text-gold hover:border-gold transition-colors duration-300"
+          className="border-b border-[var(--text-primary)] pb-1 text-sm font-medium text-[var(--text-primary)] transition-colors duration-300 hover:border-gold hover:text-gold"
         >
-          Sign Out
+          {copy.signOut}
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-12">
-        
-        {/* Sidebar Navigation */}
+      <div className="flex flex-col gap-12 md:flex-row">
         <aside className="w-full md:w-1/4">
           <nav className="space-y-2">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`block px-4 py-3 text-sm font-medium transition-colors border-l-2 ${
-                  location.pathname === link.path 
-                    ? 'border-gold text-black bg-white' 
-                    : 'border-transparent text-gray-500 hover:text-black hover:bg-white'
+                className={`block border-l-2 px-4 py-3 text-sm font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? 'border-gold bg-[var(--bg-card)] text-[var(--text-primary)]'
+                    : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {link.name}
@@ -57,11 +98,9 @@ const Dashboard = () => {
           </nav>
         </aside>
 
-        {/* Main Content Area */}
         <main className="w-full md:w-3/4">
-           <Outlet />
+          <Outlet />
         </main>
-
       </div>
     </div>
   );

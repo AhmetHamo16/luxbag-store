@@ -14,6 +14,10 @@ const Footer = () => {
       classicCollection: 'Classic Collection',
       ourStory: 'Our Story',
       customerCare: 'Customer Care',
+      faq: 'FAQ',
+      shippingReturns: 'Shipping & Returns',
+      privacy: 'Privacy Policy',
+      terms: 'Terms of Service',
       newsletter: 'Newsletter',
       newsletterText: 'Subscribe to receive exclusive offers, early access to new collections, and styling tips.',
       emailPlaceholder: 'Your email address',
@@ -24,6 +28,10 @@ const Footer = () => {
       classicCollection: 'مجموعة الكلاسيك',
       ourStory: 'قصتنا',
       customerCare: 'خدمة العملاء',
+      faq: 'الأسئلة الشائعة',
+      shippingReturns: 'الشحن والاسترجاع',
+      privacy: 'سياسة الخصوصية',
+      terms: 'شروط الخدمة',
       newsletter: 'النشرة البريدية',
       newsletterText: 'اشتركي للحصول على العروض الحصرية والوصول المبكر إلى التشكيلات الجديدة ونصائح الأناقة.',
       emailPlaceholder: 'بريدك الإلكتروني',
@@ -34,6 +42,10 @@ const Footer = () => {
       classicCollection: 'Klasik Koleksiyon',
       ourStory: 'Hikayemiz',
       customerCare: 'Musteri Hizmetleri',
+      faq: 'Sik Sorulan Sorular',
+      shippingReturns: 'Kargo ve Iade',
+      privacy: 'Gizlilik Politikasi',
+      terms: 'Hizmet Sartlari',
       newsletter: 'Bulten',
       newsletterText: 'Ozel teklifler, yeni koleksiyonlara erken erisim ve stil onerileri icin abone olun.',
       emailPlaceholder: 'E-posta adresiniz',
@@ -44,6 +56,10 @@ const Footer = () => {
     classicCollection: 'Classic Collection',
     ourStory: 'Our Story',
     customerCare: 'Customer Care',
+    faq: 'FAQ',
+    shippingReturns: 'Shipping & Returns',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
     newsletter: 'Newsletter',
     newsletterText: 'Subscribe to receive exclusive offers, early access to new collections, and styling tips.',
     emailPlaceholder: 'Your email address',
@@ -83,10 +99,10 @@ const Footer = () => {
           <div>
             <h3 className="text-sm font-serif text-white tracking-widest uppercase mb-6">{copy.customerCare}</h3>
             <ul className="space-y-4 text-sm text-beige/70">
-              <li><Link to="/faq" className="hover:text-gold transition-colors duration-300">FAQ</Link></li>
-              <li><Link to="/shipping" className="hover:text-gold transition-colors duration-300">Shipping & Returns</Link></li>
-              <li><Link to="/privacy" className="hover:text-gold transition-colors duration-300">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-gold transition-colors duration-300">Terms of Service</Link></li>
+              <li><Link to="/faq" className="hover:text-gold transition-colors duration-300">{copy.faq}</Link></li>
+              <li><Link to="/shipping" className="hover:text-gold transition-colors duration-300">{copy.shippingReturns}</Link></li>
+              <li><Link to="/privacy" className="hover:text-gold transition-colors duration-300">{copy.privacy}</Link></li>
+              <li><Link to="/terms" className="hover:text-gold transition-colors duration-300">{copy.terms}</Link></li>
             </ul>
           </div>
 
