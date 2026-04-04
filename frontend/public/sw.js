@@ -1,53 +1,30 @@
-const CACHE_NAME = 'melora-cache-v3';
-const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/logo.png',
-  '/manifest.json'
-];
-
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(URLS_TO_CACHE);
-      })
-  );
+  event.waitUntil(Promise.resolve());
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
-    )
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+      await self.clients.claim();
+      await self.registration.unregister();
+
+      const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      await Promise.all(
+        clients.map((client) => {
+          if ('navigate' in client) {
+            return client.navigate(client.url);
+          }
+          return Promise.resolve();
+        })
+      );
+    })()
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  if (event.request.url.includes('/api/') || event.request.url.includes('cloudinary.com')) return;
-
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then(
-          function(res) {
-            if(!res || res.status !== 200 || res.type !== 'basic') {
-              return res;
-            }
-            var responseToCache = res.clone();
-            caches.open(CACHE_NAME)
-              .then(function(cache) {
-                cache.put(event.request, responseToCache);
-              });
-            return res;
-          }
-        );
-      })
-  );
+self.addEventListener('fetch', () => {
+  // Intentionally no-op. This worker unregisters itself on activation
+  // so stale storefront bundles stop being served from cache.
 });
