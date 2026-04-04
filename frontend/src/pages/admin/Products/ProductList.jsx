@@ -7,11 +7,11 @@ import useTranslation from '../../../hooks/useTranslation';
 import useCurrencyStore from '../../../store/useCurrencyStore';
 import toast from 'react-hot-toast';
 import ConfirmationModal from '../../../components/shared/ConfirmationModal';
+import { resolveProductImage } from '../../../utils/assets';
 
 const ProductList = () => {
   const { t, language } = useTranslation('admin');
   const formatPrice = useCurrencyStore((state) => state.formatPrice);
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,18 +63,6 @@ const ProductList = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const resolveAssetUrl = (value) => {
-    if (!value) return 'https://via.placeholder.com/100';
-    if (typeof value === 'object') return resolveAssetUrl(value.url);
-    if (typeof value === 'string' && value.includes('\\uploads\\')) {
-      return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
-    }
-    if (typeof value === 'string' && value.startsWith('/uploads/')) {
-      return `${backendOrigin}${value}`;
-    }
-    return value;
   };
 
   const code39Patterns = {
@@ -401,7 +389,7 @@ const ProductList = () => {
                       {paginatedProducts.length > 0 ? paginatedProducts.map((product, index) => {
                         const name = getLocalizedValue(product.name) || ui.unknown;
                         const categoryName = getLocalizedValue(product.category?.name) || ui.uncategorized;
-                        const imageSrc = resolveAssetUrl(product.images?.[0]);
+                        const imageSrc = resolveProductImage(product, 'https://via.placeholder.com/100?text=Melora');
                         const totalStock = product.variants?.length > 0 ? (product.stockControl?.totalStock || 0) : (product.stock || 0);
                         const stockTone = totalStock <= 0 ? 'text-red-600' : totalStock <= 2 ? 'text-amber-600' : 'text-green-600';
                         const stockNotice = totalStock <= 0 ? ui.outOfStockLabel : totalStock <= 2 ? ui.lowStockLabel : ui.readyLabel;
@@ -411,7 +399,7 @@ const ProductList = () => {
                             <td className="px-4 py-4 text-center"><input type="checkbox" checked={selectedIds.includes(product._id)} onChange={() => handleSelectOne(product._id)} className="w-4 h-4 accent-[#8B6914]" /></td>
                             <td className="px-4 py-4">
                               <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden border border-gray-100">
-                                <img loading="lazy" src={imageSrc} alt={name} className="w-full h-full object-cover" />
+                                <img loading="lazy" src={imageSrc} alt={name} className="w-full h-full object-cover" onError={(event) => { event.currentTarget.src = 'https://via.placeholder.com/100?text=Melora'; }} />
                               </div>
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-black">

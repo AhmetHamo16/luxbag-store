@@ -13,7 +13,12 @@ const AddProduct = () => {
     en: {
       tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
       basicDetails: 'Basic Details',
+      nameEn: 'Name (EN) *',
+      nameAr: 'Name (AR)',
+      nameTr: 'Name (TR)',
       descEn: 'Description (EN) *',
+      descAr: 'Description (AR)',
+      descTr: 'Description (TR)',
       category: 'Category *',
       basePrice: 'Base Price',
       salePrice: 'Sale Price',
@@ -43,7 +48,12 @@ const AddProduct = () => {
     ar: {
       tabs: { general: 'عام', specs: 'المواصفات', variants: 'المتغيرات والمخزون', images: 'الصور', seo: 'السيو' },
       basicDetails: 'البيانات الأساسية',
+      nameEn: 'الاسم (EN) *',
+      nameAr: 'الاسم (AR)',
+      nameTr: 'الاسم (TR)',
       descEn: 'الوصف (EN) *',
+      descAr: 'الوصف (AR)',
+      descTr: 'الوصف (TR)',
       category: 'الفئة *',
       basePrice: 'السعر الأساسي',
       salePrice: 'سعر التخفيض',
@@ -73,7 +83,12 @@ const AddProduct = () => {
     tr: {
       tabs: { general: 'Genel', specs: 'Ozellikler', variants: 'Varyantlar ve Stok', images: 'Gorseller', seo: 'SEO' },
       basicDetails: 'Temel Bilgiler',
+      nameEn: 'Ad (EN) *',
+      nameAr: 'Ad (AR)',
+      nameTr: 'Ad (TR)',
       descEn: 'Aciklama (EN) *',
+      descAr: 'Aciklama (AR)',
+      descTr: 'Aciklama (TR)',
       category: 'Kategori *',
       basePrice: 'Temel Fiyat',
       salePrice: 'Indirimli Fiyat',
@@ -103,7 +118,12 @@ const AddProduct = () => {
   }[language] || {
     tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
     basicDetails: 'Basic Details',
+    nameEn: 'Name (EN) *',
+    nameAr: 'Name (AR)',
+    nameTr: 'Name (TR)',
     descEn: 'Description (EN) *',
+    descAr: 'Description (AR)',
+    descTr: 'Description (TR)',
     category: 'Category *',
     basePrice: 'Base Price',
     salePrice: 'Sale Price',
@@ -365,15 +385,15 @@ const AddProduct = () => {
             <h2 className="text-lg font-medium text-black mb-4">{copy.basicDetails}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name (EN) *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{copy.nameEn}</label>
                 <input required type="text" name="nameEn" value={formData.nameEn} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name (AR)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{copy.nameAr}</label>
                 <input type="text" name="nameAr" value={formData.nameAr} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black text-right" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name (TR)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{copy.nameTr}</label>
                 <input type="text" name="nameTr" value={formData.nameTr} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black" />
               </div>
             </div>
@@ -381,6 +401,17 @@ const AddProduct = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">{copy.descEn}</label>
               <textarea required rows="3" name="descEn" value={formData.descEn} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black"></textarea>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{copy.descAr}</label>
+                <textarea rows="3" name="descAr" value={formData.descAr} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black text-right"></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{copy.descTr}</label>
+                <textarea rows="3" name="descTr" value={formData.descTr} onChange={handleChange} className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-black"></textarea>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
