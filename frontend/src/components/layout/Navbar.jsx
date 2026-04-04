@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
 import useWishlistStore from '../../store/useWishlistStore';
@@ -16,6 +16,7 @@ const Navbar = () => {
   const { items: wishlistItems } = useWishlistStore();
   const wishlistCount = wishlistItems.length;
   const navigate = useNavigate();
+  const location = useLocation();
   const { t, language, setLanguage } = useTranslation('navbar');
   const [colorTheme, setTheme] = useDarkMode();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -68,6 +69,24 @@ const Navbar = () => {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
+  React.useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    if (!isMobileMenuOpen) {
+      document.body.style.overflow = '';
+      return undefined;
+    }
+
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -78,7 +97,7 @@ const Navbar = () => {
 
   return (
     <>
-    <nav className={`sticky top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'backdrop-blur-md shadow-sm dark:border-b dark:border-gold' : 'bg-transparent dark:bg-transparent'} bg-[var(--navbar-bg)] text-[var(--text-primary)]`}>
+    <nav className={`sticky top-0 w-full z-[120] transition-all duration-300 ${isScrolled ? 'backdrop-blur-md shadow-sm dark:border-b dark:border-gold' : 'bg-transparent dark:bg-transparent'} bg-[var(--navbar-bg)] text-[var(--text-primary)]`}>
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           
@@ -106,10 +125,10 @@ const Navbar = () => {
           </div>
 
           {/* Icons Grid (Strict shrink-0 to preserve hitboxes) */}
-          <div className="flex items-center gap-1.5 sm:gap-4 md:gap-6 shrink-0 relative z-10 w-auto justify-end">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6 shrink-0 relative z-10 w-auto justify-end">
             
             {/* Language Switcher */}
-            <div className="flex items-center shrink-0 gap-1 md:gap-2 border-r border-gray-200 dark:border-gray-700 rtl:border-l rtl:border-r-0 pr-1 md:pr-4 rtl:pl-1 md:rtl:pl-4 rtl:pr-0 mr-1 md:mr-0 rtl:ml-1 md:rtl:ml-0 rtl:mr-0">
+            <div className="hidden md:flex items-center shrink-0 gap-1 md:gap-2 border-r border-gray-200 dark:border-gray-700 rtl:border-l rtl:border-r-0 pr-1 md:pr-4 rtl:pl-1 md:rtl:pl-4 rtl:pr-0 mr-1 md:mr-0 rtl:ml-1 md:rtl:ml-0 rtl:mr-0">
               <button type="button" onClick={() => setLanguage('en')} className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors cursor-pointer ${language === 'en' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>EN</button>
               <button type="button" onClick={() => setLanguage('ar')} className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors cursor-pointer ${language === 'ar' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>AR</button>
               <button type="button" onClick={() => setLanguage('tr')} className={`shrink-0 text-[10px] sm:text-xs md:text-sm font-bold md:font-medium transition-colors cursor-pointer ${language === 'tr' ? 'text-brand dark:text-gold' : 'text-gray-400 hover:text-gold'}`}>TR</button>
@@ -196,7 +215,7 @@ const Navbar = () => {
       </div>
 
       {/* Slide Down Search Bar */}
-      <div className={`absolute top-full left-0 w-full bg-white shadow-md border-t border-gray-100 transition-all duration-300 ease-in-out transform origin-top ${isSearchOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
+      <div className={`absolute top-full left-0 z-[130] w-full bg-white shadow-md border-t border-gray-100 transition-all duration-300 ease-in-out transform origin-top ${isSearchOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
         <div className="max-w-3xl mx-auto px-4 py-6">
           <form onSubmit={handleSearchSubmit} className="relative">
             <input 
@@ -243,11 +262,11 @@ const Navbar = () => {
 
     {/* Mobile Slide-In Drawer */}
     <div 
-        className={`fixed inset-0 bg-black/50 z-[90] transition-opacity duration-300 md:hidden ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 top-16 bg-black/50 z-[100] transition-opacity duration-300 md:hidden ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsMobileMenuOpen(false)}
     ></div>
 
-    <div className={`fixed inset-y-0 right-0 w-4/5 max-w-sm bg-beige dark:bg-[#0a0a0a] dark:border-l dark:border-gold/20 shadow-2xl z-[60] transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`fixed top-16 bottom-0 right-0 w-[88%] max-w-sm bg-beige dark:bg-[#0a0a0a] dark:border-l dark:border-gold/20 shadow-2xl z-[110] transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
           <span className="font-serif text-lg text-brand font-bold">Menu</span>
           <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors">
@@ -255,7 +274,18 @@ const Navbar = () => {
           </button>
         </div>
         
-        <div className="p-4 flex flex-col gap-6 overflow-y-auto">
+        <div className="h-[calc(100vh-4rem-73px)] overflow-y-auto overscroll-contain p-4 flex flex-col gap-6">
+          <div className="rounded-3xl border border-[var(--border-primary)]/60 bg-white/60 dark:bg-white/5 px-4 py-3">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-brand/60">
+              Language
+            </div>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setLanguage('tr')} className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${language === 'tr' ? 'bg-brand text-white' : 'bg-transparent text-brand hover:text-gold'}`}>TR</button>
+              <button type="button" onClick={() => setLanguage('ar')} className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${language === 'ar' ? 'bg-brand text-white' : 'bg-transparent text-brand hover:text-gold'}`}>AR</button>
+              <button type="button" onClick={() => setLanguage('en')} className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${language === 'en' ? 'bg-brand text-white' : 'bg-transparent text-brand hover:text-gold'}`}>EN</button>
+            </div>
+          </div>
+
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">{t.home}</Link>
           <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">About Us</Link>
           <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium text-lg">{t.shop}</Link>
