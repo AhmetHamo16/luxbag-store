@@ -79,6 +79,7 @@ const AddProduct = () => {
       requiredDescription: 'English description is required.',
       requiredPrice: 'Base price is required.',
       requiredCategory: 'Please choose a category.',
+      duplicateSku: 'This SKU already exists. A unique SKU is required.',
     },
     ar: {
       tabs: { general: 'عام', specs: 'المواصفات', variants: 'المتغيرات والمخزون', images: 'الصور', seo: 'السيو' },
@@ -149,6 +150,7 @@ const AddProduct = () => {
       requiredDescription: 'الوصف بالإنجليزية مطلوب.',
       requiredPrice: 'السعر الأساسي مطلوب.',
       requiredCategory: 'يرجى اختيار الفئة.',
+      duplicateSku: 'رمز SKU مستخدم بالفعل. يجب أن يكون رمز SKU فريدًا.',
     },
     tr: {
       tabs: { general: 'Genel', specs: 'Ozellikler', variants: 'Varyantlar ve Stok', images: 'Gorseller', seo: 'SEO' },
@@ -219,6 +221,7 @@ const AddProduct = () => {
       requiredDescription: 'Ingilizce aciklama gereklidir.',
       requiredPrice: 'Temel fiyat gereklidir.',
       requiredCategory: 'Lutfen bir kategori secin.',
+      duplicateSku: 'Bu SKU zaten kullaniliyor. SKU benzersiz olmalidir.',
     },
   }[language] || {
     tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
@@ -289,6 +292,7 @@ const AddProduct = () => {
     requiredDescription: 'English description is required.',
     requiredPrice: 'Base price is required.',
     requiredCategory: 'Please choose a category.',
+    duplicateSku: 'This SKU already exists. A unique SKU is required.',
   };
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -384,6 +388,7 @@ const AddProduct = () => {
 
   const getFriendlyError = (error) => {
     const message = error?.response?.data?.message || '';
+    if (message.includes('duplicate key error') && message.includes('sku')) return copy.duplicateSku;
     if (message.includes('description.en')) return copy.requiredDescription;
     if (message.includes('name.en')) return copy.requiredName;
     if (message.includes('price')) return copy.requiredPrice;

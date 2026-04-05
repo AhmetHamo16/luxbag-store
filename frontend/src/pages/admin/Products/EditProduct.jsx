@@ -82,6 +82,7 @@ const EditProduct = () => {
       requiredDescription: 'English description is required.',
       requiredPrice: 'Base price is required.',
       requiredCategory: 'Please choose a category.',
+      duplicateSku: 'This SKU already exists. A unique SKU is required.',
     },
     ar: {
       tabs: { general: 'عام', specs: 'المواصفات', variants: 'المتغيرات والمخزون', images: 'الصور', seo: 'السيو' },
@@ -153,6 +154,7 @@ const EditProduct = () => {
       requiredDescription: 'الوصف بالإنجليزية مطلوب.',
       requiredPrice: 'السعر الأساسي مطلوب.',
       requiredCategory: 'يرجى اختيار الفئة.',
+      duplicateSku: 'رمز SKU مستخدم بالفعل. يجب أن يكون رمز SKU فريدًا.',
     },
     tr: {
       tabs: { general: 'Genel', specs: 'Ozellikler', variants: 'Varyantlar ve Stok', images: 'Gorseller', seo: 'SEO' },
@@ -224,6 +226,7 @@ const EditProduct = () => {
       requiredDescription: 'Ingilizce aciklama gereklidir.',
       requiredPrice: 'Temel fiyat gereklidir.',
       requiredCategory: 'Lutfen bir kategori secin.',
+      duplicateSku: 'Bu SKU zaten kullaniliyor. SKU benzersiz olmalidir.',
     },
   }[language] || {
     tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
@@ -295,6 +298,7 @@ const EditProduct = () => {
     requiredDescription: 'English description is required.',
     requiredPrice: 'Base price is required.',
     requiredCategory: 'Please choose a category.',
+    duplicateSku: 'This SKU already exists. A unique SKU is required.',
   };
   const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [fetching, setFetching] = useState(true);
@@ -443,6 +447,7 @@ const EditProduct = () => {
 
   const getFriendlyError = (error) => {
     const message = error?.response?.data?.message || '';
+    if (message.includes('duplicate key error') && message.includes('sku')) return copy.duplicateSku;
     if (message.includes('description.en')) return copy.requiredDescription;
     if (message.includes('name.en')) return copy.requiredName;
     if (message.includes('price')) return copy.requiredPrice;

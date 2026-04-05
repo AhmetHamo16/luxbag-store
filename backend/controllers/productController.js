@@ -112,6 +112,35 @@ const normalizeStockData = (payload) => {
   return normalized;
 };
 
+const sanitizeSku = (value) => String(value || '')
+  .trim()
+  .replace(/\s+/g, '-')
+  .replace(/[^a-zA-Z0-9_-]+/g, '')
+  .toUpperCase();
+
+const buildSkuCandidate = (baseSku, suffix) => {
+  const safeBase = sanitizeSku(baseSku) || 'SKU';
+  return suffix ? `${safeBase}-${suffix}` : safeBase;
+};
+
+const ensureUniqueSku = async (baseSku, excludeId = null) => {
+  const safeBase = buildSkuCandidate(baseSku);
+  const baseQuery = excludeId ? { _id: { $ne: excludeId } } : {};
+
+  const existingBase = await Product.findOne({ ...baseQuery, sku: safeBase }).select('_id');
+  if (!existingBase) {
+    return safeBase;
+  }
+
+  let candidate = '';
+  do {
+    const suffix = `${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 90 + 10)}`;
+    candidate = buildSkuCandidate(safeBase, suffix);
+  } while (await Product.findOne({ ...baseQuery, sku: candidate }).select('_id'));
+
+  return candidate;
+};
+
 // @desc    Get all products (with DB filtering)
 // @route   GET /api/products
 // @access  Public
@@ -202,6 +231,8 @@ exports.createProduct = async (req, res) => {
   try {
     let productData = parseJSONFields(req.body);
 
+    productData.sku = await ensureUniqueSku(productData.sku);
+
     // Ensure slug uniqueness
     if (productData.slug) {
       const existingProduct = await Product.findOne({ slug: productData.slug });
@@ -245,6 +276,10 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     let updateData = parseJSONFields(req.body);
+
+    if (updateData.sku) {
+      updateData.sku = await ensureUniqueSku(updateData.sku, req.params.id);
+    }
 
     // Ensure slug uniqueness
     if (updateData.slug) {
