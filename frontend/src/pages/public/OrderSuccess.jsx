@@ -1,11 +1,36 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import api from '../../services/api';
+import toast from 'react-hot-toast';
 import useLangStore from '../../store/useLangStore';
 
 const OrderSuccess = () => {
+  const { id } = useParams();
   const location = useLocation();
   const paymentIntent = location.state?.paymentIntent;
   const language = useLangStore((state) => state.language);
+  const [file, setFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  const handleUpload = async () => {
+    if (!file || !id) return;
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('receipt', file);
+      await api.post(`/orders/${id}/receipt`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setUploadSuccess(true);
+      toast.success('Receipt uploaded successfully');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to upload receipt');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const content = {
     ar: {
@@ -52,6 +77,37 @@ const OrderSuccess = () => {
         <div className="mb-8 w-full max-w-sm rounded border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left">
           <p className="mb-1 text-sm text-[var(--text-secondary)]">{content.paymentReference}</p>
           <p className="truncate font-medium text-[var(--text-primary)]">{paymentIntent.id}</p>
+        </div>
+      )}
+
+      {id && !uploadSuccess && (
+        <div className="mb-8 w-full max-w-md rounded-[20px] border border-[#e8d7c2] bg-[#fdfaf6] p-6 shadow-sm">
+          <h3 className="mb-4 font-serif text-lg text-[#2b1911]">Upload Payment Receipt</h3>
+          <p className="mb-4 text-sm text-gray-500">Please upload your transfer screenshot or PDF document to confirm the order.</p>
+          <div className="mb-4 text-left">
+            <input 
+              type="file" 
+              accept="image/jpeg, image/png, application/pdf"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#f3e8db] file:text-[#4a2c17] hover:file:bg-[#ead7bf]"
+            />
+          </div>
+          <button 
+            onClick={handleUpload}
+            disabled={!file || isUploading}
+            className="w-full bg-[#4A2C17] text-white py-3 rounded text-sm uppercase tracking-widest font-medium disabled:opacity-50 hover:bg-[#8B6914] transition-colors"
+          >
+            {isUploading ? 'Uploading...' : 'Upload Payment Receipt'}
+          </button>
+        </div>
+      )}
+
+      {uploadSuccess && (
+        <div className="mb-8 w-full max-w-md rounded bg-green-50 p-4 border border-green-200">
+          <p className="font-medium text-green-800 flex items-center justify-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+            Receipt uploaded successfully
+          </p>
         </div>
       )}
 

@@ -1208,3 +1208,24 @@ exports.exportOrdersCSV = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// @desc    Upload Post-Checkout Receipt
+// @route   POST /api/orders/:id/receipt
+// @access  Public
+exports.uploadOrderReceipt = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    
+    const receiptImage = getUploadedReceiptUrl(req.file, req);
+    if (!receiptImage) return res.status(400).json({ success: false, message: 'No valid receipt uploaded' });
+
+    order.receiptUrl = receiptImage;
+    await order.save();
+
+    res.status(200).json({ success: true, message: 'Receipt uploaded successfully', receiptUrl: receiptImage });
+  } catch (error) {
+    console.error('RECEIPT UPLOAD FAILED', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to upload receipt' });
+  }
+};

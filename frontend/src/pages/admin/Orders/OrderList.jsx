@@ -473,6 +473,17 @@ const OrderList = () => {
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${order.payment?.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-50 text-red-800 border border-red-100'}`}>
                           PAY: {order.payment?.status || 'UNKNOWN'}
                         </span>
+                        {(order.receiptUrl || order.payment?.receiptImage) && (
+                          <a 
+                            href={resolveAssetUrl(order.receiptUrl || order.payment?.receiptImage)} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-green-600 text-white shadow-sm hover:bg-green-700 transition"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            ℓ Receipt Uploaded
+                          </a>
+                        )}
                         <span className="text-[10px] text-gray-500 font-mono uppercase bg-gray-50 px-1 rounded border border-gray-200">
                           {order.payment?.method || 'N/A'}
                         </span>

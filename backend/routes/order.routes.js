@@ -20,7 +20,8 @@ const {
   markOrderPreparing,
   exportOrdersCSV,
   getOrderById,
-  createPosOrder
+  createPosOrder,
+  uploadOrderReceipt
 } = require('../controllers/orderController');
 const { protect, optionalAuth } = require('../middleware/auth.middleware');
 const { admin, adminOrCashier } = require('../middleware/admin.middleware');
@@ -34,8 +35,9 @@ const storage = hasCloudinaryConfig
   ? new (require('multer-storage-cloudinary').CloudinaryStorage)({
       cloudinary,
       params: {
-        folder: 'melora/receipts',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+        folder: 'melora-receipts',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
+        resource_type: 'auto'
       },
     })
   : multer.diskStorage({
@@ -55,10 +57,10 @@ const storage = hasCloudinaryConfig
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype && file.mimetype.startsWith('image/')) {
+    if (file.mimetype && (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf')) {
       return cb(null, true);
     }
-    cb(new Error('Only image uploads are allowed for receipts'));
+    cb(new Error('Only images and PDF files are allowed for receipts'));
   }
 });
 
@@ -161,6 +163,9 @@ router.route('/export')
 
 router.route('/:id')
   .get(protect, getOrderById);
+
+router.route('/:id/receipt')
+  .post(upload.single('receipt'), uploadOrderReceipt);
 
 router.route('/:id/status')
   .put(protect, admin, updateOrderStatus);

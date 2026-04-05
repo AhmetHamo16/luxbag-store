@@ -44,7 +44,8 @@ const orderSchema = new mongoose.Schema({
   estimatedDelivery: { type: Date },
   notes: { type: String },
   salesChannel: { type: String, enum: ['online', 'pos'], default: 'online' },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  receiptUrl: { type: String }
 }, { timestamps: true });
 
 orderSchema.index({ user: 1, createdAt: -1 });
