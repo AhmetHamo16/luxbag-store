@@ -1,5 +1,5 @@
 const Product = require('../models/Product');
-const cloudinary = require('../config/cloudinary');
+const { safeDestroy } = require('../config/cloudinary');
 const mongoose = require('mongoose');
 
 // Helper to extract Cloudinary public_id from URL
@@ -263,7 +263,9 @@ exports.updateProduct = async (req, res) => {
     oldProduct.images.forEach(oldImg => {
       if (!retainedUrls.includes(oldImg.url)) {
         const publicId = extractPublicId(oldImg.url);
-        if (publicId) cloudinary.uploader.destroy(`melora/products/${publicId}`).catch(err => console.error("Cloudinary delete failed:", err));
+        if (publicId) {
+          safeDestroy(`melora/products/${publicId}`);
+        }
       }
     });
 
@@ -307,7 +309,9 @@ exports.deleteProduct = async (req, res) => {
     // Delete images from Cloudinary
     product.images.forEach(img => {
        const publicId = extractPublicId(img.url);
-       if (publicId) cloudinary.uploader.destroy(`melora/products/${publicId}`).catch(e => console.error("Cloudinary config:", e));
+       if (publicId) {
+         safeDestroy(`melora/products/${publicId}`);
+       }
     });
     
     res.status(200).json({ success: true, data: {} });

@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const { 
   createOrder, 
   getMyOrders, 
@@ -23,16 +25,32 @@ const {
 const { protect, optionalAuth } = require('../middleware/auth.middleware');
 const { admin, adminOrCashier } = require('../middleware/admin.middleware');
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
+const { cloudinary, hasCloudinaryConfig } = require('../config/cloudinary');
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'melora/receipts',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-  },
-});
+const receiptsDir = path.join(__dirname, '..', 'uploads', 'receipts');
+fs.mkdirSync(receiptsDir, { recursive: true });
+
+const storage = hasCloudinaryConfig
+  ? new (require('multer-storage-cloudinary').CloudinaryStorage)({
+      cloudinary,
+      params: {
+        folder: 'melora/receipts',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      },
+    })
+  : multer.diskStorage({
+      destination: (_req, _file, cb) => cb(null, receiptsDir),
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname || '').toLowerCase() || '.jpg';
+        const safeBase = path
+          .basename(file.originalname || 'receipt', ext)
+          .replace(/[^a-zA-Z0-9_-]+/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '')
+          .toLowerCase() || 'receipt';
+        cb(null, `${Date.now()}-${safeBase}${ext}`);
+      },
+    });
 
 const upload = multer({
   storage: storage,
@@ -47,7 +65,10 @@ const upload = multer({
 router.route('/upload')
   .post(protect, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
-    res.status(200).json({ success: true, url: req.file.path });
+    const url = req.file.path && /^https?:\/\//i.test(req.file.path)
+      ? req.file.path
+      : `/uploads/receipts/${req.file.filename}`;
+    res.status(200).json({ success: true, url });
   });
 
 const Order = require('../models/Order');
@@ -68,7 +89,11 @@ router.post('/iban-submit', upload.single('receipt'), async (req, res) => {
       coupon: orderData.coupon || undefined,
       payment: {
         method: 'iban',
-        receiptImage: req.file ? req.file.path : null,
+        receiptImage: req.file
+          ? ((req.file.path && /^https?:\/\//i.test(req.file.path))
+            ? req.file.path
+            : `/uploads/receipts/${req.file.filename}`)
+          : null,
         status: 'pending_payment'
       },
       status: 'pending_payment',

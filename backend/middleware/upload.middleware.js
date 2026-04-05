@@ -1,20 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
-
-const hasCloudinaryConfig = Boolean(
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-);
+const { cloudinary, hasCloudinaryConfig } = require('../config/cloudinary');
 
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'products');
 fs.mkdirSync(uploadsDir, { recursive: true });
 
 const storage = hasCloudinaryConfig
-  ? new CloudinaryStorage({
+  ? new (require('multer-storage-cloudinary').CloudinaryStorage)({
       cloudinary,
       params: {
         folder: 'melora/products',
