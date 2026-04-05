@@ -10,20 +10,31 @@ const extractPublicId = (url) => {
   return fileWithExtension.split('.')[0];
 };
 
-const getUploadedFileUrl = (file) => {
+const getRequestBaseUrl = (req) => {
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const protocol = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol || 'https')
+    .toString()
+    .split(',')[0]
+    .trim();
+  return `${protocol}://${req.get('host')}`;
+};
+
+const getUploadedFileUrl = (file, req) => {
   if (!file) return '';
   if (file.path && /^https?:\/\//i.test(file.path)) {
     return file.path;
   }
+  const baseUrl = req ? getRequestBaseUrl(req) : '';
   if (file.filename) {
-    return `/uploads/products/${file.filename}`;
+    return baseUrl ? `${baseUrl}/uploads/products/${file.filename}` : `/uploads/products/${file.filename}`;
   }
   if (file.path) {
     const normalized = file.path.replace(/\\/g, '/');
     const marker = '/uploads/';
     const markerIndex = normalized.lastIndexOf(marker);
     if (markerIndex >= 0) {
-      return normalized.slice(markerIndex);
+      const relativePath = normalized.slice(markerIndex);
+      return baseUrl ? `${baseUrl}${relativePath}` : relativePath;
     }
   }
   return '';
@@ -212,7 +223,7 @@ exports.createProduct = async (req, res) => {
     let uploadedImages = [];
     if (req.files && req.files.length > 0) {
       uploadedImages = req.files.map((file, index) => ({
-        url: getUploadedFileUrl(file),
+        url: getUploadedFileUrl(file, req),
         altText: productData.name?.en || 'Product Image',
         isMain: index === 0 && existingImages.length === 0, // First uploaded is main if no existing
         sortOrder: existingImages.length + index
@@ -271,7 +282,7 @@ exports.updateProduct = async (req, res) => {
 
     if (req.files && req.files.length > 0) {
       const addedImages = req.files.map((file, index) => ({
-        url: getUploadedFileUrl(file),
+        url: getUploadedFileUrl(file, req),
         altText: updateData.name?.en || 'Product Image',
         isMain: existingImages.length === 0 && index === 0,
         sortOrder: existingImages.length + index

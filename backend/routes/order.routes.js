@@ -62,12 +62,22 @@ const upload = multer({
   }
 });
 
+const getRequestBaseUrl = (req) => {
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const protocol = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol || 'https')
+    .toString()
+    .split(',')[0]
+    .trim();
+  return `${protocol}://${req.get('host')}`;
+};
+
 router.route('/upload')
   .post(protect, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
+    const baseUrl = getRequestBaseUrl(req);
     const url = req.file.path && /^https?:\/\//i.test(req.file.path)
       ? req.file.path
-      : `/uploads/receipts/${req.file.filename}`;
+      : `${baseUrl}/uploads/receipts/${req.file.filename}`;
     res.status(200).json({ success: true, url });
   });
 
@@ -77,6 +87,7 @@ const Order = require('../models/Order');
 router.post('/iban-submit', upload.single('receipt'), async (req, res) => {
   try {
     let orderData = JSON.parse(req.body.orderData);
+    const baseUrl = getRequestBaseUrl(req);
     
     const newOrder = new Order({
       user: null,
@@ -92,7 +103,7 @@ router.post('/iban-submit', upload.single('receipt'), async (req, res) => {
         receiptImage: req.file
           ? ((req.file.path && /^https?:\/\//i.test(req.file.path))
             ? req.file.path
-            : `/uploads/receipts/${req.file.filename}`)
+            : `${baseUrl}/uploads/receipts/${req.file.filename}`)
           : null,
         status: 'pending_payment'
       },
