@@ -123,16 +123,18 @@ exports.forgotPassword = async (req, res) => {
       await user.save({ validateBeforeSave: false });
 
       const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
-      const emailSent = await sendEmail({
-        to: user.email,
-        subject: 'Password Reset Request',
-        type: 'passwordReset',
-        data: { resetUrl }
-      });
+      setImmediate(async () => {
+        const emailSent = await sendEmail({
+          to: user.email,
+          subject: 'Password Reset Request',
+          type: 'passwordReset',
+          data: { resetUrl }
+        });
 
-      if (!emailSent) {
-        console.warn(`Password reset email could not be sent for ${user.email}.`);
-      }
+        if (!emailSent) {
+          console.warn(`Password reset email could not be sent for ${user.email}.`);
+        }
+      });
     }
 
     res.status(200).json({ success: true, message: 'Password reset link sent to email if account exists.' });

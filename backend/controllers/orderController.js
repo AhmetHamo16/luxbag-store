@@ -14,6 +14,39 @@ const normalizeItemName = (name) => {
   return String(name);
 };
 
+const getRequestBaseUrl = (req) => {
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const protocol = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol || 'https')
+    .toString()
+    .split(',')[0]
+    .trim();
+  return `${protocol}://${req.get('host')}`;
+};
+
+const getUploadedReceiptUrl = (file, req) => {
+  if (!file) return null;
+  if (file.path && /^https?:\/\//i.test(file.path)) {
+    return file.path;
+  }
+
+  const baseUrl = getRequestBaseUrl(req);
+
+  if (file.filename) {
+    return `${baseUrl}/uploads/receipts/${file.filename}`;
+  }
+
+  if (file.path) {
+    const normalized = file.path.replace(/\\/g, '/');
+    const marker = '/uploads/';
+    const markerIndex = normalized.lastIndexOf(marker);
+    if (markerIndex >= 0) {
+      return `${baseUrl}${normalized.slice(markerIndex)}`;
+    }
+  }
+
+  return null;
+};
+
 const calculateCouponDiscount = (coupon, subtotal, shippingCost = 0) => {
   if (!coupon) return 0;
 
@@ -162,7 +195,7 @@ exports.createOrder = async (req, res) => {
       orderData = req.body;
     }
 
-    const receiptImage = req.file ? req.file.path : null;
+    const receiptImage = getUploadedReceiptUrl(req.file, req);
 
     if (!receiptImage && orderData?.payment?.method === 'iban') {
       return res.status(400).json({ message: 'Receipt image is required' });
@@ -275,7 +308,11 @@ exports.createOrder = async (req, res) => {
       await validatedCoupon.save();
     }
 
-    await notifyAdminForBankTransfer(saved);
+    setImmediate(() => {
+      notifyAdminForBankTransfer(saved).catch((error) => {
+        console.error('Admin notification failed:', error.message);
+      });
+    });
     
     // Stock Deductions (Simplified for debug phase)
     try {
