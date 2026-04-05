@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
+const crypto = require('crypto');
 
 // Generate tokens
 const generateTokens = (userId) => {
@@ -51,6 +52,9 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    if (user && !user.password) {
+      return res.status(400).json({ success: false, message: 'This account does not have a password yet. Please use forgot password to set one.' });
+    }
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
@@ -110,24 +114,64 @@ exports.refreshToken = async (req, res) => {
 
 // Forgot Password
 exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email });
-  if (user) {
-    // Mock token for now
-    await sendEmail({
-      to: user.email,
-      subject: 'Password Reset Request',
-      type: 'passwordReset',
-      data: { resetUrl: `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/MOCK_TOKEN` }
-    });
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const resetToken = user.createPasswordResetToken();
+      await user.save({ validateBeforeSave: false });
+
+      const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: 'Password Reset Request',
+        type: 'passwordReset',
+        data: { resetUrl }
+      });
+
+      if (!emailSent) {
+        console.warn(`Password reset email could not be sent for ${user.email}.`);
+      }
+    }
+
+    res.status(200).json({ success: true, message: 'Password reset link sent to email if account exists.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
-  res.status(200).json({ success: true, message: 'Password reset link sent to email if account exists.' });
 };
 
 // Reset Password
 exports.resetPassword = async (req, res) => {
-  // Logic for verifying token and updating password goes here
-  res.status(200).json({ success: true, message: 'Password reset successful (Mock)' });
+  try {
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(req.params.token)
+      .digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Reset link is invalid or has expired.' });
+    }
+
+    const { password } = req.body;
+    if (!password || String(password).trim().length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long.' });
+    }
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successful.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 // Verify Email

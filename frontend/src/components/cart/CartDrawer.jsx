@@ -12,6 +12,7 @@ const CartDrawer = () => {
   const formatPrice = useCurrencyStore((state) => state.formatPrice);
   const navigate = useNavigate();
   const location = useLocation();
+  const previousPathRef = React.useRef(location.pathname);
 
   const copy = {
     en: {
@@ -68,7 +69,10 @@ const CartDrawer = () => {
   };
 
   React.useEffect(() => {
-    if (isDrawerOpen) {
+    const pathChanged = previousPathRef.current !== location.pathname;
+    previousPathRef.current = location.pathname;
+
+    if (isDrawerOpen && pathChanged) {
       closeDrawer();
     }
   }, [location.pathname, isDrawerOpen, closeDrawer]);

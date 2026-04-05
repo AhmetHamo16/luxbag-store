@@ -6,6 +6,7 @@ import { settingsService } from '../../services/settingsService';
 import useCurrencyStore from '../../store/useCurrencyStore';
 import useLangStore from '../../store/useLangStore';
 import useAuthStore from '../../store/authStore';
+import { resolveAssetUrl } from '../../utils/assets';
 
 const uiMap = {
   en: {
@@ -361,17 +362,7 @@ const uiMap = {
   }
 };
 
-const resolveImageUrl = (value) => {
-  if (!value) return '/placeholder.jpg';
-  if (typeof value === 'object') return resolveImageUrl(value.url || value.secure_url || value.path);
-  if (typeof value === 'string' && value.startsWith('http')) return value;
-  if (typeof value === 'string' && value.includes('\\uploads\\')) {
-    const idx = value.lastIndexOf('\\uploads\\');
-    return `http://127.0.0.1:5000${value.slice(idx).replace(/\\/g, '/')}`;
-  }
-  if (typeof value === 'string' && value.startsWith('/uploads/')) return `http://127.0.0.1:5000${value}`;
-  return value;
-};
+const resolveImageUrl = (value) => resolveAssetUrl(value, 'https://via.placeholder.com/300?text=Melora');
 
 const CashierPOS = () => {
   const { language } = useLangStore();
