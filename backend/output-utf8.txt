@@ -1,0 +1,167 @@
+=== PRODUCTS IN DB ===
+- [CANTAA-001] Melora Classic Grace (N/A)
+- [CANTAA-002] Melora Mini Pearl (N/A)
+- [CANTAA-003] Melora Shoulder Aura (N/A)
+- [CANTAA-004] Melora Evening Glow (N/A)
+- [CANTAA-005] Melora Classic Charm (N/A)
+- [CANTAA-006] Melora Mini Bloom (N/A)
+- [CANTAA-007] Melora Shoulder Muse (N/A)
+- [CANTAA-008] Melora Evening Satin (N/A)
+- [CANTAA-009] Melora Classic Velvet (N/A)
+- [CANTAA-010] Melora Mini Crystal (N/A)
+- [CANTAA-011] Melora Shoulder Soft (N/A)
+- [CANTAA-012] Melora Evening Royal (N/A)
+- [CANTAA-013] Melora Classic Ivory (N/A)
+- [CANTAA-014] Melora Mini Chic (N/A)
+- [CANTAA-015] Melora Shoulder Nova (N/A)
+- [CANTAA-016] Melora Evening Moon (N/A)
+- [CANTAA-017] Melora Classic Line (N/A)
+- [CANTAA-018] Melora Mini Rose (N/A)
+- [CANTAA-019] Melora Shoulder Elite (N/A)
+- [CANTAA-020] Melora Evening Noir (N/A)
+- [CANTAA-021] Melora Classic Silk (N/A)
+- [CANTAA-022] Melora Mini Star (N/A)
+- [CANTAA-024] Melora Evening Gem (N/A)
+- [CANTAA-025] Melora Classic Shine (N/A)
+- [CANTAA-026] Melora Mini Touch (N/A)
+- [CANTAA-027] Melora Shoulder Luxe (N/A)
+- [CANTAA-028] Melora Evening Pearl (N/A)
+- [CANTAA-029] Melora Classic Aura (N/A)
+- [CANTAA-030] Melora Mini Belle (N/A)
+- [CANTAA-031] Melora Shoulder Wave (N/A)
+- [CANTAA-032] Melora Evening Grace (N/A)
+- [CANTAA-033] Melora Classic Gold (N/A)
+- [CANTAA-034] Melora Mini Aura (N/A)
+- [CANTAA-035] Melora Shoulder Chic (N/A)
+- [CANTAA-036] Melora Evening Crystal (N/A)
+- [CANTAA-037] Melora Classic Prime (N/A)
+- [CANTAA-038] Melora Mini Queen (N/A)
+- [CANTAA-039] Melora Shoulder Soft Gold (general)
+- [CANTAA-040] Melora Evening Signature (general)
+- [CANTAA-023] Melora Shoulder Pure (general)
+
+=== IMAGES IN results.json ===
+1. WhatsApp Image 2026-04-05 at 2.37.07 PM (1).jpeg [Folder: bags]
+2. WhatsApp Image 2026-04-05 at 2.37.07 PM (2).jpeg [Folder: bags]
+3. WhatsApp Image 2026-04-05 at 2.37.07 PM (3).jpeg [Folder: bags]
+4. WhatsApp Image 2026-04-05 at 2.37.07 PM (4).jpeg [Folder: bags]
+5. WhatsApp Image 2026-04-05 at 2.37.07 PM (5).jpeg [Folder: bags]
+6. WhatsApp Image 2026-04-05 at 2.37.07 PM.jpeg [Folder: bags]
+7. WhatsApp Image 2026-04-05 at 2.37.08 PM (1).jpeg [Folder: bags]
+8. WhatsApp Image 2026-04-05 at 2.37.08 PM (2).jpeg [Folder: bags]
+9. WhatsApp Image 2026-04-05 at 2.37.08 PM (3).jpeg [Folder: bags]
+10. WhatsApp Image 2026-04-05 at 2.37.08 PM.jpeg [Folder: bags]
+11. WhatsApp Image 2026-04-05 at 2.37.09 PM (1).jpeg [Folder: bags]
+12. WhatsApp Image 2026-04-05 at 2.37.09 PM (2).jpeg [Folder: bags]
+13. WhatsApp Image 2026-04-05 at 2.37.09 PM.jpeg [Folder: bags]
+14. WhatsApp Image 2026-04-05 at 2.37.10 PM (1).jpeg [Folder: bags]
+15. WhatsApp Image 2026-04-05 at 2.37.10 PM (2).jpeg [Folder: bags]
+16. WhatsApp Image 2026-04-05 at 2.37.10 PM.jpeg [Folder: bags]
+17. WhatsApp Image 2026-04-05 at 2.37.11 PM (1).jpeg [Folder: bags]
+18. WhatsApp Image 2026-04-05 at 2.37.11 PM.jpeg [Folder: bags]
+19. WhatsApp Image 2026-04-05 at 2.37.12 PM (1).jpeg [Folder: bags]
+20. WhatsApp Image 2026-04-05 at 2.37.12 PM (2).jpeg [Folder: bags]
+21. WhatsApp Image 2026-04-05 at 2.37.12 PM.jpeg [Folder: bags]
+22. WhatsApp Image 2026-04-05 at 2.37.13 PM (1).jpeg [Folder: bags]
+23. WhatsApp Image 2026-04-05 at 2.37.13 PM.jpeg [Folder: bags]
+24. WhatsApp Image 2026-04-05 at 2.37.14 PM (1).jpeg [Folder: bags]
+25. WhatsApp Image 2026-04-05 at 2.37.14 PM.jpeg [Folder: bags]
+26. WhatsApp Image 2026-04-05 at 2.37.15 PM (1).jpeg [Folder: bags]
+27. WhatsApp Image 2026-04-05 at 2.37.15 PM.jpeg [Folder: bags]
+28. WhatsApp Image 2026-04-05 at 2.37.16 PM.jpeg [Folder: bags]
+29. WhatsApp Image 2026-04-05 at 2.37.17 PM (1).jpeg [Folder: bags]
+30. WhatsApp Image 2026-04-05 at 2.37.17 PM.jpeg [Folder: bags]
+31. WhatsApp Image 2026-04-05 at 2.37.18 PM.jpeg [Folder: bags]
+32. WhatsApp Image 2026-04-05 at 2.37.19 PM (1).jpeg [Folder: bags]
+33. WhatsApp Image 2026-04-05 at 2.37.19 PM.jpeg [Folder: bags]
+34. WhatsApp Image 2026-04-05 at 2.37.20 PM.jpeg [Folder: bags]
+35. WhatsApp Image 2026-04-05 at 2.37.21 PM (1).jpeg [Folder: bags]
+36. WhatsApp Image 2026-04-05 at 2.37.21 PM.jpeg [Folder: bags]
+37. WhatsApp Image 2026-04-05 at 2.37.22 PM (1).jpeg [Folder: bags]
+38. WhatsApp Image 2026-04-05 at 2.37.22 PM.jpeg [Folder: bags]
+39. WhatsApp Image 2026-04-05 at 2.37.23 PM (1).jpeg [Folder: bags]
+40. WhatsApp Image 2026-04-05 at 2.37.23 PM (2).jpeg [Folder: bags]
+41. WhatsApp Image 2026-04-05 at 2.37.23 PM (3).jpeg [Folder: bags]
+42. WhatsApp Image 2026-04-05 at 2.37.23 PM (4).jpeg [Folder: bags]
+43. WhatsApp Image 2026-04-05 at 2.37.23 PM (5).jpeg [Folder: bags]
+44. WhatsApp Image 2026-04-05 at 2.37.23 PM (6).jpeg [Folder: bags]
+45. WhatsApp Image 2026-04-05 at 2.37.23 PM.jpeg [Folder: bags]
+46. WhatsApp Image 2026-04-05 at 2.37.24 PM (1).jpeg [Folder: bags]
+47. WhatsApp Image 2026-04-05 at 2.37.24 PM (2).jpeg [Folder: bags]
+48. WhatsApp Image 2026-04-05 at 2.37.24 PM (3).jpeg [Folder: bags]
+49. WhatsApp Image 2026-04-05 at 2.37.24 PM (4).jpeg [Folder: bags]
+50. WhatsApp Image 2026-04-05 at 2.37.24 PM (5).jpeg [Folder: bags]
+51. WhatsApp Image 2026-04-05 at 2.37.24 PM (6).jpeg [Folder: bags]
+52. WhatsApp Image 2026-04-05 at 2.37.24 PM (7).jpeg [Folder: bags]
+53. WhatsApp Image 2026-04-05 at 2.37.24 PM.jpeg [Folder: bags]
+54. WhatsApp Image 2026-04-05 at 2.37.25 PM (1).jpeg [Folder: bags]
+55. WhatsApp Image 2026-04-05 at 2.37.25 PM (2).jpeg [Folder: bags]
+56. WhatsApp Image 2026-04-05 at 2.37.25 PM (3).jpeg [Folder: bags]
+57. WhatsApp Image 2026-04-05 at 2.37.25 PM (4).jpeg [Folder: bags]
+58. WhatsApp Image 2026-04-05 at 2.37.25 PM (5).jpeg [Folder: bags]
+59. WhatsApp Image 2026-04-05 at 2.37.25 PM (6).jpeg [Folder: bags]
+60. WhatsApp Image 2026-04-05 at 2.37.25 PM.jpeg [Folder: bags]
+61. WhatsApp Image 2026-04-05 at 2.37.26 PM (1).jpeg [Folder: bags]
+62. WhatsApp Image 2026-04-05 at 2.37.26 PM (2).jpeg [Folder: bags]
+63. WhatsApp Image 2026-04-05 at 2.37.26 PM (3).jpeg [Folder: bags]
+64. WhatsApp Image 2026-04-05 at 2.37.26 PM (4).jpeg [Folder: bags]
+65. WhatsApp Image 2026-04-05 at 2.37.26 PM (5).jpeg [Folder: bags]
+66. WhatsApp Image 2026-04-05 at 2.37.26 PM.jpeg [Folder: bags]
+67. WhatsApp Image 2026-04-05 at 2.37.27 PM (1).jpeg [Folder: bags]
+68. WhatsApp Image 2026-04-05 at 2.37.27 PM (2).jpeg [Folder: bags]
+69. WhatsApp Image 2026-04-05 at 2.37.27 PM (3).jpeg [Folder: bags]
+70. WhatsApp Image 2026-04-05 at 2.37.27 PM (4).jpeg [Folder: bags]
+71. WhatsApp Image 2026-04-05 at 2.37.27 PM (5).jpeg [Folder: bags]
+72. WhatsApp Image 2026-04-05 at 2.37.27 PM (6).jpeg [Folder: bags]
+73. WhatsApp Image 2026-04-05 at 2.37.27 PM (7).jpeg [Folder: bags]
+74. WhatsApp Image 2026-04-05 at 2.37.27 PM.jpeg [Folder: bags]
+75. WhatsApp Image 2026-04-05 at 2.37.28 PM (1).jpeg [Folder: bags]
+76. WhatsApp Image 2026-04-05 at 2.37.28 PM (2).jpeg [Folder: bags]
+77. WhatsApp Image 2026-04-05 at 2.37.28 PM (3).jpeg [Folder: bags]
+78. WhatsApp Image 2026-04-05 at 2.37.28 PM (4).jpeg [Folder: bags]
+79. WhatsApp Image 2026-04-05 at 2.37.28 PM (5).jpeg [Folder: bags]
+80. WhatsApp Image 2026-04-05 at 2.37.28 PM (6).jpeg [Folder: bags]
+81. WhatsApp Image 2026-04-05 at 2.37.28 PM.jpeg [Folder: bags]
+82. WhatsApp Image 2026-04-05 at 2.37.29 PM.jpeg [Folder: bags]
+83. WhatsApp Image 2026-04-05 at 2.29.01 PM (1).jpeg [Folder: perfumes]
+84. WhatsApp Image 2026-04-05 at 2.29.01 PM.jpeg [Folder: perfumes]
+85. WhatsApp Image 2026-04-05 at 2.29.02 PM (1).jpeg [Folder: perfumes]
+86. WhatsApp Image 2026-04-05 at 2.29.02 PM (2).jpeg [Folder: perfumes]
+87. WhatsApp Image 2026-04-05 at 2.29.02 PM (3).jpeg [Folder: perfumes]
+88. WhatsApp Image 2026-04-05 at 2.29.02 PM (4).jpeg [Folder: perfumes]
+89. WhatsApp Image 2026-04-05 at 2.29.02 PM (5).jpeg [Folder: perfumes]
+90. WhatsApp Image 2026-04-05 at 2.29.02 PM (6).jpeg [Folder: perfumes]
+91. WhatsApp Image 2026-04-05 at 2.29.02 PM.jpeg [Folder: perfumes]
+92. WhatsApp Image 2026-04-05 at 2.28.31 PM (1).jpeg [Folder: watches]
+93. WhatsApp Image 2026-04-05 at 2.28.31 PM.jpeg [Folder: watches]
+94. WhatsApp Image 2026-04-05 at 2.28.32 PM (1).jpeg [Folder: watches]
+95. WhatsApp Image 2026-04-05 at 2.28.32 PM (2).jpeg [Folder: watches]
+96. WhatsApp Image 2026-04-05 at 2.28.32 PM.jpeg [Folder: watches]
+97. WhatsApp Image 2026-04-05 at 2.28.33 PM (1).jpeg [Folder: watches]
+98. WhatsApp Image 2026-04-05 at 2.28.33 PM.jpeg [Folder: watches]
+99. WhatsApp Image 2026-04-05 at 2.28.34 PM (1).jpeg [Folder: watches]
+100. WhatsApp Image 2026-04-05 at 2.28.34 PM (2).jpeg [Folder: watches]
+101. WhatsApp Image 2026-04-05 at 2.28.34 PM.jpeg [Folder: watches]
+102. WhatsApp Image 2026-04-05 at 2.28.35 PM (1).jpeg [Folder: watches]
+103. WhatsApp Image 2026-04-05 at 2.28.35 PM (2).jpeg [Folder: watches]
+104. WhatsApp Image 2026-04-05 at 2.28.35 PM (3).jpeg [Folder: watches]
+105. WhatsApp Image 2026-04-05 at 2.28.35 PM (4).jpeg [Folder: watches]
+106. WhatsApp Image 2026-04-05 at 2.28.35 PM (5).jpeg [Folder: watches]
+107. WhatsApp Image 2026-04-05 at 2.28.35 PM (6).jpeg [Folder: watches]
+108. WhatsApp Image 2026-04-05 at 2.28.35 PM.jpeg [Folder: watches]
+109. WhatsApp Image 2026-04-05 at 2.28.36 PM (1).jpeg [Folder: watches]
+110. WhatsApp Image 2026-04-05 at 2.28.36 PM (2).jpeg [Folder: watches]
+111. WhatsApp Image 2026-04-05 at 2.28.36 PM (3).jpeg [Folder: watches]
+112. WhatsApp Image 2026-04-05 at 2.28.36 PM (4).jpeg [Folder: watches]
+113. WhatsApp Image 2026-04-05 at 2.28.36 PM (5).jpeg [Folder: watches]
+114. WhatsApp Image 2026-04-05 at 2.28.36 PM (6).jpeg [Folder: watches]
+115. WhatsApp Image 2026-04-05 at 2.28.36 PM.jpeg [Folder: watches]
+116. WhatsApp Image 2026-04-05 at 2.28.37 PM (1).jpeg [Folder: watches]
+117. WhatsApp Image 2026-04-05 at 2.28.37 PM (2).jpeg [Folder: watches]
+118. WhatsApp Image 2026-04-05 at 2.28.37 PM.jpeg [Folder: watches]
+119. WhatsApp Image 2026-04-05 at 2.38.33 PM (1).jpeg [Folder: sunglasses]
+120. WhatsApp Image 2026-04-05 at 2.38.33 PM (2).jpeg [Folder: sunglasses]
+121. WhatsApp Image 2026-04-05 at 2.38.33 PM (3).jpeg [Folder: sunglasses]
+122. WhatsApp Image 2026-04-05 at 2.38.33 PM (4).jpeg [Folder: sunglasses]
+123. WhatsApp Image 2026-04-05 at 2.38.33 PM (5).jpeg [Folder: sunglasses]
+124. WhatsApp Image 2026-04-05 at 2.38.33 PM.jpeg [Folder: sunglasses]
