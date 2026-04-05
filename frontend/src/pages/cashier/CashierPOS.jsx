@@ -61,6 +61,7 @@ const uiMap = {
     pieces: 'Pieces',
     total: 'Total',
     completeSale: 'Complete Sale',
+    completeAndPrint: 'Complete & Print',
     processing: 'Processing Sale...',
     lowStock: 'Low Stock',
     topProducts: 'Top Products',
@@ -177,6 +178,7 @@ const uiMap = {
     pieces: 'عدد القطع',
     total: 'الإجمالي',
     completeSale: 'إتمام البيع',
+    completeAndPrint: 'إتمام البيع والطباعة',
     processing: 'جاري تجهيز عملية البيع...',
     lowStock: 'المخزون المنخفض',
     topProducts: 'المنتجات الأكثر مبيعًا',
@@ -293,6 +295,7 @@ const uiMap = {
     pieces: 'Parca',
     total: 'Toplam',
     completeSale: 'Satisi Tamamla',
+    completeAndPrint: 'Satisi Tamamla ve Yazdir',
     processing: 'Satis Hazirlaniyor...',
     lowStock: 'Dusuk Stok',
     topProducts: 'En Cok Satanlar',
@@ -645,7 +648,7 @@ const CashierPOS = () => {
     return { label: ui.paymentBadgeMixed, className: 'bg-amber-50 text-amber-700 border border-amber-100' };
   };
 
-  const completeSale = async () => {
+  const completeSale = async (shouldPrint = false) => {
     if (!currentShift) {
       toast.error(ui.shiftRequired);
       return;
@@ -680,6 +683,9 @@ const CashierPOS = () => {
       clearSale();
       await Promise.all([loadProducts(), loadPosSummary()]);
       await loadCurrentShift();
+      if (shouldPrint) {
+        printReceipt(createdOrder);
+      }
       toast.success(ui.saleCompleted);
     } catch (error) {
       setSaleSuccessNotice('');
@@ -1123,7 +1129,10 @@ const CashierPOS = () => {
               <div className="flex items-center justify-between"><span>{ui.discount}</span><span className="font-semibold text-[#25170f]">{formatPrice(totals.appliedDiscount)}</span></div>
             </div>
             <div className="mt-5 rounded-[1.5rem] bg-[#f7efe5] px-4 py-4"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-[#7a6653]">{ui.total}</span><span className="text-2xl font-semibold text-[#25170f]">{formatPrice(totals.total)}</span></div></div>
-            <button onClick={completeSale} disabled={saleButtonDisabled} className="mt-5 w-full rounded-[1.5rem] bg-[#2b1b12] px-5 py-4 text-sm font-semibold text-[#fff8ef] transition hover:bg-[#1d1730] disabled:cursor-not-allowed disabled:bg-[#8b7b70] disabled:text-[#f7efe6] disabled:opacity-100">{submitting ? ui.processing : ui.completeSale}</button>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <button onClick={() => completeSale(false)} disabled={saleButtonDisabled} className="w-full rounded-[1.5rem] bg-[#2b1b12] px-5 py-4 text-sm font-semibold text-[#fff8ef] transition hover:bg-[#1d1730] disabled:cursor-not-allowed disabled:bg-[#8b7b70] disabled:text-[#f7efe6] disabled:opacity-100">{submitting ? ui.processing : ui.completeSale}</button>
+              <button type="button" onClick={() => completeSale(true)} disabled={saleButtonDisabled} className="w-full rounded-[1.5rem] border border-[#d9c8af] bg-[#fbf5ee] px-5 py-4 text-sm font-semibold text-[#25170f] transition hover:bg-[#f3e7d9] disabled:cursor-not-allowed disabled:border-[#d8cbbd] disabled:bg-[#f3ede6] disabled:text-[#8b7b70] disabled:opacity-100">{submitting ? ui.processing : ui.completeAndPrint}</button>
+            </div>
             {saleDisabledReason ? (
               <p className="mt-3 text-center text-xs font-medium text-[#8b5e34]">{saleDisabledReason}</p>
             ) : null}

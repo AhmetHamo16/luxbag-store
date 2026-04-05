@@ -11,7 +11,7 @@ import { resolveProductImage } from '../../utils/assets';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
-  const { items: cartItems, openDrawer } = useCartStore();
+  const { items: cartItems, closeDrawer } = useCartStore();
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const { items: wishlistItems } = useWishlistStore();
   const wishlistCount = wishlistItems.length;
@@ -40,6 +40,12 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchResults, setSearchResults] = React.useState([]);
   const formatPrice = useCurrencyStore(state => state.formatPrice);
+  const handleCartClick = () => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+    closeDrawer();
+    navigate('/cart');
+  };
   const copy = {
     en: {
       about: 'About Us',
@@ -190,7 +196,7 @@ const Navbar = () => {
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                {wishlistCount > 0 && <span className="absolute -top-1 -right-2 bg-gold text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full leading-none">{wishlistCount}</span>}
             </Link>
-            <button type="button" onClick={openDrawer} className="relative text-brand hover:text-gold transition-colors block focus:outline-none shrink-0 cursor-pointer">
+            <button type="button" onClick={handleCartClick} className="relative text-brand hover:text-gold transition-colors block focus:outline-none shrink-0 cursor-pointer" aria-label={copy.cart}>
                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                {cartItemCount > 0 && <span className="absolute -top-1 -right-2 bg-gold text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full leading-none">{cartItemCount}</span>}
             </button>
@@ -343,7 +349,7 @@ const Navbar = () => {
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
           
           <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors font-medium flex items-center justify-between text-lg">{copy.wishlist} {wishlistCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{wishlistCount}</span>}</Link>
-          <button type="button" onClick={() => { setIsMobileMenuOpen(false); openDrawer(); }} className="text-brand hover:text-gold transition-colors font-medium text-left flex items-center justify-between w-full text-lg">{copy.cart} {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
+          <button type="button" onClick={handleCartClick} className="text-brand hover:text-gold transition-colors font-medium text-left flex items-center justify-between w-full text-lg">{copy.cart} {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
           
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
         </div>
