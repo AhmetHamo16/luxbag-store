@@ -4,6 +4,11 @@ const parseOrigins = (value) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
+const defaultProductionOrigins = [
+  'https://meloramoda.com',
+  'https://www.meloramoda.com',
+];
+
 const validateEnv = () => {
   const missing = [];
 
@@ -36,6 +41,7 @@ const validateEnv = () => {
       new Set([
         ...parseOrigins(process.env.CLIENT_URLS),
         ...parseOrigins(process.env.CLIENT_URL),
+        ...defaultProductionOrigins,
         'http://localhost:5173',
         'http://127.0.0.1:5173',
       ])

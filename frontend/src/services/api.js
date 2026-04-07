@@ -8,7 +8,7 @@ export const defaultApiBase =
     ? 'http://127.0.0.1:5000/api'
     : isLocalHost
       ? 'http://127.0.0.1:5000/api'
-      : `${window.location.origin}/api`;
+      : 'https://luxbag-store-production.up.railway.app/api';
 
 export const apiBaseUrl = import.meta.env.VITE_API_URL || defaultApiBase;
 export const backendOrigin = apiBaseUrl.replace(/\/api$/, '');
