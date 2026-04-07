@@ -21,6 +21,44 @@ const Shop = () => {
   
   const [dbCategories, setDbCategories] = useState([]);
 
+  useEffect(() => {
+    const seo = {
+      en: {
+        title: 'Shop | Melora Moda',
+        description: 'Browse Melora Moda bags and accessories by category, price, and latest arrivals.',
+      },
+      ar: {
+        title: 'المتجر | Melora Moda',
+        description: 'تصفحي متجر Melora Moda للحقائب والاكسسوارات النسائية حسب الفئة والسعر وأحدث المنتجات.',
+      },
+      tr: {
+        title: 'Magaza | Melora Moda',
+        description: 'Melora Moda canta ve aksesuar koleksiyonunu kategoriye ve fiyata gore inceleyin.',
+      },
+    }[language] || {
+      title: 'Shop | Melora Moda',
+      description: 'Browse Melora Moda bags and accessories by category, price, and latest arrivals.',
+    };
+
+    document.title = seo.title;
+
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', seo.description);
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://meloramoda.com/shop');
+  }, [language]);
+
   const getCategoryName = (category) => {
     if (!category) return 'Unknown';
     if (typeof category === 'string') return category;

@@ -70,6 +70,44 @@ const Home = () => {
 
   const copy = homeCopy[language] || homeCopy.en;
 
+  useEffect(() => {
+    const seo = {
+      en: {
+        title: 'Melora Moda | Women\'s Bags and Accessories',
+        description: 'Shop Melora Moda for elegant women\'s bags and curated accessories with a refined shopping experience.',
+      },
+      ar: {
+        title: 'Melora Moda | حقائب واكسسوارات نسائية',
+        description: 'تسوقي من Melora Moda تشكيلة حقائب واكسسوارات نسائية أنيقة ومنتجات مختارة بعناية.',
+      },
+      tr: {
+        title: 'Melora Moda | Kadin Canta ve Aksesuar',
+        description: 'Melora Moda ile secilmis kadin canta ve aksesuar koleksiyonunu kesfedin.',
+      },
+    }[language] || {
+      title: 'Melora Moda | Women\'s Bags and Accessories',
+      description: 'Shop Melora Moda for elegant women\'s bags and curated accessories with a refined shopping experience.',
+    };
+
+    document.title = seo.title;
+
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', seo.description);
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://meloramoda.com/');
+  }, [language]);
+
   const slides = [
     {
       lang: 'EN',
