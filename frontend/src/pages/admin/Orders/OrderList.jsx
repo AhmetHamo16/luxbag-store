@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { backendOrigin } from '../../../services/api';
 import { orderService } from '../../../services/orderService';
 import Loader from '../../../components/shared/Loader';
 import useTranslation from '../../../hooks/useTranslation';
@@ -10,7 +11,6 @@ import useCurrencyStore from '../../../store/useCurrencyStore';
 const OrderList = () => {
   const { t, language } = useTranslation('admin');
   const formatPrice = useCurrencyStore((state) => state.formatPrice);
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const ui = {
     en: {
       exportCsv: 'Export CSV',

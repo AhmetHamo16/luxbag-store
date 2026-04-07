@@ -12,6 +12,7 @@ import ProductCard from '../../components/product/ProductCard';
 import toast from 'react-hot-toast';
 import { contentService } from '../../services/contentService';
 import { getAvailableStock, getStockLevel, isAvailableForPurchase } from '../../utils/stock';
+import { backendOrigin } from '../../services/api';
 
 const ProductDetail = () => {
   const { id } = useParams(); // URL param acts as slug/id
@@ -34,7 +35,6 @@ const ProductDetail = () => {
   const { language } = useLangStore();
   const formatPrice = useCurrencyStore(state => state.formatPrice);
   const [recentItems, setRecentItems] = useState([]);
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const t = translations[language].product;
   const localizedName = product?.name?.[language] || product?.name?.en || product?.name?.ar || product?.name?.tr || 'Unknown';
   const resolveAssetUrl = useCallback((value) => {

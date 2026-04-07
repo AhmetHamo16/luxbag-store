@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { backendOrigin } from '../../services/api';
 import ProductCard from '../../components/product/ProductCard';
 import SkeletonCard from '../../components/shared/SkeletonCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
@@ -13,7 +14,6 @@ import { resolveProductImage } from '../../utils/assets';
 const Home = () => {
   const { language } = useLangStore();
   const { t } = useTranslation('home');
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);

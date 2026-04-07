@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { backendOrigin } from '../../../services/api';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
 import Loader from '../../../components/shared/Loader';
@@ -300,7 +301,6 @@ const EditProduct = () => {
     requiredCategory: 'Please choose a category.',
     duplicateSku: 'This SKU already exists. A unique SKU is required.',
   };
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [fetching, setFetching] = useState(true);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);

@@ -1,9 +1,4 @@
-const defaultApiBase =
-  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
-    ? 'http://127.0.0.1:5000/api'
-    : 'https://luxbag-store-production.up.railway.app/api';
-
-const backendOrigin = (import.meta.env.VITE_API_URL || defaultApiBase).replace(/\/api$/, '');
+import { backendOrigin } from '../services/api';
 
 export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/300') => {
   if (!value) return fallback;

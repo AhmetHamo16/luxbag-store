@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../../components/product/ProductCard';
 import Loader from '../../components/shared/Loader';
+import { backendOrigin } from '../../services/api';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
@@ -17,7 +18,6 @@ const Shop = () => {
   
   const { t, language } = useTranslation('shop');
   const location = useLocation();
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   
   const [dbCategories, setDbCategories] = useState([]);
 

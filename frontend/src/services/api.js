@@ -1,12 +1,20 @@
 import axios from 'axios';
 
-const defaultApiBase =
-  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
+const isLocalHost =
+  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+export const defaultApiBase =
+  typeof window === 'undefined'
     ? 'http://127.0.0.1:5000/api'
-    : 'https://luxbag-store-production.up.railway.app/api';
+    : isLocalHost
+      ? 'http://127.0.0.1:5000/api'
+      : `${window.location.origin}/api`;
+
+export const apiBaseUrl = import.meta.env.VITE_API_URL || defaultApiBase;
+export const backendOrigin = apiBaseUrl.replace(/\/api$/, '');
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || defaultApiBase,
+  baseURL: apiBaseUrl,
   withCredentials: true, // IMPORTANT for sending cookies (refreshToken)
   headers: {
     'Content-Type': 'application/json',
@@ -45,7 +53,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // Assume /api/auth/refresh-token uses the httpOnly cookie to get a new access token
-        const { data } = await axios.post(`${import.meta.env.VITE_API_URL || defaultApiBase}/auth/refresh-token`, {}, { withCredentials: true });
+        const { data } = await axios.post(`${apiBaseUrl}/auth/refresh-token`, {}, { withCredentials: true });
         
         localStorage.setItem('accessToken', data.accessToken);
         

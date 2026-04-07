@@ -1,4 +1,4 @@
-import api from './api';
+import api, { apiBaseUrl } from './api';
 
 export const orderService = {
   createOrder: async (orderData) => {
@@ -99,6 +99,6 @@ export const orderService = {
   
   exportOrdersCSV: () => {
     // Return the string URL for direct anchor-tag downloading
-    return `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api'}/orders/export`;
+    return `${apiBaseUrl}/orders/export`;
   }
 };

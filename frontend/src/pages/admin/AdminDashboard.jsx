@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { backendOrigin } from '../../services/api';
 import { orderService } from '../../services/orderService';
 import { settingsService } from '../../services/settingsService';
 import Loader from '../../components/shared/Loader';
@@ -197,7 +198,6 @@ const AdminDashboard = () => {
   const formatPrice = useCurrencyStore(state => state.formatPrice);
   const { language } = useLangStore();
   const ui = dashboardUi[language] || dashboardUi.en;
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [stats, setStats] = useState({
     totalRevenue: '0.00',
     totalOrders: 0,

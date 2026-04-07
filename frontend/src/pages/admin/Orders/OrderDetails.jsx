@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { backendOrigin } from '../../../services/api';
 import { orderService } from '../../../services/orderService';
 import Loader from '../../../components/shared/Loader';
 import useTranslation from '../../../hooks/useTranslation';
@@ -93,7 +94,6 @@ const OrderDetails = () => {
     },
   }[language];
   const { id } = useParams();
-  const backendOrigin = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
