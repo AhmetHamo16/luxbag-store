@@ -57,6 +57,45 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
       tr: 'Gozlukler',
     },
   ];
+  const collectionCards = [
+    {
+      key: 'bags',
+      href: '/bags',
+      image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80',
+      en: { title: 'Bags', subtitle: 'Signature silhouettes for everyday elegance' },
+      ar: { title: 'الحقائب', subtitle: 'تصاميم أنيقة مختارة للإطلالات اليومية الراقية' },
+      tr: { title: 'Cantalar', subtitle: 'Gunluk siklik icin secilen zarif tasarimlar' },
+    },
+    {
+      key: 'watches',
+      href: '/watches',
+      image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80',
+      en: { title: 'Watches', subtitle: 'Refined timepieces with a polished finish' },
+      ar: { title: 'الساعات', subtitle: 'لمسات فاخرة بتفاصيل هادئة وأنيقة' },
+      tr: { title: 'Saatler', subtitle: 'Zarif ve seckin detaylara sahip modeller' },
+    },
+    {
+      key: 'perfumes',
+      href: '/perfumes',
+      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=900&q=80',
+      en: { title: 'Perfumes', subtitle: 'Soft notes curated for memorable presence' },
+      ar: { title: 'العطور', subtitle: 'روائح منتقاة لحضور أنثوي يترك أثرًا' },
+      tr: { title: 'Parfumler', subtitle: 'Kalici ve ozenle secilen yumusak notalar' },
+    },
+    {
+      key: 'glasses',
+      href: '/glasses',
+      image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=900&q=80',
+      en: { title: 'Glasses', subtitle: 'Modern frames with a soft statement' },
+      ar: { title: 'النظارات', subtitle: 'إطارات عصرية بلمسة أنيقة وواضحة' },
+      tr: { title: 'Gozlukler', subtitle: 'Modern cizgilerle sade ve sik durus' },
+    },
+  ];
+  const trustBadges = {
+    en: ['Curated pieces', 'Fast support', 'Elegant daily edits'],
+    ar: ['قطع مختارة بعناية', 'دعم سريع', 'أناقة يومية راقية'],
+    tr: ['Ozenle secilen urunler', 'Hizli destek', 'Gunluk zarif secimler'],
+  };
 
   useEffect(() => {
     const defaultSeo = {
@@ -221,6 +260,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     ...defaultLuxuryCopy,
     ...(heroCopy?.[language] || heroCopy?.en || {}),
   };
+  const trustCopy = trustBadges[language] || trustBadges.en;
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
@@ -305,6 +345,39 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
 
         {/* Product Grid Area */}
         <main className="w-full flex-1">
+          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {collectionCards.map((card) => {
+              const copy = card[language] || card.en;
+              const isActive = location.pathname === card.href;
+
+              return (
+                <Link
+                  key={card.key}
+                  to={card.href}
+                  className={`group relative overflow-hidden rounded-[28px] border transition-all duration-500 ${
+                    isActive
+                      ? 'border-[#2c1d12] shadow-[0_22px_46px_rgba(44,29,18,0.14)]'
+                      : 'border-[#eadcc8] shadow-[0_16px_38px_rgba(71,45,20,0.08)] hover:-translate-y-1 hover:shadow-[0_24px_52px_rgba(71,45,20,0.13)]'
+                  }`}
+                >
+                  <div className="relative h-52 overflow-hidden">
+                    <img
+                      src={card.image}
+                      alt={copy.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(25,16,10,0.05),rgba(25,16,10,0.68))]"></div>
+                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                      <div className="text-[11px] uppercase tracking-[0.28em] text-white/75">Melora Moda</div>
+                      <h3 className="mt-2 font-serif text-2xl">{copy.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-white/82">{copy.subtitle}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
           <div className="mb-6 overflow-x-auto rounded-[30px] border border-[#eadcc8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,241,231,0.92))] p-3 shadow-[0_18px_38px_rgba(71,45,20,0.07)] backdrop-blur-sm">
             <div className="flex min-w-max items-center gap-2">
               {collectionBar.map((section) => {
@@ -326,6 +399,17 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 );
               })}
             </div>
+          </div>
+
+          <div className="mb-6 flex flex-wrap gap-3">
+            {trustCopy.map((item) => (
+              <div
+                key={item}
+                className="rounded-full border border-[#e4d4c0] bg-white/82 px-4 py-2 text-[11px] font-semibold tracking-[0.18em] text-[#7a5b3a] shadow-[0_8px_18px_rgba(71,45,20,0.05)] backdrop-blur-sm"
+              >
+                {item}
+              </div>
+            ))}
           </div>
           
           {/* Top Bar */}
