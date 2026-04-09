@@ -174,12 +174,6 @@ const Navbar = () => {
             <Link to="/shop" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
               {t.shop}
             </Link>
-            <Link to="/bags" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
-              {language === 'ar' ? 'الحقائب' : language === 'tr' ? 'Cantalar' : 'Bags'}
-            </Link>
-            <Link to="/watches" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
-              {language === 'ar' ? 'الساعات' : language === 'tr' ? 'Saatler' : 'Watches'}
-            </Link>
             <Link to="/categories" className="text-brand hover:text-gold transition-colors duration-300 font-medium tracking-wide">
               {t.categories || 'Categories'}
             </Link>

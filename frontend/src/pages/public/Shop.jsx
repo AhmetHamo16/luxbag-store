@@ -5,7 +5,7 @@ import { backendOrigin } from '../../services/api';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath = '/shop' }) => {
   const [products, setProducts] = useState([]);
@@ -20,6 +20,43 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   const location = useLocation();
   
   const [dbCategories, setDbCategories] = useState([]);
+  const collectionBar = [
+    {
+      key: 'shop',
+      href: '/shop',
+      en: 'All Products',
+      ar: 'كل المنتجات',
+      tr: 'Tum Urunler',
+    },
+    {
+      key: 'bags',
+      href: '/bags',
+      en: 'Bags Section',
+      ar: 'قسم الحقائب',
+      tr: 'Canta Bolumu',
+    },
+    {
+      key: 'watches',
+      href: '/watches',
+      en: 'Watches Section',
+      ar: 'قسم الساعات',
+      tr: 'Saat Bolumu',
+    },
+    {
+      key: 'perfumes',
+      href: '/perfumes',
+      en: 'Perfumes Section',
+      ar: 'قسم العطور',
+      tr: 'Parfum Bolumu',
+    },
+    {
+      key: 'glasses',
+      href: '/glasses',
+      en: 'Glasses Section',
+      ar: 'قسم النظارات',
+      tr: 'Gozluk Bolumu',
+    },
+  ];
 
   useEffect(() => {
     const defaultSeo = {
@@ -268,6 +305,28 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
 
         {/* Product Grid Area */}
         <main className="w-full flex-1">
+          <div className="mb-6 overflow-x-auto rounded-[26px] border border-[#eadcc8] bg-white/88 p-3 shadow-[0_12px_32px_rgba(71,45,20,0.06)] backdrop-blur-sm">
+            <div className="flex min-w-max items-center gap-3">
+              {collectionBar.map((section) => {
+                const isActive = location.pathname === section.href;
+                const label = section[language] || section.en;
+
+                return (
+                  <Link
+                    key={section.key}
+                    to={section.href}
+                    className={`rounded-2xl px-5 py-3 text-sm font-semibold transition-all ${
+                      isActive
+                        ? 'bg-[#2c1d12] text-[#f8efe2] shadow-sm'
+                        : 'bg-[#fffaf5] text-[#6d5a48] hover:bg-[#f4e7d7] hover:text-[#2c1d12]'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
           
           {/* Top Bar */}
           <div className="mb-8 flex flex-col gap-4 rounded-[28px] border border-[#eadcc8] bg-white/88 px-5 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
