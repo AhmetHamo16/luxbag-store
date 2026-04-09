@@ -7,7 +7,7 @@ import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
 import { useLocation } from 'react-router-dom';
 
-const Shop = () => {
+const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath = '/shop' }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('');
@@ -22,7 +22,7 @@ const Shop = () => {
   const [dbCategories, setDbCategories] = useState([]);
 
   useEffect(() => {
-    const seo = {
+    const defaultSeo = {
       en: {
         title: 'Shop | Melora Moda',
         description: 'Browse Melora Moda bags and accessories by category, price, and latest arrivals.',
@@ -40,7 +40,9 @@ const Shop = () => {
       description: 'Browse Melora Moda bags and accessories by category, price, and latest arrivals.',
     };
 
-    document.title = seo.title;
+    const seoPayload = seo?.[language] || seo?.en || defaultSeo;
+
+    document.title = seoPayload.title;
 
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
@@ -48,7 +50,7 @@ const Shop = () => {
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', seo.description);
+    metaDesc.setAttribute('content', seoPayload.description);
 
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
@@ -56,8 +58,8 @@ const Shop = () => {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://meloramoda.com/shop');
-  }, [language]);
+    canonical.setAttribute('href', `https://meloramoda.com${canonicalPath}`);
+  }, [language, seo, canonicalPath]);
 
   const getCategoryName = (category) => {
     if (!category) return 'Unknown';
@@ -74,7 +76,14 @@ const Shop = () => {
       ]);
       let fetched = Array.isArray(prodRes.data) ? prodRes.data : (prodRes.data?.data || []);
       
-      const categoryRows = Array.isArray(catRes.data) ? catRes.data : (catRes.data?.data || []);
+      let categoryRows = Array.isArray(catRes.data) ? catRes.data : (catRes.data?.data || []);
+
+      if (Array.isArray(categorySlugs) && categorySlugs.length > 0) {
+        categoryRows = categoryRows.filter((category) => categorySlugs.includes(category.slug));
+        const allowedIds = new Set(categoryRows.map((category) => String(category._id)));
+        fetched = fetched.filter((product) => allowedIds.has(String(product.category?._id || product.category)));
+      }
+
       const cats = [{ name: t.allCategories || 'All', value: '' }, ...categoryRows.map(c => ({
         name: getCategoryName(c),
         value: c._id
@@ -107,7 +116,7 @@ const Shop = () => {
   useEffect(() => {
     fetchProductsAndCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, sortOption, filterTrigger, language]);
+  }, [activeCategory, sortOption, filterTrigger, language, categorySlugs]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -141,7 +150,7 @@ const Shop = () => {
     alt: product.name?.[language] || product.name?.en || 'Melora bag'
   }));
 
-  const luxuryCopy = {
+  const defaultLuxuryCopy = {
     en: {
       intro: 'A refined edit of signature silhouettes, sculpted textures, and elevated essentials.',
       curation: 'Private Curation',
@@ -171,6 +180,11 @@ const Shop = () => {
     countLabel: 'Visible pieces',
   };
 
+  const luxuryCopy = {
+    ...defaultLuxuryCopy,
+    ...(heroCopy?.[language] || heroCopy?.en || {}),
+  };
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
       <div className="mx-auto max-w-[1500px] px-4 py-10 sm:px-6 lg:px-10">
@@ -181,7 +195,7 @@ const Shop = () => {
             <span className="mb-5 inline-flex rounded-full border border-[#d9c0a2] bg-white/70 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8b5e34]">
               {luxuryCopy.curation}
             </span>
-            <h1 className="max-w-3xl font-serif text-4xl leading-tight text-[#2c1d12] sm:text-5xl lg:text-6xl">{t.title}</h1>
+            <h1 className="max-w-3xl font-serif text-4xl leading-tight text-[#2c1d12] sm:text-5xl lg:text-6xl">{luxuryCopy.title || t.title}</h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-[#6a5848] sm:text-base">
               {luxuryCopy.intro}
             </p>

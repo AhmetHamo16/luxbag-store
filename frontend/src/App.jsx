@@ -20,6 +20,7 @@ import api from './services/api';
 
 const Home = lazy(() => import('./pages/public/Home'));
 const Shop = lazy(() => import('./pages/public/Shop'));
+const CollectionPage = lazy(() => import('./pages/public/CollectionPage'));
 const ProductDetail = lazy(() => import('./pages/public/ProductDetail'));
 const AboutUs = lazy(() => import('./pages/public/AboutUs'));
 const Contact = lazy(() => import('./pages/public/Contact'));
@@ -104,6 +105,10 @@ function App() {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/categories" element={<Shop />} />
+                    <Route path="/bags" element={<CollectionPage collectionKey="bags" />} />
+                    <Route path="/watches" element={<CollectionPage collectionKey="watches" />} />
+                    <Route path="/perfumes" element={<CollectionPage collectionKey="perfumes" />} />
+                    <Route path="/glasses" element={<CollectionPage collectionKey="glasses" />} />
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />

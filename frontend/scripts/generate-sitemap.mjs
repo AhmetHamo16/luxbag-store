@@ -14,6 +14,10 @@ const apiUrl = (process.env.VITE_API_URL || 'https://luxbag-store-production.up.
 const staticPages = [
   { loc: `${siteUrl}/`, changefreq: 'daily', priority: '1.0' },
   { loc: `${siteUrl}/shop`, changefreq: 'daily', priority: '0.9' },
+  { loc: `${siteUrl}/bags`, changefreq: 'daily', priority: '0.85' },
+  { loc: `${siteUrl}/watches`, changefreq: 'daily', priority: '0.8' },
+  { loc: `${siteUrl}/perfumes`, changefreq: 'daily', priority: '0.8' },
+  { loc: `${siteUrl}/glasses`, changefreq: 'daily', priority: '0.8' },
   { loc: `${siteUrl}/about`, changefreq: 'monthly', priority: '0.6' },
   { loc: `${siteUrl}/contact`, changefreq: 'monthly', priority: '0.6' },
 ];
