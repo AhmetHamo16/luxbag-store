@@ -3,44 +3,8 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import useLangStore from '../../store/useLangStore';
 
-const Dashboard = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user, logout } = useAuthStore();
-  const { language } = useLangStore();
-
-  const copy = {
-    en: {
-      orders: 'Dashboard (Orders)',
-      profile: 'Profile Details',
-      wishlist: 'My Wishlist',
-      addresses: 'Addresses',
-      account: 'My Account',
-      welcome: 'Welcome back',
-      user: 'User',
-      signOut: 'Sign Out',
-    },
-    ar: {
-      orders: 'لوحة الطلبات',
-      profile: 'بيانات الحساب',
-      wishlist: 'المفضلة',
-      addresses: 'العناوين',
-      account: 'حسابي',
-      welcome: 'مرحبًا بعودتك',
-      user: 'المستخدم',
-      signOut: 'تسجيل الخروج',
-    },
-    tr: {
-      orders: 'Panel (Siparisler)',
-      profile: 'Profil Bilgileri',
-      wishlist: 'Favorilerim',
-      addresses: 'Adresler',
-      account: 'Hesabim',
-      welcome: 'Tekrar hos geldiniz',
-      user: 'Kullanici',
-      signOut: 'Cikis Yap',
-    },
-  }[language] || {
+const copyMap = {
+  en: {
     orders: 'Dashboard (Orders)',
     profile: 'Profile Details',
     wishlist: 'My Wishlist',
@@ -49,7 +13,35 @@ const Dashboard = () => {
     welcome: 'Welcome back',
     user: 'User',
     signOut: 'Sign Out',
-  };
+  },
+  ar: {
+    orders: 'لوحة الطلبات',
+    profile: 'بيانات الحساب',
+    wishlist: 'المفضلة',
+    addresses: 'العناوين',
+    account: 'حسابي',
+    welcome: 'مرحبًا بعودتك',
+    user: 'المستخدم',
+    signOut: 'تسجيل الخروج',
+  },
+  tr: {
+    orders: 'Siparis Paneli',
+    profile: 'Profil Bilgileri',
+    wishlist: 'Favorilerim',
+    addresses: 'Adresler',
+    account: 'Hesabim',
+    welcome: 'Tekrar hos geldiniz',
+    user: 'Kullanici',
+    signOut: 'Cikis Yap',
+  },
+};
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuthStore();
+  const { language } = useLangStore();
+  const copy = copyMap[language] || copyMap.en;
 
   const handleLogout = async () => {
     await logout();

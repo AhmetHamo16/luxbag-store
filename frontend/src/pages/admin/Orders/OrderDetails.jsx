@@ -119,11 +119,29 @@ const OrderDetails = () => {
 
   const handleStatusChange = async (newStatus) => {
     let trackingNumber = order.trackingNumber || null;
+    if (newStatus === 'shipped' && order.payment?.method === 'iban' && order.payment?.status !== 'paid') {
+      toast.error(language === 'ar' ? 'لا يمكن شحن طلب التحويل البنكي قبل تأكيد الدفع.' : language === 'tr' ? 'Banka havalesi siparisi odeme onayi olmadan kargolanamaz.' : 'This bank-transfer order must be marked paid before shipping.');
+      return;
+    }
     if (newStatus === 'shipped' && !trackingNumber) {
-      trackingNumber = window.prompt("Enter tracking number for this shipment (optional):");
+      trackingNumber = window.prompt(
+        language === 'ar'
+          ? 'أدخل رقم التتبع لهذا الشحن. يمكنك تركه فارغًا إذا أردت.'
+          : language === 'tr'
+            ? 'Bu kargo icin takip numarasini girin. Isterseniz bos birakabilirsiniz.'
+            : 'Enter tracking number for this shipment (optional):',
+        ''
+      );
+      if (trackingNumber === null) return;
     }
 
-    if (window.confirm(`Update this order's status to ${newStatus}?`)) {
+    const confirmMessage = language === 'ar'
+      ? `هل تريد تحديث حالة الطلب إلى ${newStatus}؟`
+      : language === 'tr'
+        ? `Siparis durumu ${newStatus} olarak guncellensin mi?`
+        : `Update this order's status to ${newStatus}?`;
+
+    if (window.confirm(confirmMessage)) {
       try {
         await orderService.updateOrderStatus(order._id, newStatus, trackingNumber);
         fetchOrder();
@@ -135,7 +153,14 @@ const OrderDetails = () => {
   };
 
   const updateTracking = async () => {
-     let trackingNumber = window.prompt("Update tracking number:", order.trackingNumber || "");
+     let trackingNumber = window.prompt(
+       language === 'ar'
+         ? 'تحديث رقم التتبع:'
+         : language === 'tr'
+           ? 'Takip numarasini guncelle:'
+           : 'Update tracking number:',
+       order.trackingNumber || ''
+     );
      if (trackingNumber !== null) {
         try {
            await orderService.updateOrderStatus(order._id, order.status, trackingNumber);
@@ -147,7 +172,13 @@ const OrderDetails = () => {
   };
 
   const handleManualPayment = async () => {
-    if (window.confirm(t?.orders?.verifyCodConfirm || 'Mark this Cash On Delivery (COD) order as officially Paid?')) {
+    const confirmMessage = language === 'ar'
+      ? 'هل تريد تأكيد هذا الطلب كمدفوع رسميًا؟'
+      : language === 'tr'
+        ? 'Bu siparisi resmi olarak odendi diye isaretlemek istiyor musunuz?'
+        : (t?.orders?.verifyCodConfirm || 'Mark this Cash On Delivery (COD) order as officially Paid?');
+
+    if (window.confirm(confirmMessage)) {
       try {
         await orderService.markAsPaid(order._id);
         fetchOrder();
@@ -159,7 +190,13 @@ const OrderDetails = () => {
   };
 
   const handleCancelOrder = async () => {
-    if (window.confirm('Are you certain you want to forcefully cancel this order? This action is heavily audited.')) {
+    const confirmMessage = language === 'ar'
+      ? 'هل أنت متأكدة من إلغاء هذا الطلب؟'
+      : language === 'tr'
+        ? 'Bu siparisi iptal etmek istediginizden emin misiniz?'
+        : 'Are you certain you want to forcefully cancel this order? This action is heavily audited.';
+
+    if (window.confirm(confirmMessage)) {
       try {
         await orderService.cancelOrder(order._id);
         fetchOrder();
@@ -184,7 +221,7 @@ const OrderDetails = () => {
 
     const printWindow = window.open('', '_blank', 'width=720,height=900');
     if (!printWindow) {
-      toast.error('Unable to open print window');
+      toast.error(language === 'ar' ? 'تعذر فتح نافذة الطباعة' : language === 'tr' ? 'Yazdirma penceresi acilamadi' : 'Unable to open print window');
       return;
     }
 

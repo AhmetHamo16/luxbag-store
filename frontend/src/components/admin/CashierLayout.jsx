@@ -5,7 +5,7 @@ import useLangStore from '../../store/useLangStore';
 import { orderService } from '../../services/orderService';
 import { settingsService } from '../../services/settingsService';
 import toast from 'react-hot-toast';
-import { enableNotificationAudio, isNotificationLooping, playNotificationTone, setNotificationTone, stopNotificationTone } from '../../utils/notifications';
+import { enableNotificationAudio, getNotificationTone, isNotificationLooping, playNotificationTone, setNotificationTone, stopNotificationTone } from '../../utils/notifications';
 
 const labels = {
   en: {
@@ -31,6 +31,13 @@ const labels = {
     soundStatus: 'Sound Status',
     soundOn: 'Playing',
     soundOff: 'Ready',
+    notificationTone: 'Notification Tone',
+    toneChanged: 'Notification tone updated',
+    customTone: 'Custom Tone',
+    messageTone: 'Message Style',
+    luxuryTone: 'Luxury Bell',
+    classicTone: 'Classic Chime',
+    softTone: 'Soft Gentle',
     cashierReminder: 'Cashier Reminder',
     cashierReminderText: 'Open the shift, scan items, then complete the sale from the summary panel.',
     alertsUpdated: 'Alerts refresh automatically every 15 seconds.'
@@ -58,6 +65,13 @@ const labels = {
     soundStatus: 'حالة الصوت',
     soundOn: 'يعمل الآن',
     soundOff: 'جاهز',
+    notificationTone: 'نغمة الإشعارات',
+    toneChanged: 'تم تغيير نغمة الإشعارات',
+    customTone: 'النغمة الخاصة',
+    messageTone: 'نغمة الرسالة',
+    luxuryTone: 'نغمة فاخرة',
+    classicTone: 'نغمة كلاسيكية',
+    softTone: 'نغمة هادئة',
     cashierReminder: 'تذكير للكاشير',
     cashierReminderText: 'افتحي الوردية أولًا، امسحي المنتجات، ثم أتمي البيع من صندوق الملخص.',
     alertsUpdated: 'يتم تحديث التنبيهات تلقائيًا كل 15 ثانية.'
@@ -85,6 +99,13 @@ const labels = {
     soundStatus: 'Ses Durumu',
     soundOn: 'Calisiyor',
     soundOff: 'Hazir',
+    notificationTone: 'Bildirim Sesi',
+    toneChanged: 'Bildirim sesi degistirildi',
+    customTone: 'Ozel Ses',
+    messageTone: 'Mesaj Tarzi',
+    luxuryTone: 'Luks Zil',
+    classicTone: 'Klasik Cingil',
+    softTone: 'Yumusak Ses',
     cashierReminder: 'Kasiyer Notu',
     cashierReminderText: 'Once vardiyayi ac, urunleri tara, sonra ozet kutusundan satisi tamamla.',
     alertsUpdated: 'Uyarilar her 15 saniyede otomatik yenilenir.'
@@ -100,8 +121,16 @@ const CashierLayout = () => {
   const [alerts, setAlerts] = useState([]);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [isAlertTonePlaying, setIsAlertTonePlaying] = useState(false);
+  const [selectedTone, setSelectedTone] = useState(getNotificationTone());
   const lastAlertIdRef = useRef(null);
   const alertsBootstrappedRef = useRef(false);
+  const toneOptions = [
+    { value: 'custom', label: ui.customTone },
+    { value: 'message', label: ui.messageTone },
+    { value: 'luxury', label: ui.luxuryTone },
+    { value: 'classic', label: ui.classicTone },
+    { value: 'soft', label: ui.softTone },
+  ];
 
   useEffect(() => {
     return enableNotificationAudio();
@@ -113,6 +142,7 @@ const CashierLayout = () => {
         const res = await settingsService.getSettings();
         const tone = res?.data?.notificationTone || 'custom';
         setNotificationTone(tone);
+        setSelectedTone(tone);
       } catch (error) {
         console.error('Failed to load notification tone for cashier', error);
       }
@@ -135,6 +165,15 @@ const CashierLayout = () => {
   const handleStopSound = () => {
     stopNotificationTone();
     setIsAlertTonePlaying(false);
+  };
+
+  const handleToneChange = (event) => {
+    const nextTone = event.target.value;
+    stopNotificationTone();
+    setNotificationTone(nextTone);
+    setSelectedTone(nextTone);
+    setIsAlertTonePlaying(false);
+    toast.success(ui.toneChanged);
   };
 
   const handleSilenceAlert = () => {
@@ -316,6 +355,18 @@ const CashierLayout = () => {
                   {isAlertTonePlaying ? ui.soundOn : ui.soundOff}
                 </p>
               </div>
+              <div className="rounded-2xl border border-[#4f436c] bg-white/5 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-[#d9c5a0]">{ui.notificationTone}</p>
+                <select
+                  value={selectedTone}
+                  onChange={handleToneChange}
+                  className="mt-3 w-full rounded-xl border border-[#5f537b] bg-[#251d3b] px-3 py-2 text-sm font-semibold text-[#fff8ef] outline-none"
+                >
+                  {toneOptions.map((tone) => (
+                    <option key={tone.value} value={tone.value}>{tone.label}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -348,6 +399,15 @@ const CashierLayout = () => {
               <button onClick={handleTestSound} className="rounded-xl bg-[#d1a85d] px-3 py-2 text-xs font-semibold text-[#1d1730]">
                 {ui.testSound}
               </button>
+              <select
+                value={selectedTone}
+                onChange={handleToneChange}
+                className="rounded-xl border border-[#d9c8af] bg-white px-3 py-2 text-xs font-semibold text-[#25170f]"
+              >
+                {toneOptions.map((tone) => (
+                  <option key={tone.value} value={tone.value}>{tone.label}</option>
+                ))}
+              </select>
               {isAlertTonePlaying && (
                 <button onClick={handleStopSound} className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">
                   {ui.stopSound}

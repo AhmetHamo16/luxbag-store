@@ -183,11 +183,28 @@ const OrderList = () => {
 
 
   const handleStatusChangeClick = (id, newStatus) => {
+    const currentOrder = orders.find((entry) => entry._id === id) || selectedOrder;
+    if (newStatus === 'shipped' && currentOrder?.payment?.method === 'iban' && currentOrder?.payment?.status !== 'paid') {
+      toast.error(language === 'ar' ? 'لا يمكن شحن طلب التحويل البنكي قبل تأكيد الدفع.' : language === 'tr' ? 'Banka havalesi siparisi odeme onayi olmadan kargolanamaz.' : 'This bank-transfer order must be marked paid before shipping.');
+      return;
+    }
+
+    const title = language === 'ar'
+      ? 'تحديث حالة الطلب'
+      : language === 'tr'
+        ? 'Siparis Durumunu Guncelle'
+        : 'Update Order Status';
+    const message = language === 'ar'
+      ? `هل تريد تغيير حالة الطلب إلى ${newStatus}؟`
+      : language === 'tr'
+        ? `Siparis durumu ${newStatus} olarak guncellensin mi?`
+        : `Change order status to ${newStatus}?`;
+
     setConfirmModal({
        isOpen: true,
        data: { id, newStatus, trackingNumber: null },
-       title: 'Update Order Status',
-       message: `Change order status to ${newStatus}?`
+       title,
+       message
     });
   };
 
@@ -198,12 +215,26 @@ const OrderList = () => {
     setConfirmModal({ ...confirmModal, isOpen: false });
 
     if (newStatus === 'shipped') {
-       trackingNumber = window.prompt(t?.orders?.trackingPrompt || "Enter tracking number for this shipment (optional):");
+       trackingNumber = window.prompt(
+         language === 'ar'
+           ? 'أدخل رقم التتبع لهذا الشحن. يمكنك تركه فارغًا إذا أردت.'
+           : language === 'tr'
+             ? 'Bu kargo icin takip numarasini girin. Isterseniz bos birakabilirsiniz.'
+             : (t?.orders?.trackingPrompt || 'Enter tracking number for this shipment (optional):'),
+         ''
+       );
+       if (trackingNumber === null) return;
     }
 
     try {
       await orderService.updateOrderStatus(id, newStatus, trackingNumber);
-      toast.success(`Order marked as ${newStatus}`);
+      toast.success(
+        language === 'ar'
+          ? `تم تحديث حالة الطلب إلى ${newStatus}`
+          : language === 'tr'
+            ? `Siparis durumu ${newStatus} olarak guncellendi`
+            : `Order marked as ${newStatus}`
+      );
       fetchOrders();
       if (selectedOrder && selectedOrder._id === id) {
         fetchOrderDetails(id);
@@ -232,8 +263,12 @@ const OrderList = () => {
     setConfirmModal({
        isOpen: true,
        data: 'bulk',
-       title: 'Confirm Bulk Update',
-       message: `Update ${selectedIds.length} orders to ${bulkStatus}?`
+       title: language === 'ar' ? 'تأكيد التحديث الجماعي' : language === 'tr' ? 'Toplu Guncellemeyi Onayla' : 'Confirm Bulk Update',
+       message: language === 'ar'
+         ? `هل تريد تحديث ${selectedIds.length} طلبات إلى ${bulkStatus}؟`
+         : language === 'tr'
+           ? `${selectedIds.length} siparis ${bulkStatus} durumuna guncellensin mi?`
+           : `Update ${selectedIds.length} orders to ${bulkStatus}?`
     });
   };
 
@@ -244,12 +279,24 @@ const OrderList = () => {
       for (const id of selectedIds) {
         await orderService.updateOrderStatus(id, bulkStatus, null);
       }
-      toast.success(`${selectedIds.length} orders updated to ${bulkStatus}`);
+      toast.success(
+        language === 'ar'
+          ? `تم تحديث ${selectedIds.length} طلبات إلى ${bulkStatus}`
+          : language === 'tr'
+            ? `${selectedIds.length} siparis ${bulkStatus} durumuna guncellendi`
+            : `${selectedIds.length} orders updated to ${bulkStatus}`
+      );
       setBulkStatus('');
       fetchOrders();
     } catch (err) {
       console.error("Bulk action failed", err);
-      toast.error('Bulk update failed partially or completely.');
+      toast.error(
+        language === 'ar'
+          ? 'فشل تحديث بعض الطلبات أو كلها.'
+          : language === 'tr'
+            ? 'Toplu guncelleme kismen veya tamamen basarisiz oldu.'
+            : 'Bulk update failed partially or completely.'
+      );
       fetchOrders();
     } finally {
       setLoading(false);
