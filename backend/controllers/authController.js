@@ -5,9 +5,20 @@ const crypto = require('crypto');
 
 // Generate tokens
 const generateTokens = (userId) => {
-  const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
-  const refreshToken = jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+  const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  const refreshToken = jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
   return { accessToken, refreshToken };
+};
+
+const getRefreshCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  };
 };
 
 // Register User
@@ -30,12 +41,7 @@ exports.register = async (req, res) => {
     
     const { accessToken, refreshToken } = generateTokens(user._id);
 
-    res.cookie('jwt', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('jwt', refreshToken, getRefreshCookieOptions());
 
     res.status(201).json({
       success: true,
@@ -61,12 +67,7 @@ exports.login = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user._id);
 
-    res.cookie('jwt', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('jwt', refreshToken, getRefreshCookieOptions());
 
     res.status(200).json({
       success: true,
@@ -82,6 +83,8 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   res.cookie('jwt', '', {
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     expires: new Date(0)
   });
   res.status(200).json({ success: true, message: 'Logged out successfully' });
@@ -99,12 +102,7 @@ exports.refreshToken = async (req, res) => {
 
     const newTokens = generateTokens(user._id);
     
-    res.cookie('jwt', newTokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('jwt', newTokens.refreshToken, getRefreshCookieOptions());
 
     res.status(200).json({ success: true, accessToken: newTokens.accessToken });
   } catch (error) {
