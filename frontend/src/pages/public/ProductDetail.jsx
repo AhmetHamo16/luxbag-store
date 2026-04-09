@@ -427,6 +427,12 @@ const ProductDetail = () => {
   const availableStock = getAvailableStock(product, selectedVariant);
   const stockLevel = getStockLevel(availableStock);
   const canPurchase = isAvailableForPurchase(product, selectedVariant);
+  const currentPrice = selectedVariant?.salePrice || selectedVariant?.price || product.salePrice || product.price;
+  const quickBenefits = {
+    en: ['Boutique selection', 'Fast support', 'Secure ordering'],
+    ar: ['اختيار بوتيكي', 'دعم سريع', 'طلب آمن'],
+    tr: ['Butik secim', 'Hizli destek', 'Guvenli siparis'],
+  }[language] || ['Boutique selection', 'Fast support', 'Secure ordering'];
 
 
   const handleAddToCart = () => {
@@ -612,13 +618,28 @@ const ProductDetail = () => {
             <span className="text-xs text-gray-500 font-medium">({product.reviewCount || 0} reviews)</span>
           </div>
 
-          <div className="text-2xl font-medium text-black mb-6">
-            {formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product.salePrice || product.price)}
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <div className="rounded-full border border-[#ead9c5] bg-[#fffaf3] px-5 py-3 text-2xl font-medium text-black shadow-[0_12px_28px_rgba(66,42,18,0.07)]">
+              {formatPrice(currentPrice)}
+            </div>
+            <div className={`rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] ${canPurchase ? 'border-[#cfe2d0] bg-[#f2faf3] text-[#2f6b38]' : 'border-[#e8c8bc] bg-[#fff4ef] text-[#a45139]'}`}>
+              {canPurchase ? (t.inStock?.replace('{n}', availableStock) || `${availableStock} in stock`) : stockMessages.backSoon}
+            </div>
           </div>
           
           <p className="text-gray-600 leading-relaxed mb-8 text-sm whitespace-pre-line">
             {description}
           </p>
+          <div className="mb-8 flex flex-wrap gap-3">
+            {quickBenefits.map((item) => (
+              <div
+                key={item}
+                className="rounded-full border border-[#e6d7c5] bg-white/88 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7d6040] shadow-[0_8px_18px_rgba(66,42,18,0.05)]"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="rounded-[24px] border border-[#eadcc8] bg-[#fffaf3] px-5 py-4 shadow-[0_10px_30px_rgba(73,43,16,0.06)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a6948]">{productFacts.piecesLabel}</p>
@@ -653,7 +674,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Stock Display */}
-          <div className="mb-6 flex flex-col gap-3 text-start">
+          <div className="mb-6 flex flex-col gap-3 rounded-[28px] border border-[#eadcc8] bg-[linear-gradient(180deg,#fffdf9_0%,#f8f0e5_100%)] p-5 text-start shadow-[0_16px_34px_rgba(66,42,18,0.06)]">
             <span className={`text-sm font-medium ${canPurchase ? 'text-green-600' : 'text-red-500'}`}>
               {canPurchase ? (t.inStock?.replace('{n}', availableStock) || `${availableStock} in stock`) : stockMessages.backSoon}
             </span>
@@ -702,16 +723,17 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-10 border-t border-b border-gray-200 py-8">
+          <div className="mb-10 rounded-[30px] border border-[#eadcc8] bg-white/92 p-5 shadow-[0_18px_40px_rgba(66,42,18,0.07)]">
+          <div className="flex flex-col sm:flex-row gap-4">
             {/* Quantity Selector */}
-            <div className="flex items-center border border-gray-300 w-fit">
-              <button onClick={decrement} className="px-4 py-3 hover:bg-gray-100 transition-colors">-</button>
-              <span className="px-4 py-3 min-w-12 text-center font-medium">{quantity}</span>
-              <button onClick={increment} className="px-4 py-3 hover:bg-gray-100 transition-colors">+</button>
+            <div className="flex items-center rounded-full border border-[#d9c8b4] bg-[#fffaf4] w-fit">
+              <button onClick={decrement} className="px-4 py-3 text-[#6d563e] hover:bg-[#f5eadc] transition-colors">-</button>
+              <span className="px-4 py-3 min-w-12 text-center font-medium text-[#2f2117]">{quantity}</span>
+              <button onClick={increment} className="px-4 py-3 text-[#6d563e] hover:bg-[#f5eadc] transition-colors">+</button>
             </div>
             
             {/* Add to Cart */}
-            <button disabled={!canPurchase} onClick={handleAddToCart} className={`flex-1 px-6 md:px-8 py-3 font-bold tracking-wide transition-colors duration-300 border whitespace-nowrap ${canPurchase ? 'bg-brand text-beige dark:bg-gold dark:text-black hover:bg-beige hover:text-brand dark:hover:bg-white dark:hover:text-black border-brand dark:border-gold' : 'bg-gray-200 text-gray-500 border-gray-200 cursor-not-allowed'}`}>
+            <button disabled={!canPurchase} onClick={handleAddToCart} className={`flex-1 rounded-full px-6 md:px-8 py-4 text-sm font-bold uppercase tracking-[0.18em] transition-colors duration-300 border whitespace-nowrap ${canPurchase ? 'bg-[#2f2117] text-[#f8efe2] hover:bg-[#8b5e34] border-[#2f2117]' : 'bg-gray-200 text-gray-500 border-gray-200 cursor-not-allowed'}`}>
               {canPurchase ? (t.addToCart || 'Add to Cart') : stockMessages.backSoon}
             </button>
             
@@ -719,11 +741,12 @@ const ProductDetail = () => {
               href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`} 
               target="_blank" 
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 md:px-6 py-3 font-medium tracking-wide hover:bg-[#128C7E] transition-colors duration-300 whitespace-nowrap"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] text-white px-4 md:px-6 py-4 text-sm font-medium uppercase tracking-[0.12em] hover:bg-[#128C7E] transition-colors duration-300 whitespace-nowrap"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.266 2.008.772 2.88l-1.01 3.692 3.774-.99a5.727 5.727 0 002.231.45h.001c3.18 0 5.767-2.586 5.767-5.766 0-3.181-2.588-5.766-5.767-5.766zm0 9.773c-.859 0-1.7-.231-2.435-.668l-.174-.103-1.808.474.484-1.763-.113-.18a4.8 4.8 0 01-.734-2.569c0-2.656 2.16-4.815 4.818-4.815 2.656 0 4.816 2.158 4.816 4.815-.001 2.657-2.16 4.815-4.816 4.815zm2.636-3.606c-.144-.072-.852-.42-984-.468-.132-.048-.228-.072-.324.072s-.372.468-.456.564-.168.108-.312.036-.607-.224-1.157-.714c-.428-.382-.716-.854-.8-1.022-.084-.168-.009-.259.063-.331.065-.065.144-.168.216-.252.072-.084.096-.144.144-.24a.455.455 0 00-.024-.432c-.048-.096-.324-.78-.444-1.068-.117-.281-.236-.243-.324-.248h-.276c-.096 0-.252.036-.384.18s-.504.492-.504 1.2.516 1.392.588 1.488c.072.096 1.016 1.55 2.46 2.174.344.148.613.237.822.303.345.11.659.094.907.057.279-.042.852-.348.972-.684.12-.336.12-.624.084-.684-.038-.059-.133-.083-.277-.155z"></path></svg>
               {ui.orderViaWhatsapp}
             </a>
+          </div>
           </div>
 
           {/* Trust Signals */}
@@ -884,6 +907,32 @@ const ProductDetail = () => {
           </div>
         </div>
       )}
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e6d8c6] bg-white/96 px-4 py-3 shadow-[0_-16px_40px_rgba(66,42,18,0.12)] backdrop-blur-md md:hidden">
+        <div className="mx-auto flex max-w-7xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-[#8a6948]">{name}</div>
+            <div className="mt-1 text-base font-semibold text-[#2f2117]">{formatPrice(currentPrice)}</div>
+          </div>
+          <button
+            disabled={!canPurchase}
+            onClick={handleAddToCart}
+            className={`rounded-full px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] ${
+              canPurchase ? 'bg-[#2f2117] text-[#f8efe2]' : 'bg-gray-200 text-gray-500'
+            }`}
+          >
+            {canPurchase ? (t.addToCart || 'Add to Cart') : 'Soon'}
+          </button>
+          <a
+            href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full bg-[#25D366] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-white"
+          >
+            WA
+          </a>
+        </div>
+      </div>
     </div>
   );
 };
