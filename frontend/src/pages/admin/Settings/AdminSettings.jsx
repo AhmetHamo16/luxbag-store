@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import Loader from '../../../components/shared/Loader';
+import useLangStore from '../../../store/useLangStore';
 import { settingsService } from '../../../services/settingsService';
 import { isNotificationLooping, playNotificationTone, setNotificationTone, stopNotificationTone } from '../../../utils/notifications';
-import useLangStore from '../../../store/useLangStore';
-import toast from 'react-hot-toast';
 
 const uiMap = {
   en: {
@@ -40,7 +40,7 @@ const uiMap = {
     save: 'Save All Settings',
     saving: 'Saving...',
     success: 'Settings updated successfully.',
-    failed: 'Failed to update settings.'
+    failed: 'Failed to update settings.',
   },
   ar: {
     title: 'الإعدادات العامة',
@@ -76,7 +76,7 @@ const uiMap = {
     save: 'حفظ جميع الإعدادات',
     saving: 'جارٍ الحفظ...',
     success: 'تم تحديث الإعدادات بنجاح.',
-    failed: 'تعذر تحديث الإعدادات.'
+    failed: 'تعذر تحديث الإعدادات.',
   },
   tr: {
     title: 'Genel Ayarlar',
@@ -112,8 +112,8 @@ const uiMap = {
     save: 'Tum Ayarlari Kaydet',
     saving: 'Kaydediliyor...',
     success: 'Ayarlar basariyla guncellendi.',
-    failed: 'Ayarlar guncellenemedi.'
-  }
+    failed: 'Ayarlar guncellenemedi.',
+  },
 };
 
 const AdminSettings = () => {
@@ -135,7 +135,7 @@ const AdminSettings = () => {
     accountHolder: '',
     maintenanceMode: false,
     cardPayment: true,
-    codPayment: true
+    codPayment: true,
   });
 
   useEffect(() => {
@@ -158,7 +158,7 @@ const AdminSettings = () => {
           accountHolder: data.accountHolder || '',
           maintenanceMode: data.maintenanceMode || false,
           cardPayment: data.paymentMethods?.card ?? true,
-          codPayment: data.paymentMethods?.cod ?? true
+          codPayment: data.paymentMethods?.cod ?? true,
         });
 
         setNotificationTone(nextTone);
@@ -214,8 +214,8 @@ const AdminSettings = () => {
         maintenanceMode: formData.maintenanceMode,
         paymentMethods: {
           card: formData.cardPayment,
-          cod: formData.codPayment
-        }
+          cod: formData.codPayment,
+        },
       });
       setNotificationTone(formData.notificationTone);
       toast.success(ui.success);
@@ -234,7 +234,7 @@ const AdminSettings = () => {
     { value: 'message', label: ui.messageTone },
     { value: 'luxury', label: ui.luxuryTone },
     { value: 'classic', label: ui.classicTone },
-    { value: 'soft', label: ui.softTone }
+    { value: 'soft', label: ui.softTone },
   ];
 
   return (

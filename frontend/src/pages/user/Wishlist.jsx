@@ -62,7 +62,7 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="min-h-[60vh] max-w-7xl mx-auto px-4 py-16 text-[var(--text-primary)] sm:px-6 lg:px-8">
+    <div className="mx-auto min-h-[60vh] max-w-7xl px-4 py-16 text-[var(--text-primary)] sm:px-6 lg:px-8">
       <h1 className="mb-12 text-center font-serif text-4xl text-[var(--text-primary)]">{copy.title}</h1>
 
       {items.length === 0 ? (
@@ -90,7 +90,7 @@ const Wishlist = () => {
                   aria-label={copy.removeLabel}
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
 
