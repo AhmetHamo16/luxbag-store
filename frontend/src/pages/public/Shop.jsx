@@ -31,30 +31,30 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     {
       key: 'bags',
       href: '/bags',
-      en: 'Bags Section',
-      ar: 'قسم الحقائب',
-      tr: 'Canta Bolumu',
+      en: 'Bags',
+      ar: 'الحقائب',
+      tr: 'Cantalar',
     },
     {
       key: 'watches',
       href: '/watches',
-      en: 'Watches Section',
-      ar: 'قسم الساعات',
-      tr: 'Saat Bolumu',
+      en: 'Watches',
+      ar: 'الساعات',
+      tr: 'Saatler',
     },
     {
       key: 'perfumes',
       href: '/perfumes',
-      en: 'Perfumes Section',
-      ar: 'قسم العطور',
-      tr: 'Parfum Bolumu',
+      en: 'Perfumes',
+      ar: 'العطور',
+      tr: 'Parfumler',
     },
     {
       key: 'glasses',
       href: '/glasses',
-      en: 'Glasses Section',
-      ar: 'قسم النظارات',
-      tr: 'Gozluk Bolumu',
+      en: 'Glasses',
+      ar: 'النظارات',
+      tr: 'Gozlukler',
     },
   ];
 
@@ -305,8 +305,8 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
 
         {/* Product Grid Area */}
         <main className="w-full flex-1">
-          <div className="mb-6 overflow-x-auto rounded-[26px] border border-[#eadcc8] bg-white/88 p-3 shadow-[0_12px_32px_rgba(71,45,20,0.06)] backdrop-blur-sm">
-            <div className="flex min-w-max items-center gap-3">
+          <div className="mb-6 overflow-x-auto rounded-[30px] border border-[#eadcc8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,241,231,0.92))] p-3 shadow-[0_18px_38px_rgba(71,45,20,0.07)] backdrop-blur-sm">
+            <div className="flex min-w-max items-center gap-2">
               {collectionBar.map((section) => {
                 const isActive = location.pathname === section.href;
                 const label = section[language] || section.en;
@@ -315,10 +315,10 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                   <Link
                     key={section.key}
                     to={section.href}
-                    className={`rounded-2xl px-5 py-3 text-sm font-semibold transition-all ${
+                    className={`rounded-full border px-5 py-3 text-sm font-semibold tracking-[0.08em] transition-all ${
                       isActive
-                        ? 'bg-[#2c1d12] text-[#f8efe2] shadow-sm'
-                        : 'bg-[#fffaf5] text-[#6d5a48] hover:bg-[#f4e7d7] hover:text-[#2c1d12]'
+                        ? 'border-[#2c1d12] bg-[#2c1d12] text-[#f8efe2] shadow-[0_10px_24px_rgba(44,29,18,0.18)]'
+                        : 'border-[#e6d7c4] bg-white/90 text-[#6d5a48] hover:border-[#d8bea0] hover:bg-[#fbf2e7] hover:text-[#2c1d12]'
                     }`}
                   >
                     {label}
