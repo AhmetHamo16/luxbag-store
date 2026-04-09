@@ -14,6 +14,11 @@ export const orderService = {
     return response.data;
   },
 
+  resetDemoData: async () => {
+    const response = await api.post('/orders/reset-demo');
+    return response.data;
+  },
+
   voidPosOrder: async (id, reason = '') => {
     const response = await api.put(`/orders/${id}/void-pos`, { reason });
     return response.data;

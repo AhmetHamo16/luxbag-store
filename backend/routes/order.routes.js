@@ -17,6 +17,7 @@ const {
   closePosShift,
   getPosShifts,
   voidPosOrder,
+  resetDemoData,
   markOrderPreparing,
   exportOrdersCSV,
   getOrderById,
@@ -157,6 +158,9 @@ router.route('/:id/void-pos')
 
 router.route('/pos')
   .post(protect, adminOrCashier, createPosOrder);
+
+router.route('/reset-demo')
+  .post(protect, adminOrCashier, resetDemoData);
 
 router.route('/export')
   .get(protect, admin, exportOrdersCSV);

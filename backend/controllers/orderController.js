@@ -4,6 +4,7 @@ const Setting = require('../models/Setting');
 const User = require('../models/User');
 const Coupon = require('../models/Coupon');
 const CashierShift = require('../models/CashierShift');
+const Analytics = require('../models/Analytics');
 const mongoose = require('mongoose');
 const sendEmail = require('../utils/sendEmail');
 
@@ -720,6 +721,49 @@ exports.voidPosOrder = async (req, res) => {
   } catch (error) {
     console.error('VOID POS ORDER FAILED', error);
     res.status(500).json({ success: false, message: error.message || 'Failed to void POS order' });
+  }
+};
+
+// @desc    Reset demo sales, orders, analytics, and targets
+// @route   POST /api/orders/reset-demo
+// @access  Private/Admin/Cashier
+exports.resetDemoData = async (req, res) => {
+  try {
+    const orders = await Order.find().lean();
+
+    for (const order of orders) {
+      if (Array.isArray(order.items) && order.items.length > 0) {
+        await restoreOrderStock(order.items);
+      }
+    }
+
+    const [ordersResult, analyticsResult, shiftsResult] = await Promise.all([
+      Order.deleteMany({}),
+      Analytics.deleteMany({}),
+      CashierShift.deleteMany({})
+    ]);
+
+    let settings = await Setting.findOne();
+    if (!settings) {
+      settings = await Setting.create({});
+    }
+
+    settings.monthlySalesTarget = 0;
+    settings.weeklySalesTarget = 0;
+    await settings.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Demo data reset successfully',
+      data: {
+        ordersDeleted: ordersResult.deletedCount || 0,
+        visitsDeleted: analyticsResult.deletedCount || 0,
+        shiftsDeleted: shiftsResult.deletedCount || 0
+      }
+    });
+  } catch (error) {
+    console.error('RESET DEMO DATA FAILED', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to reset demo data' });
   }
 };
 

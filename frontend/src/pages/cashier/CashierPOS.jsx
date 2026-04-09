@@ -124,7 +124,11 @@ const uiMap = {
     clearCustomer: 'Clear Customer',
     shiftOpenState: 'وردية مفتوحة',
     shiftIdleState: 'لا توجد وردية',
-    openShiftNow: 'Open Shift Now'
+    openShiftNow: 'Open Shift Now',
+    resetDemo: 'Reset Demo Data',
+    resetDemoHint: 'Clear test orders, views, targets, and shift logs.',
+    resetDemoConfirm: 'This will erase all experimental orders, visits, targets, and cashier shift logs. Continue?',
+    resetDemoSuccess: 'Demo data was reset successfully.'
   },
   ar: {
     eyebrow: 'مبيعات المتجر ونقطة البيع',
@@ -241,7 +245,11 @@ const uiMap = {
     clearCustomer: 'تفريغ بيانات العميل',
     shiftOpenState: 'وردية مفتوحة',
     shiftIdleState: 'لا توجد وردية',
-    openShiftNow: 'فتح الوردية الآن'
+    openShiftNow: 'فتح الوردية الآن',
+    resetDemo: 'تصفير بيانات التجربة',
+    resetDemoHint: 'يمسح الطلبات التجريبية والمشاهدات والأهداف وسجل الورديات.',
+    resetDemoConfirm: 'سيتم حذف جميع الطلبات التجريبية والمشاهدات والأهداف وسجل الورديات. هل تريد المتابعة؟',
+    resetDemoSuccess: 'تم تصفير بيانات التجربة بنجاح.'
   },
   tr: {
     eyebrow: 'Melora Magaza Satislari',
@@ -358,7 +366,11 @@ const uiMap = {
     clearCustomer: 'Musteriyi Temizle',
     shiftOpenState: 'VARDIYA ACIK',
     shiftIdleState: 'VARDIYA YOK',
-    openShiftNow: 'Vardiyayi Simdi Ac'
+    openShiftNow: 'Vardiyayi Simdi Ac',
+    resetDemo: 'Demo Verilerini Sifirla',
+    resetDemoHint: 'Test siparislerini, ziyaretleri, hedefleri ve vardiya kayitlarini temizler.',
+    resetDemoConfirm: 'Tum deneme siparisleri, ziyaretler, hedefler ve vardiya kayitlari silinecek. Devam edilsin mi?',
+    resetDemoSuccess: 'Demo verileri basariyla sifirlandi.'
   }
 };
 
@@ -386,6 +398,7 @@ const CashierPOS = () => {
   const [saleSuccessNotice, setSaleSuccessNotice] = useState('');
   const [currentShift, setCurrentShift] = useState(null);
   const [shiftLoading, setShiftLoading] = useState(false);
+  const [resettingDemo, setResettingDemo] = useState(false);
   const [openingFloat, setOpeningFloat] = useState('0');
   const [shiftNotes, setShiftNotes] = useState('');
   const [actualCash, setActualCash] = useState('');
@@ -741,6 +754,34 @@ const CashierPOS = () => {
     }
   };
 
+  const handleResetDemoData = async () => {
+    if (!window.confirm(ui.resetDemoConfirm)) return;
+
+    try {
+      setResettingDemo(true);
+      await orderService.resetDemoData();
+      setCart([]);
+      setCustomerName('');
+      setCustomerPhone('');
+      setNotes('');
+      setDiscountAmount('0');
+      setCashPart('');
+      setCardPart('');
+      setLastOrder(null);
+      setSaleSuccessNotice('');
+      setOpeningFloat('0');
+      setShiftNotes('');
+      setActualCash('');
+      setActualCard('');
+      await Promise.all([loadProducts(), loadPosSummary(), loadCurrentShift(), loadSettings()]);
+      toast.success(ui.resetDemoSuccess);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to reset demo data.');
+    } finally {
+      setResettingDemo(false);
+    }
+  };
+
   return (
     <div className="px-4 py-6 md:px-6 xl:px-8">
       <section className="rounded-[2rem] border border-[#eadbca] bg-[linear-gradient(135deg,#fffdf9,#f4eadf)] p-6 shadow-[0_24px_80px_rgba(45,24,12,0.08)]">
@@ -749,6 +790,17 @@ const CashierPOS = () => {
           <div className="max-w-3xl">
             <h1 className="font-serif text-4xl text-[#25170f] md:text-5xl">{ui.title}</h1>
             <p className="mt-4 max-w-2xl text-base leading-8 text-[#7a6653]">{ui.subtitle}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleResetDemoData}
+                disabled={resettingDemo}
+                className="rounded-full border border-[#c97f74] bg-[#fff5f3] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#9b4135] shadow-sm transition hover:bg-[#ffe9e4] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {resettingDemo ? '...' : ui.resetDemo}
+              </button>
+              <p className="text-xs text-[#8f7558]">{ui.resetDemoHint}</p>
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-[1.5rem] bg-white/90 px-5 py-4 shadow-sm border border-[#eadbca]"><p className="text-xs uppercase tracking-[0.25em] text-[#9d7848]">{ui.currentSale}</p><p className="mt-2 text-3xl font-semibold text-[#25170f]">{cart.length}</p></div>
