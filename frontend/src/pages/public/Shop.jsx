@@ -310,7 +310,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
         
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-[310px] lg:flex-shrink-0">
-          <div className="sticky top-28 space-y-8 rounded-[30px] border border-[#eadcc8] bg-white/88 p-6 shadow-[0_18px_45px_rgba(71,45,20,0.08)] backdrop-blur-md">
+          <div className="space-y-8 rounded-[30px] border border-[#eadcc8] bg-white/88 p-6 shadow-[0_18px_45px_rgba(71,45,20,0.08)] backdrop-blur-md lg:sticky lg:top-28">
             
             {/* Category Filter */}
             <div>

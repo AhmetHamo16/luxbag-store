@@ -199,7 +199,7 @@ const Cart = () => {
 
           {/* Order Summary */}
           <div className="w-full lg:w-1/3">
-            <div className="bg-white p-8 border border-gray-100 shadow-sm sticky top-28">
+            <div className="border border-gray-100 bg-white p-8 shadow-sm lg:sticky lg:top-28">
               <h2 className="text-2xl font-serif mb-6 border-b border-gray-200 pb-4">{copy.summary}</h2>
               
               <div className="space-y-4 mb-6">
