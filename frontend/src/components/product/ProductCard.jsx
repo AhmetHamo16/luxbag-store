@@ -63,15 +63,16 @@ const ProductCard = ({ product }) => {
   const badgeLabel = hasNewBadge ? 'New' : hasFeaturedBadge ? 'Featured' : null;
 
   return (
-    <div className="group relative flex h-[340px] w-full flex-col overflow-hidden rounded-[28px] border border-[#e7dccd] bg-[linear-gradient(180deg,#fffefb_0%,#fbf6ef_55%,#f4ebdf_100%)] shadow-[0_14px_38px_rgba(73,43,16,0.08)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_22px_56px_rgba(73,43,16,0.16)] dark:border-[var(--border-color)] dark:from-[var(--bg-card)] dark:via-[var(--bg-card)] dark:to-[var(--bg-secondary)] sm:h-[470px] lg:h-[530px]">
-      <div className="relative h-[74%] w-full overflow-hidden rounded-b-[30px]">
+    <div className="group relative flex min-h-[342px] w-full flex-col overflow-hidden rounded-[24px] border border-[#e7dccd] bg-[linear-gradient(180deg,#fffefb_0%,#fbf6ef_55%,#f4ebdf_100%)] shadow-[0_14px_38px_rgba(73,43,16,0.08)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_22px_56px_rgba(73,43,16,0.16)] dark:border-[var(--border-color)] dark:from-[var(--bg-card)] dark:via-[var(--bg-card)] dark:to-[var(--bg-secondary)] sm:h-[470px] sm:rounded-[28px] lg:h-[530px]">
+      <div className="relative h-[220px] w-full overflow-hidden rounded-b-[26px] sm:h-[74%] sm:rounded-b-[30px]">
         <button
           type="button"
           onClick={(event) => {
             event.preventDefault();
+            event.stopPropagation();
             toggleWishlist(product);
           }}
-          className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur transition-all duration-300 hover:bg-[#f7efe4] dark:bg-[var(--bg-card)]"
+          className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur transition-all duration-300 hover:bg-[#f7efe4] dark:bg-[var(--bg-card)] sm:right-4 sm:top-4"
           aria-label={copy.addToWishlist}
         >
           <svg
@@ -89,20 +90,20 @@ const ProductCard = ({ product }) => {
             src={image}
             alt={safeName}
             loading="lazy"
-            className="h-full w-full object-contain object-center bg-[radial-gradient(circle_at_top,#fffefb_0%,#f7f0e6_58%,#ecdfcf_100%)] p-5 transition-transform duration-1000 ease-out group-hover:scale-105"
+            className="h-full w-full object-contain object-center bg-[radial-gradient(circle_at_top,#fffefb_0%,#f7f0e6_58%,#ecdfcf_100%)] p-3 transition-transform duration-1000 ease-out group-hover:scale-105 sm:p-5"
             onError={(event) => {
               event.target.src = 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=600';
             }}
           />
         </Link>
 
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/18 to-transparent"></div>
-        <div className="absolute left-4 top-4 z-20 rounded-full border border-[#ead7c1] bg-white/92 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7a5630] shadow-sm dark:border-[var(--border-color)] dark:bg-[var(--bg-card)] dark:text-[var(--text-primary)]">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/18 to-transparent"></div>
+        <div className="absolute left-3 top-3 z-20 rounded-full border border-[#ead7c1] bg-white/92 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#7a5630] shadow-sm dark:border-[var(--border-color)] dark:bg-[var(--bg-card)] dark:text-[var(--text-primary)] sm:left-4 sm:top-4 sm:px-3 sm:text-[10px] sm:tracking-[0.18em]">
           {piecesLabel}
         </div>
 
         {badgeLabel && (
-          <div className="absolute left-4 top-14 z-20 rounded-full bg-[#2f2117] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f8efe2] shadow-[0_10px_18px_rgba(47,33,23,0.16)]">
+          <div className="absolute left-3 top-12 z-20 rounded-full bg-[#2f2117] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#f8efe2] shadow-[0_10px_18px_rgba(47,33,23,0.16)] sm:left-4 sm:top-14 sm:px-3 sm:text-[10px] sm:tracking-[0.22em]">
             {badgeLabel}
           </div>
         )}
@@ -120,22 +121,22 @@ const ProductCard = ({ product }) => {
         )}
       </div>
 
-      <div className="flex h-[26%] flex-col justify-between px-4 pb-5 pt-4 text-center sm:px-5">
-        <div className="mx-auto mb-3 h-px w-12 bg-[#c7aa82]"></div>
+      <div className="flex flex-1 flex-col justify-between px-3 pb-4 pt-3 text-center sm:h-[26%] sm:px-5 sm:pb-5 sm:pt-4">
+        <div className="mx-auto mb-2 h-px w-10 bg-[#c7aa82] sm:mb-3 sm:w-12"></div>
         <Link to={`/product/${product.slug || product._id || product.id}`} className="block">
-          <h3 className="line-clamp-2 font-serif text-sm font-medium uppercase tracking-[0.2em] text-[#2f2117] dark:text-[var(--text-primary)] sm:text-[15px]" title={safeName}>
+          <h3 className="line-clamp-2 min-h-[2.7rem] font-serif text-[12px] font-medium uppercase tracking-[0.12em] text-[#2f2117] dark:text-[var(--text-primary)] sm:min-h-0 sm:text-[15px] sm:tracking-[0.2em]" title={safeName}>
             {safeName}
           </h3>
         </Link>
 
-        <div className="mt-3 flex items-center justify-center space-x-2">
+        <div className="mt-2 flex min-h-[42px] items-center justify-center gap-2 sm:mt-3 sm:min-h-0">
           {product.isSale ? (
             <>
-              <span className="text-[11px] font-light text-gray-400 line-through sm:text-xs">{formatPrice(product.oldPrice)}</span>
-              <span className="text-sm font-semibold tracking-[0.14em] text-[#2f2117] dark:text-[var(--text-primary)] sm:text-base">{formatPrice(product.price)}</span>
+              <span className="text-[10px] font-light text-gray-400 line-through sm:text-xs">{formatPrice(product.oldPrice)}</span>
+              <span className="text-[13px] font-semibold tracking-[0.08em] text-[#2f2117] dark:text-[var(--text-primary)] sm:text-base sm:tracking-[0.14em]">{formatPrice(product.price)}</span>
             </>
           ) : (
-            <span className="rounded-full border border-[#ead9c5] bg-white/88 px-4 py-2 text-sm font-semibold tracking-[0.14em] text-[#2f2117] shadow-sm dark:text-[var(--text-primary)] sm:text-base">{formatPrice(product.price)}</span>
+            <span className="rounded-full border border-[#ead9c5] bg-white/88 px-3 py-2 text-[13px] font-semibold tracking-[0.08em] text-[#2f2117] shadow-sm dark:text-[var(--text-primary)] sm:px-4 sm:text-base sm:tracking-[0.14em]">{formatPrice(product.price)}</span>
           )}
         </div>
       </div>
