@@ -25,7 +25,7 @@ const BackToTop = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-[90] pointer-events-none">
+    <div className="fixed bottom-6 left-6 z-[90] hidden pointer-events-none md:block">
       <button
         onClick={scrollToTop}
         className={`pointer-events-auto w-12 h-12 bg-black text-white dark:bg-gray-800 hover:bg-gold dark:hover:bg-gold hover:-translate-y-1 transition-all duration-300 rounded-full flex items-center justify-center shadow-lg ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}

@@ -46,7 +46,7 @@ const FloatingSocials = () => {
   ];
 
   return (
-    <div className={`fixed bottom-6 right-6 z-[90] flex flex-col gap-4 transition-all duration-500 ease-in-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+    <div className={`fixed bottom-6 right-6 z-[90] hidden md:flex flex-col gap-4 transition-all duration-500 ease-in-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
       {socials.map((platform) => (
         <div key={platform.id} className="relative group flex items-center justify-center">
           {/* Tooltip */}
