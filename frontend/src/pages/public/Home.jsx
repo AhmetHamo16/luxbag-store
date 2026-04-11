@@ -151,7 +151,10 @@ const Home = () => {
     shoulder: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600',
     evening: 'https://images.unsplash.com/photo-1575032617751-6ddec2089882?w=600',
     glasses: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600',
+    sunglasses: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600',
+    eyewear: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600',
     perfumes: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600',
+    perfume: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600',
     watches: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600'
   };
 
