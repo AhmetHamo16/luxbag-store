@@ -69,6 +69,12 @@ const ProductDetail = () => {
     notifyTone: 'Thank you for your patience. We are preparing a fresh restock for you.',
     warehouse: 'Available in warehouse:',
   };
+  if (language === 'ar') {
+    stockMessages.backSoon = 'هذا التصميم غير متوفر حاليًا، لكنه سيعود قريبًا جدًا.';
+    stockMessages.notifyTone = 'شكرًا لصبرك، نحن نجهز إعادة التوفر لك بأجمل صورة.';
+    stockMessages.warehouse = 'المتوفر في المستودع:';
+  }
+
   const piecesIncluded = Number(product?.specs?.piecesIncluded || 1);
   const productFacts = {
     en: {
@@ -103,6 +109,15 @@ const ProductDetail = () => {
     materialLabel: 'Material',
     dimensionsLabel: 'Dimensions',
   };
+  if (language === 'ar') {
+    productFacts.includedPieces = piecesIncluded > 1 ? `${piecesIncluded} قطع متناسقة` : 'قطعة أساسية واحدة';
+    productFacts.material = product?.specs?.material || 'خامة فاخرة بتشطيب راقٍ';
+    productFacts.dimensions = product?.specs?.dimensions?.width ? `${product.specs.dimensions.width} × ${product.specs.dimensions.height || '-'} × ${product.specs.dimensions.depth || '-'} سم` : 'حجم أنيق للمشاوير والسهرات';
+    productFacts.piecesLabel = 'تفاصيل الطقم';
+    productFacts.materialLabel = 'الخامة';
+    productFacts.dimensionsLabel = 'الأبعاد';
+  }
+
   const ui = {
     en: {
       notFound: 'Product Not Found',
@@ -256,6 +271,47 @@ const ProductDetail = () => {
     orderMessage: `Hello, I would like to order: ${localizedName} for ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product?.salePrice || product?.price || 0)}`,
     shareMessage: `Hey, check out this bag: ${typeof window !== 'undefined' ? window.location.href : ''}`,
   };
+  if (language === 'ar') {
+    Object.assign(ui, {
+      notFound: 'المنتج غير موجود',
+      home: 'الرئيسية',
+      shop: 'المتجر',
+      detailView: 'عرض التفاصيل',
+      openGallery: 'افتحي المعرض الكامل',
+      reset: 'إعادة الضبط',
+      copied: 'تم نسخ الرابط',
+      share: 'مشاركة',
+      whatsapp: 'واتساب',
+      offerEnds: 'ينتهي العرض خلال:',
+      selectVariant: 'اختاري المقاس واللون',
+      sizeGuide: 'دليل المقاسات',
+      orderViaWhatsapp: 'اطلبي عبر واتساب',
+      related: 'قد يعجبك أيضًا',
+      recentlyViewed: 'شاهدت مؤخرًا',
+      reviews: 'آراء العملاء',
+      verifiedBuyer: 'مشتري موثق',
+      noReviews: 'لا توجد تقييمات بعد. كوني أول من يراجع هذا المنتج.',
+      writeReview: 'اكتبي تقييمًا',
+      rating: 'التقييم',
+      yourReview: 'تقييمك',
+      reviewPlaceholder: 'شاركي رأيك حول هذا المنتج...',
+      submitting: 'جارٍ الإرسال...',
+      submitReview: 'إرسال التقييم',
+      loginToReview: 'سجلي الدخول لكتابة تقييم',
+      fitGuide: 'دليل المقاس',
+      dimensionsCm: 'الأبعاد (سم)',
+      strapDrop: 'طول الحمالة (سم)',
+      measurementsNote: '* المقاسات تقريبية وقد تختلف قليلًا حسب الموديل.',
+      size: 'المقاس',
+      fit: 'الملاءمة',
+      reviewSuccess: 'تم إرسال التقييم بنجاح!',
+      reviewError: 'فشل إرسال التقييم',
+      addSuccess: 'تمت الإضافة إلى السلة',
+      orderMessage: `مرحبًا، أود طلب: ${localizedName} بسعر ${formatPrice(selectedVariant?.salePrice || selectedVariant?.price || product?.salePrice || product?.price || 0)}`,
+      shareMessage: `مرحبًا، شاهدي هذه الحقيبة: ${typeof window !== 'undefined' ? window.location.href : ''}`,
+    });
+  }
+
   const trustCopy = {
     en: {
       authenticTitle: '100% Authentic Guaranteed',
@@ -297,6 +353,19 @@ const ProductDetail = () => {
     deliveryTitle: 'Delivery & Returns',
     deliveryDesc: 'Fast delivery and a smooth return process for a more confident shopping experience.',
   };
+
+  if (language === 'ar') {
+    Object.assign(trustCopy, {
+      authenticTitle: 'ضمان الأصالة 100%',
+      authenticDesc: 'كل حقيبة من Melora تمر بمراحل تدقيق جودة وتحقيق من الأصالة.',
+      shippingTitle: 'شحن سريع مجاني',
+      shippingDesc: 'استمتعي بشحن محلي مجاني للطلبات التي تزيد عن 500 ليرة تركية.',
+      featuresTitle: 'أبرز المميزات',
+      featuresDesc: 'خامات فاخرة وتشطيب راقٍ مصمم للاستخدام اليومي بأناقة.',
+      deliveryTitle: 'التوصيل والإرجاع',
+      deliveryDesc: 'توصيل سريع وإرجاع سلس لتجربة شراء أكثر راحة.',
+    });
+  }
 
   useEffect(() => {
     const fetchProduct = async () => {

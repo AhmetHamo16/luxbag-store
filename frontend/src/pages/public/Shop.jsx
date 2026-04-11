@@ -97,6 +97,25 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     tr: ['Ozenle secilen urunler', 'Hizli destek', 'Gunluk zarif secimler'],
   };
 
+  collectionBar[0].ar = 'كل المنتجات';
+  collectionBar[1].ar = 'الحقائب';
+  collectionBar[2].ar = 'الساعات';
+  collectionBar[3].ar = 'العطور';
+  collectionBar[4].ar = 'النظارات';
+  collectionBar[0].tr = 'Tum Urunler';
+  collectionBar[1].tr = 'Cantalar';
+  collectionBar[3].tr = 'Parfumler';
+  collectionBar[4].tr = 'Gozlukler';
+  collectionCards[0].ar = { title: 'الحقائب', subtitle: 'تصاميم أنيقة مختارة للإطلالات اليومية الراقية' };
+  collectionCards[1].ar = { title: 'الساعات', subtitle: 'لمسات فاخرة بتفاصيل هادئة وأنيقة' };
+  collectionCards[2].ar = { title: 'العطور', subtitle: 'روائح منتقاة لحضور أنثوي يترك أثرًا جميلًا' };
+  collectionCards[3].ar = { title: 'النظارات', subtitle: 'إطارات عصرية بلمسة أنيقة وواضحة' };
+  collectionCards[0].tr = { title: 'Cantalar', subtitle: 'Gunluk siklik icin secilen zarif tasarimlar' };
+  collectionCards[1].tr = { title: 'Saatler', subtitle: 'Zarif ve seckin detaylara sahip modeller' };
+  collectionCards[2].tr = { title: 'Parfumler', subtitle: 'Kalici ve ozenle secilen yumusak notalar' };
+  collectionCards[3].tr = { title: 'Gozlukler', subtitle: 'Modern cizgilerle sade ve sik durus' };
+  trustBadges.ar = ['قطع مختارة بعناية', 'دعم سريع', 'أناقة يومية راقية'];
+
   useEffect(() => {
     const defaultSeo = {
       en: {
@@ -255,6 +274,14 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     precisionSearch: 'Filter with precision',
     countLabel: 'Visible pieces',
   };
+
+  if (language === 'ar') {
+    defaultLuxuryCopy.intro = 'تشكيلة منتقاة بعناية من التصاميم المميزة والخامات الراقية والقطع التي تترك أثرًا فاخرًا.';
+    defaultLuxuryCopy.curation = 'تشكيلة خاصة';
+    defaultLuxuryCopy.refinedFilters = 'فلاتر راقية';
+    defaultLuxuryCopy.precisionSearch = 'اختاري بدقة';
+    defaultLuxuryCopy.countLabel = 'القطع الظاهرة';
+  }
 
   const luxuryCopy = {
     ...defaultLuxuryCopy,
