@@ -168,10 +168,11 @@ const Home = () => {
   };
 
   const categoryCards = categories.map((category) => {
-    const resolvedImage = category?.image ? resolveAssetUrl(category.image) : '';
+    const forcedCategoryImage = categoryFallbackImages[category?.slug];
+    const resolvedImage = forcedCategoryImage || (category?.image ? resolveAssetUrl(category.image) : '');
     return {
       name: category?.name?.[language] || category?.name?.en || 'Category',
-      img: resolvedImage || categoryFallbackImages[category?.slug] || categoryFallbackImages.classic,
+      img: resolvedImage || categoryFallbackImages.classic,
       link: `/shop?category=${category?._id || category?.slug}`,
       key: category?._id || category?.slug || category?.name?.en
     };
