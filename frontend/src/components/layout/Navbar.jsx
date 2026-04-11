@@ -367,6 +367,45 @@ const Navbar = () => {
           <button type="button" onClick={handleCartClick} className="rounded-2xl border border-transparent px-3 py-3 text-brand transition-colors font-medium text-left flex items-center justify-between w-full text-lg hover:border-[#eadcc8] hover:bg-white/65 hover:text-gold">{copy.cart} {cartItemCount > 0 && <span className="bg-gold text-white text-[12px] px-2 py-0.5 rounded-full">{cartItemCount}</span>}</button>
           
           <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
+
+          {isAuthenticated ? (
+            <div className="rounded-3xl border border-[#eadcc8] bg-white/70 px-4 py-4 shadow-sm">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-brand/60">
+                {copy.account}
+              </div>
+              <div className="flex flex-col gap-3">
+                <Link
+                  to={user?.role === 'admin' ? '/admin' : user?.role === 'cashier' ? '/cashier' : '/user/dashboard'}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="rounded-2xl bg-[#2f2117] px-4 py-3 text-center text-sm font-semibold text-[#f8efe2] shadow-[0_12px_24px_rgba(47,33,23,0.18)]"
+                >
+                  {user?.role === 'admin'
+                    ? (language === 'ar' ? 'لوحة الإدارة' : language === 'tr' ? 'Yonetim Paneli' : 'Admin Panel')
+                    : user?.role === 'cashier'
+                      ? (language === 'ar' ? 'الكاشير' : language === 'tr' ? 'Kasiyer' : 'Cashier')
+                      : (language === 'ar' ? 'حسابي' : language === 'tr' ? 'Hesabim' : 'My Account')}
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsMobileMenuOpen(false);
+                    await handleLogout();
+                  }}
+                  className="rounded-2xl border border-[#d8c4ac] px-4 py-3 text-sm font-semibold text-brand transition-colors hover:bg-white"
+                >
+                  {t.logout}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="rounded-3xl bg-[#2f2117] px-4 py-4 text-center text-sm font-semibold uppercase tracking-[0.18em] text-[#f8efe2] shadow-[0_14px_28px_rgba(47,33,23,0.18)]"
+            >
+              {copy.account}
+            </Link>
+          )}
         </div>
       </div>
     </>

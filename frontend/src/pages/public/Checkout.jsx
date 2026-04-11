@@ -107,6 +107,51 @@ const Checkout = () => {
       accountHolderLabel: 'Hesap sahibi',
     },
   }[language];
+  if (language === 'ar') {
+    Object.assign(ui, {
+      savedAddresses: 'العناوين المحفوظة',
+      paymentMethod: 'طريقة الدفع',
+      editShipping: 'تعديل الشحن',
+      bankTransfer: 'تحويل بنكي مباشر',
+      accountHolder: 'اسم صاحب الحساب',
+      amountToTransfer: 'المبلغ المطلوب تحويله',
+      uploadPrompt: 'ارفعي صورة واضحة لإيصال التحويل البنكي بصيغة JPEG أو PNG',
+      uploading: 'جارٍ الرفع...',
+      browseFiles: 'اختيار الملف',
+      processing: 'جارٍ المعالجة...',
+      submitTransfer: 'حوّلت المبلغ - تأكيد الطلب',
+      apply: 'تطبيق',
+      shippingDiscount: 'خصم الشحن',
+      discount: 'الخصم',
+      copy: 'نسخ',
+      copied: 'تم النسخ',
+      copyFailed: 'فشل النسخ',
+      cartEmpty: 'سلتك فارغة',
+      returnToShop: 'العودة إلى المتجر',
+      accountHolderLabel: 'اسم الحساب',
+      confirmation: 'التأكيد',
+      securePayment: 'دفع آمن ومشفر',
+      transferHelp: 'يرجى تحويل المبلغ بالكامل إلى الآيبان أدناه ثم رفع إيصال التحويل لإكمال الطلب.',
+      changeReceipt: 'تغيير الإيصال',
+      required: 'مطلوب',
+    });
+  } else if (language === 'tr') {
+    Object.assign(ui, {
+      confirmation: 'Onay',
+      securePayment: '256-Bit SSL Guvenli Odeme',
+      transferHelp: 'Lutfen tutarin tamamini asagidaki IBAN numarasina gonderin ve siparisi tamamlamak icin dekontu yukleyin.',
+      changeReceipt: 'Dekontu Degistir',
+      required: 'Gerekli',
+    });
+  } else {
+    Object.assign(ui, {
+      confirmation: 'Confirmation',
+      securePayment: '256-Bit SSL Secure Payment',
+      transferHelp: 'Please transfer the exact amount to the IBAN below, then upload your receipt.',
+      changeReceipt: 'Change Receipt',
+      required: 'Required',
+    });
+  }
   const feedbackCopy = {
     en: {
       couponApplied: 'Coupon applied successfully!',
@@ -132,6 +177,14 @@ const Checkout = () => {
     uploadReceiptRequired: 'Please upload your transfer receipt before submitting.',
     createOrderFailed: 'Failed to create order, please try again.',
   };
+  if (language === 'ar') {
+    Object.assign(feedbackCopy, {
+      couponApplied: 'تم تطبيق الكوبون بنجاح',
+      couponInvalid: 'رمز الكوبون غير صحيح',
+      uploadReceiptRequired: 'ارفعي إيصال التحويل قبل إرسال الطلب',
+      createOrderFailed: 'تعذر إنشاء الطلب، حاولي مرة أخرى',
+    });
+  }
 
   const subtotal = getTotal();
   const [adminSettings, setAdminSettings] = useState(null);
@@ -278,23 +331,23 @@ const Checkout = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 font-sans text-black">
+    <div className="max-w-7xl mx-auto px-4 py-10 font-sans text-black sm:px-6 sm:py-16 lg:px-8">
       
       {/* Checkout Progress */}
-      <div className="flex justify-center items-center mb-12">
-        <div className={`flex items-center ${step >= 1 ? 'text-black font-medium' : 'text-gray-400'}`}>
-          <span className={`w-8 h-8 flex items-center justify-center rounded-full mr-2 ${step >= 1 ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'}`}>1</span>
+      <div className="mb-10 flex flex-wrap items-center justify-center gap-3 sm:mb-12 sm:gap-0">
+        <div className={`flex items-center rounded-full px-3 py-2 text-sm ${step >= 1 ? 'bg-[#2f2117] text-white font-medium shadow-sm' : 'bg-gray-100 text-gray-400'}`}>
+          <span className={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-white text-[#2f2117]' : 'bg-gray-200 text-gray-500'}`}>1</span>
           {t.shippingInfo}
         </div>
-        <div className={`w-12 h-px mx-4 ${step >= 2 ? 'bg-black' : 'bg-gray-200'}`}></div>
-        <div className={`flex items-center ${step >= 2 ? 'text-black font-medium' : 'text-gray-400'}`}>
-          <span className={`w-8 h-8 flex items-center justify-center rounded-full mr-2 ${step >= 2 ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'}`}>2</span>
+        <div className={`hidden h-px w-12 mx-4 sm:block ${step >= 2 ? 'bg-black' : 'bg-gray-200'}`}></div>
+        <div className={`flex items-center rounded-full px-3 py-2 text-sm ${step >= 2 ? 'bg-[#2f2117] text-white font-medium shadow-sm' : 'bg-gray-100 text-gray-400'}`}>
+          <span className={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-white text-[#2f2117]' : 'bg-gray-200 text-gray-500'}`}>2</span>
           {t.paymentInfo}
         </div>
-        <div className={`w-12 h-px mx-4 ${step >= 3 ? 'bg-black' : 'bg-gray-200'}`}></div>
-        <div className={`flex items-center ${step >= 3 ? 'text-black font-medium' : 'text-gray-400'}`}>
-          <span className={`w-8 h-8 flex items-center justify-center rounded-full mr-2 ${step >= 3 ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'}`}>3</span>
-          Confirmation
+        <div className={`hidden h-px w-12 mx-4 sm:block ${step >= 3 ? 'bg-black' : 'bg-gray-200'}`}></div>
+        <div className={`flex items-center rounded-full px-3 py-2 text-sm ${step >= 3 ? 'bg-[#2f2117] text-white font-medium shadow-sm' : 'bg-gray-100 text-gray-400'}`}>
+          <span className={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${step >= 3 ? 'bg-white text-[#2f2117]' : 'bg-gray-200 text-gray-500'}`}>3</span>
+          {ui.confirmation}
         </div>
       </div>
 
@@ -304,7 +357,7 @@ const Checkout = () => {
         <div className="w-full lg:w-2/3">
           
           {step === 1 && (
-            <div className="bg-white p-8 rounded shadow-sm border border-gray-100">
+            <div className="rounded border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
               <h2 className="text-2xl font-serif mb-6">{t.shippingAddress || 'Shipping Address'}</h2>
               
               {savedAddresses.length > 0 && (
@@ -333,12 +386,12 @@ const Checkout = () => {
                   <div>
                     <label className="block text-sm font-medium mb-1">{t.firstName || 'First Name'}</label>
                     <input {...register("firstName", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
-                    {errors.firstName && <span className="text-red-500 text-xs mt-1">Required</span>}
+                    {errors.firstName && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">{t.lastName || 'Last Name'}</label>
                     <input {...register("lastName", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
-                    {errors.lastName && <span className="text-red-500 text-xs mt-1">Required</span>}
+                    {errors.lastName && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                   </div>
                 </div>
 
@@ -350,7 +403,7 @@ const Checkout = () => {
                   <div>
                     <label className="block text-sm font-medium mb-1">{t.phoneNumber || 'Phone Number'}</label>
                     <input type="tel" {...register("phone", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
-                    {errors.phone && <span className="text-red-500 text-xs mt-1">Required</span>}
+                    {errors.phone && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                   </div>
                 </div>
 
@@ -363,7 +416,7 @@ const Checkout = () => {
                     <option value="United Kingdom">United Kingdom</option>
                     <option value="United States">United States</option>
                   </select>
-                  {errors.country && <span className="text-red-500 text-xs mt-1">Required</span>}
+                  {errors.country && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                 </div>
 
                 <div>
@@ -385,13 +438,13 @@ const Checkout = () => {
                     <div className="col-span-1">
                       <label className="block text-sm font-medium mb-1">{t.postalCode || 'Postal Code'}</label>
                       <input {...register("zipCode", { required: !isTurkey })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
-                      {errors.zipCode && <span className="text-red-500 text-xs mt-1">Required</span>}
+                      {errors.zipCode && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                     </div>
                   )}
                 </div>
                 
                 <div className="pt-4 flex justify-end">
-                  <button type="submit" className="bg-black text-white px-8 py-4 uppercase tracking-widest text-sm font-medium hover:bg-gold transition-colors duration-300">
+                  <button type="submit" className="w-full bg-black px-8 py-4 text-sm font-medium uppercase tracking-widest text-white transition-colors duration-300 hover:bg-gold sm:w-auto">
                     {t.paymentInfo || 'Continue to Payment'}
                   </button>
                 </div>
@@ -401,8 +454,8 @@ const Checkout = () => {
           )}
 
           {step === 2 && (
-            <div className="bg-white p-8 rounded shadow-sm border border-gray-100">
-              <div className="flex justify-between items-center mb-6">
+            <div className="rounded border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-2xl font-serif">{ui.paymentMethod}</h2>
                 <button onClick={() => setStep(1)} className="text-sm underline hover:text-gold transition-colors">{ui.editShipping}</button>
               </div>
@@ -423,8 +476,8 @@ const Checkout = () => {
                   {language === 'tr' && <p className="text-sm mb-4">Lütfen tam tutarı aşağıdaki IBAN'a transfer edin ve dekontu yükleyin</p>}
                   {language === 'en' && <p className="text-sm mb-4">Please transfer the exact amount to the IBAN below, then upload your receipt.</p>}
                   
-                  <div className="mb-4 rounded-[24px] border border-[#e8d7c2] bg-white/90 p-5 text-left text-black shadow-[0_18px_45px_rgba(74,44,23,0.08)] backdrop-blur-sm">
-                     <div className="mb-4 flex items-start justify-between gap-4 border-b border-[#f0e5d7] pb-4">
+                  <div className="mb-4 rounded-[24px] border border-[#e8d7c2] bg-white/90 p-4 text-left text-black shadow-[0_18px_45px_rgba(74,44,23,0.08)] backdrop-blur-sm sm:p-5">
+                     <div className="mb-4 flex flex-col items-start justify-between gap-4 border-b border-[#f0e5d7] pb-4 sm:flex-row">
                        <div>
                          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#8b6b46]">{ui.accountHolder}</p>
                          <p className="font-serif text-lg text-[#2b1911]">{adminSettings?.accountHolder || 'Muhammed Nur Deri'}</p>
@@ -437,7 +490,7 @@ const Checkout = () => {
                          {ui.copy}
                        </button>
                      </div>
-                     <div className="mb-4 flex items-start justify-between gap-4 border-b border-[#f0e5d7] pb-4">
+                     <div className="mb-4 flex flex-col items-start justify-between gap-4 border-b border-[#f0e5d7] pb-4 sm:flex-row">
                        <div>
                          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#8b6b46]">IBAN</p>
                          <p className="break-all font-mono text-[15px] leading-7 text-[#2b1911]">{adminSettings?.iban || 'TR60 0006 4000 0012 2110 7488 53'}</p>
@@ -468,7 +521,7 @@ const Checkout = () => {
                         <img src={receiptPreview} alt="Receipt Preview" className="w-48 object-contain mb-3 border border-gray-200 shadow-sm rounded-sm" />
                         <p className="text-sm font-bold text-brand">{receiptFile?.name}</p>
                         <label className="mt-3 cursor-pointer text-brand underline text-sm font-medium hover:text-gold transition-colors">
-                          Change Receipt
+                          {ui.changeReceipt}
                           <input type="file" accept="image/*" className="hidden" onChange={handleReceiptUpload} />
                         </label>
                       </>
@@ -497,7 +550,7 @@ const Checkout = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-center gap-3 text-brand">
                   <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-500">256-Bit SSL Secure Payment</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-500">{ui.securePayment}</span>
                 </div>
               </div>
             </div>

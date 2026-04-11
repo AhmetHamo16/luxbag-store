@@ -35,6 +35,7 @@ const ProductDetail = () => {
   const { language } = useLangStore();
   const formatPrice = useCurrencyStore(state => state.formatPrice);
   const [recentItems, setRecentItems] = useState([]);
+  const imageCount = product?.images?.length || 0;
   const t = translations[language].product;
   const localizedName = product?.name?.[language] || product?.name?.en || product?.name?.ar || product?.name?.tr || 'Unknown';
   const resolveAssetUrl = useCallback((value) => {
@@ -75,6 +76,12 @@ const ProductDetail = () => {
     stockMessages.warehouse = 'المتوفر في المستودع:';
   }
 
+  if (language === 'ar') {
+    stockMessages.backSoon = 'هذا التصميم غير متوفر حاليًا، لكنه سيعود قريبًا جدًا.';
+    stockMessages.notifyTone = 'شكرًا لصبرك، نحن نجهز إعادة التوفر لك بأجمل صورة.';
+    stockMessages.warehouse = 'المتوفر في المستودع:';
+  }
+
   const piecesIncluded = Number(product?.specs?.piecesIncluded || 1);
   const productFacts = {
     en: {
@@ -109,6 +116,15 @@ const ProductDetail = () => {
     materialLabel: 'Material',
     dimensionsLabel: 'Dimensions',
   };
+  if (language === 'ar') {
+    productFacts.includedPieces = piecesIncluded > 1 ? `${piecesIncluded} قطع متناسقة` : 'قطعة أساسية واحدة';
+    productFacts.material = product?.specs?.material || 'خامة فاخرة بتشطيب راقٍ';
+    productFacts.dimensions = product?.specs?.dimensions?.width ? `${product.specs.dimensions.width} × ${product.specs.dimensions.height || '-'} × ${product.specs.dimensions.depth || '-'} سم` : 'حجم أنيق للمشاوير والسهرات';
+    productFacts.piecesLabel = 'تفاصيل الطقم';
+    productFacts.materialLabel = 'الخامة';
+    productFacts.dimensionsLabel = 'الأبعاد';
+  }
+
   if (language === 'ar') {
     productFacts.includedPieces = piecesIncluded > 1 ? `${piecesIncluded} قطع متناسقة` : 'قطعة أساسية واحدة';
     productFacts.material = product?.specs?.material || 'خامة فاخرة بتشطيب راقٍ';
@@ -589,13 +605,39 @@ const ProductDetail = () => {
             <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs font-medium px-3 py-1 rounded-full z-20 backdrop-blur-sm pointer-events-none">
               {mainImageIndex + 1} / {product.images?.length || 1}
             </div>
+            {imageCount > 1 && (
+              <div className="absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 items-center justify-between px-3 md:hidden">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setMainImageIndex((prev) => (prev === 0 ? imageCount - 1 : prev - 1));
+                  }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/88 text-[#2f2117] shadow-[0_10px_24px_rgba(47,33,23,0.16)] backdrop-blur-sm"
+                  aria-label="Previous image"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setMainImageIndex((prev) => (prev === imageCount - 1 ? 0 : prev + 1));
+                  }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/88 text-[#2f2117] shadow-[0_10px_24px_rgba(47,33,23,0.16)] backdrop-blur-sm"
+                  aria-label="Next image"
+                >
+                  ›
+                </button>
+              </div>
+            )}
             <button
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
                 setIsLightboxOpen(true);
               }}
-              className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[#fffaf4]/92 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#2c1d12] shadow-[0_14px_34px_rgba(66,42,18,0.16)] backdrop-blur-md transition hover:bg-white"
+              className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[#fffaf4]/92 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#2c1d12] shadow-[0_14px_34px_rgba(66,42,18,0.16)] backdrop-blur-md transition hover:bg-white md:px-4 md:text-[11px] md:tracking-[0.28em]"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="5.5" strokeWidth="1.8" />
