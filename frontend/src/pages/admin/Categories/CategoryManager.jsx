@@ -33,6 +33,18 @@ const CategoryManager = () => {
   const [imageFile, setImageFile] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
+  const getErrorMessage = (err) => {
+    const apiMessage = err?.response?.data?.message;
+    if (!apiMessage) return ui.saveFailed;
+    if (apiMessage.includes('duplicate key') || apiMessage.includes('slug_1')) {
+      return language === 'ar'
+        ? 'هذه الفئة موجودة بالفعل أو أن اسمها الإنجليزي مكرر.'
+        : language === 'tr'
+          ? 'Bu kategori zaten var veya Ingilizce adi tekrar ediyor.'
+          : 'This category already exists or its English name creates a duplicate slug.';
+    }
+    return apiMessage;
+  };
 
   const fetchCategories = async () => {
     try {
@@ -123,7 +135,7 @@ const CategoryManager = () => {
       fetchCategories();
     } catch (err) {
       console.error(err);
-      toast.error(ui.saveFailed);
+      toast.error(getErrorMessage(err));
     }
   };
 

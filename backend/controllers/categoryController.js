@@ -1,5 +1,31 @@
 const Category = require('../models/Category');
 
+const parseCategoryPayload = (body = {}) => {
+  const parsed = { ...body };
+
+  Object.keys(parsed).forEach((key) => {
+    const match = key.match(/^([^\[]+)\[([^\]]+)\]$/);
+    if (!match) return;
+
+    const [, parent, child] = match;
+    if (!parsed[parent] || typeof parsed[parent] !== 'object') {
+      parsed[parent] = {};
+    }
+
+    parsed[parent][child] = parsed[key];
+    delete parsed[key];
+  });
+
+  return parsed;
+};
+
+const slugify = (value = '') =>
+  String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 // @desc    Get all categories
 // @route   GET /api/categories
 // @access  Public (or Private/Admin if query provides ?all=true)
@@ -35,10 +61,21 @@ exports.getCategoryBySlug = async (req, res) => {
 // @access  Private/Admin
 exports.createCategory = async (req, res) => {
   try {
-    let categoryData = { ...req.body };
+    let categoryData = parseCategoryPayload(req.body);
     if (req.file) {
       categoryData.image = req.file.path;
     }
+
+    categoryData.slug = categoryData.slug || slugify(categoryData?.name?.en);
+
+    if (!categoryData?.name?.en || !categoryData?.name?.ar || !categoryData?.name?.tr) {
+      return res.status(400).json({ success: false, message: 'Category names are required in EN, AR, and TR.' });
+    }
+
+    if (!categoryData.slug) {
+      return res.status(400).json({ success: false, message: 'A valid slug could not be generated for this category.' });
+    }
+
     const category = await Category.create(categoryData);
     res.status(201).json({ success: true, data: category });
   } catch (error) {
@@ -51,9 +88,13 @@ exports.createCategory = async (req, res) => {
 // @access  Private/Admin
 exports.updateCategory = async (req, res) => {
   try {
-    let updateData = { ...req.body };
+    let updateData = parseCategoryPayload(req.body);
     if (req.file) {
       updateData.image = req.file.path;
+    }
+
+    if (!updateData.slug && updateData?.name?.en) {
+      updateData.slug = slugify(updateData.name.en);
     }
 
     const category = await Category.findByIdAndUpdate(req.params.id, updateData, {
