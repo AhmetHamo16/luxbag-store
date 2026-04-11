@@ -172,12 +172,10 @@ const UserList = () => {
     setIsOrdersModalOpen(true);
     setOrdersLoading(true);
     try {
-      // Typically you'd have a specific endpoint like /api/users/:id/orders
-      // Since we don't, we can fetch all admin orders and filter locally for this phase, or better yet, assume the backend has it.
-      // Wait, we DO have getOrders in orderController which gets ALL orders for Admins. Let's use that and filter.
-      // (In a real massive prod app, we'd add a dedicated route. For now, filter).
-      const res = await api.get('/orders'); 
-      const filtered = res.data.filter(ord => ord.user?._id === user._id || ord.user === user._id);
+      const res = await api.get('/orders?status=All&page=1&limit=500');
+      const filtered = (res.data?.data || []).filter(
+        (ord) => ord.user?._id === user._id || ord.user === user._id
+      );
       setUserOrders(filtered);
     } catch (err) {
       console.error(err);

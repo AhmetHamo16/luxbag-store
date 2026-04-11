@@ -911,7 +911,10 @@ exports.getOrders = async (req, res) => {
          $match: {
            $or: [
              { "userData.name": { $regex: search, $options: 'i' } },
-             { "userData.email": { $regex: search, $options: 'i' } }
+             { "userData.email": { $regex: search, $options: 'i' } },
+             { "shippingAddress.fullName": { $regex: search, $options: 'i' } },
+             { "shippingAddress.email": { $regex: search, $options: 'i' } },
+             { "shippingAddress.phone": { $regex: search, $options: 'i' } }
            ]
          }
        });
