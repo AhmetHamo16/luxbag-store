@@ -95,6 +95,21 @@ const Navbar = () => {
     account: 'Account',
     close: 'Close',
   };
+  if (language === 'ar') {
+    Object.assign(copy, {
+      about: 'من نحن',
+      menu: 'القائمة',
+      language: 'اللغة',
+      wishlist: 'المفضلة',
+      cart: 'السلة',
+      searchPlaceholder: 'ابحثي عن المنتجات...',
+      searchResults: 'المنتجات',
+      viewAllResults: 'عرض كل النتائج',
+      account: 'الحساب',
+      close: 'إغلاق',
+    });
+  }
+  const cashierLabel = language === 'ar' ? 'الكاشير' : language === 'tr' ? 'Kasiyer' : 'Cashier';
 
   React.useEffect(() => {
     const handleEsc = (e) => {
@@ -209,12 +224,12 @@ const Navbar = () => {
                       {t.admin}
                     </Link>
                     <Link to="/cashier" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300 hidden sm:block">
-                      {language === 'ar' ? 'الكاشير' : language === 'tr' ? 'Kasiyer' : 'Cashier'}
+                      {cashierLabel}
                     </Link>
                   </div>
                 ) : user?.role === 'cashier' ? (
                   <Link to="/cashier" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">
-                    {language === 'ar' ? 'الكاشير' : language === 'tr' ? 'Kasiyer' : 'Cashier'}
+                    {cashierLabel}
                   </Link>
                 ) : (
                   <Link to="/user/dashboard" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">

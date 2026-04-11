@@ -507,7 +507,7 @@ const Checkout = () => {
 
         {/* Order Summary Sidebar */}
         <div className="w-full lg:w-1/3">
-          <div className="bg-white p-6 md:p-8 rounded shadow-sm sticky top-28 border border-gray-100">
+          <div className="bg-white p-6 md:p-8 rounded shadow-sm border border-gray-100 lg:sticky lg:top-28">
             <h3 className="text-xl font-serif mb-6">{t.orderSummary || 'Order Summary'}</h3>
             
             <div className="space-y-4 mb-6">
