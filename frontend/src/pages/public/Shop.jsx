@@ -345,7 +345,8 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
 
         {/* Product Grid Area */}
         <main className="w-full flex-1">
-          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="-mx-1 mb-6 overflow-x-auto pb-2 md:mx-0 md:overflow-visible md:pb-0">
+            <div className="flex min-w-max gap-4 px-1 md:grid md:min-w-0 md:grid-cols-2 xl:grid-cols-4">
             {collectionCards.map((card) => {
               const copy = card[language] || card.en;
               const isActive = location.pathname === card.href;
@@ -354,7 +355,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 <Link
                   key={card.key}
                   to={card.href}
-                  className={`group relative overflow-hidden rounded-[28px] border transition-all duration-500 ${
+                  className={`group relative min-w-[260px] overflow-hidden rounded-[28px] border transition-all duration-500 md:min-w-0 ${
                     isActive
                       ? 'border-[#2c1d12] shadow-[0_22px_46px_rgba(44,29,18,0.14)]'
                       : 'border-[#eadcc8] shadow-[0_16px_38px_rgba(71,45,20,0.08)] hover:-translate-y-1 hover:shadow-[0_24px_52px_rgba(71,45,20,0.13)]'
@@ -376,6 +377,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 </Link>
               );
             })}
+            </div>
           </div>
 
           <div className="mb-6 overflow-x-auto rounded-[30px] border border-[#eadcc8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,241,231,0.92))] p-3 shadow-[0_18px_38px_rgba(71,45,20,0.07)] backdrop-blur-sm">
@@ -413,14 +415,14 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
           </div>
           
           {/* Top Bar */}
-          <div className="mb-8 flex flex-col gap-4 rounded-[28px] border border-[#eadcc8] bg-white/88 px-5 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-8 flex flex-col gap-4 rounded-[28px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <span className="text-sm font-medium text-[#6d5a48]">{t.showing?.replace('{count}', products.length) || `Showing ${products.length} products`}</span>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-[#8b6b4b]">{t.sortBy || 'Sort by:'}</span>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-2">
+              <span className="text-xs uppercase tracking-[0.18em] text-[#8b6b4b] sm:text-sm sm:normal-case sm:tracking-normal">{t.sortBy || 'Sort by:'}</span>
               <select 
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                className="rounded-2xl border border-[#dac7b1] bg-[#fffaf5] px-4 py-2 text-sm font-medium text-[#2c1d12] focus:ring-0 cursor-pointer outline-none"
+                className="w-full rounded-2xl border border-[#dac7b1] bg-[#fffaf5] px-4 py-3 text-sm font-medium text-[#2c1d12] focus:ring-0 cursor-pointer outline-none sm:w-auto sm:py-2"
               >
                 <option value="-createdAt">{t.sortNewest || 'Newest'}</option>
                 <option value="price-low">{t.sortPriceLow || 'Price: Low to High'}</option>

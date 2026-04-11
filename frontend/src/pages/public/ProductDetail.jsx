@@ -470,7 +470,7 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="max-w-7xl mx-auto px-4 pb-28 pt-10 sm:px-6 sm:py-16 lg:px-8">
       
       {/* Breadcrumb */}
       <nav className="text-sm mb-8 text-gray-500 flex items-center gap-2">
@@ -606,7 +606,7 @@ const ProductDetail = () => {
 
         {/* Product Details */}
         <div className="w-full md:w-1/2 flex flex-col justify-center">
-          <h1 className="text-4xl font-serif mb-4 text-black">{name}</h1>
+          <h1 className="mb-4 text-3xl font-serif text-black sm:text-4xl">{name}</h1>
           
           {/* Star Rating Display */}
           <div className="flex items-center gap-2 mb-4">
@@ -619,10 +619,10 @@ const ProductDetail = () => {
           </div>
 
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            <div className="rounded-full border border-[#ead9c5] bg-[#fffaf3] px-5 py-3 text-2xl font-medium text-black shadow-[0_12px_28px_rgba(66,42,18,0.07)]">
+            <div className="rounded-full border border-[#ead9c5] bg-[#fffaf3] px-4 py-3 text-xl font-medium text-black shadow-[0_12px_28px_rgba(66,42,18,0.07)] sm:px-5 sm:text-2xl">
               {formatPrice(currentPrice)}
             </div>
-            <div className={`rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] ${canPurchase ? 'border-[#cfe2d0] bg-[#f2faf3] text-[#2f6b38]' : 'border-[#e8c8bc] bg-[#fff4ef] text-[#a45139]'}`}>
+            <div className={`rounded-full border px-4 py-2 text-[11px] font-semibold tracking-[0.14em] sm:text-xs sm:tracking-[0.18em] ${canPurchase ? 'border-[#cfe2d0] bg-[#f2faf3] text-[#2f6b38]' : 'border-[#e8c8bc] bg-[#fff4ef] text-[#a45139]'}`}>
               {canPurchase ? (t.inStock?.replace('{n}', availableStock) || `${availableStock} in stock`) : stockMessages.backSoon}
             </div>
           </div>
@@ -656,7 +656,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Share & Actions */}
-          <div className="flex items-center justify-between border-b border-gray-100 pb-6 mb-6">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-6">
             <button 
               onClick={() => {
                  navigator.clipboard.writeText(window.location.href);
@@ -723,10 +723,10 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div className="mb-10 rounded-[30px] border border-[#eadcc8] bg-white/92 p-5 shadow-[0_18px_40px_rgba(66,42,18,0.07)]">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="mb-10 rounded-[30px] border border-[#eadcc8] bg-white/92 p-4 shadow-[0_18px_40px_rgba(66,42,18,0.07)] sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row">
             {/* Quantity Selector */}
-            <div className="flex items-center rounded-full border border-[#d9c8b4] bg-[#fffaf4] w-fit">
+            <div className="flex w-full items-center justify-center rounded-full border border-[#d9c8b4] bg-[#fffaf4] sm:w-fit sm:justify-start">
               <button onClick={decrement} className="px-4 py-3 text-[#6d563e] hover:bg-[#f5eadc] transition-colors">-</button>
               <span className="px-4 py-3 min-w-12 text-center font-medium text-[#2f2117]">{quantity}</span>
               <button onClick={increment} className="px-4 py-3 text-[#6d563e] hover:bg-[#f5eadc] transition-colors">+</button>
@@ -741,7 +741,7 @@ const ProductDetail = () => {
               href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`} 
               target="_blank" 
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] text-white px-4 md:px-6 py-4 text-sm font-medium uppercase tracking-[0.12em] hover:bg-[#128C7E] transition-colors duration-300 whitespace-nowrap"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-4 text-sm font-medium uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-[#128C7E] sm:w-auto md:px-6 whitespace-nowrap"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.266 2.008.772 2.88l-1.01 3.692 3.774-.99a5.727 5.727 0 002.231.45h.001c3.18 0 5.767-2.586 5.767-5.766 0-3.181-2.588-5.766-5.767-5.766zm0 9.773c-.859 0-1.7-.231-2.435-.668l-.174-.103-1.808.474.484-1.763-.113-.18a4.8 4.8 0 01-.734-2.569c0-2.656 2.16-4.815 4.818-4.815 2.656 0 4.816 2.158 4.816 4.815-.001 2.657-2.16 4.815-4.816 4.815zm2.636-3.606c-.144-.072-.852-.42-984-.468-.132-.048-.228-.072-.324.072s-.372.468-.456.564-.168.108-.312.036-.607-.224-1.157-.714c-.428-.382-.716-.854-.8-1.022-.084-.168-.009-.259.063-.331.065-.065.144-.168.216-.252.072-.084.096-.144.144-.24a.455.455 0 00-.024-.432c-.048-.096-.324-.78-.444-1.068-.117-.281-.236-.243-.324-.248h-.276c-.096 0-.252.036-.384.18s-.504.492-.504 1.2.516 1.392.588 1.488c.072.096 1.016 1.55 2.46 2.174.344.148.613.237.822.303.345.11.659.094.907.057.279-.042.852-.348.972-.684.12-.336.12-.624.084-.684-.038-.059-.133-.083-.277-.155z"></path></svg>
               {ui.orderViaWhatsapp}
@@ -788,7 +788,7 @@ const ProductDetail = () => {
             <h2 className="text-3xl font-serif text-brand mb-4">{ui.related}</h2>
             <div className="w-12 h-[2px] bg-gold mx-auto"></div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
             {relatedProducts.map(prod => (
               <ProductCard key={prod._id} product={prod} />
             ))}
@@ -908,16 +908,16 @@ const ProductDetail = () => {
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e6d8c6] bg-white/96 px-4 py-3 shadow-[0_-16px_40px_rgba(66,42,18,0.12)] backdrop-blur-md md:hidden">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e6d8c6] bg-white/96 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(66,42,18,0.12)] backdrop-blur-md md:hidden">
+        <div className="mx-auto flex max-w-7xl items-center gap-2">
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-[#8a6948]">{name}</div>
+            <div className="truncate text-[10px] uppercase tracking-[0.16em] text-[#8a6948]">{name}</div>
             <div className="mt-1 text-base font-semibold text-[#2f2117]">{formatPrice(currentPrice)}</div>
           </div>
           <button
             disabled={!canPurchase}
             onClick={handleAddToCart}
-            className={`rounded-full px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] ${
+            className={`rounded-full px-4 py-3 text-[10px] font-bold uppercase tracking-[0.14em] ${
               canPurchase ? 'bg-[#2f2117] text-[#f8efe2]' : 'bg-gray-200 text-gray-500'
             }`}
           >
@@ -927,7 +927,7 @@ const ProductDetail = () => {
             href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full bg-[#25D366] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-white"
+            className="rounded-full bg-[#25D366] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
           >
             WA
           </a>
