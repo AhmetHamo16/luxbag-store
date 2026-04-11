@@ -697,7 +697,7 @@ const ProductDetail = () => {
               {product.images?.length > 1 && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); setMainImageIndex(prev => prev === 0 ? product.images.length - 1 : prev - 1); }}
-                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all focus:outline-none z-[110]"
+                  className="absolute left-3 top-1/2 z-[110] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-all hover:bg-white/25 focus:outline-none md:left-8 md:h-12 md:w-12"
                 >
                   &#10094;
                 </button>
@@ -706,7 +706,7 @@ const ProductDetail = () => {
               {product.images?.length > 1 && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); setMainImageIndex(prev => prev === product.images.length - 1 ? 0 : prev + 1); }}
-                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all focus:outline-none z-[110]"
+                  className="absolute right-3 top-1/2 z-[110] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-all hover:bg-white/25 focus:outline-none md:right-8 md:h-12 md:w-12"
                 >
                   &#10095;
                 </button>
@@ -716,36 +716,36 @@ const ProductDetail = () => {
         )}
 
         {/* Product Details */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center">
-          <h1 className="mb-4 text-3xl font-serif text-black sm:text-4xl">{name}</h1>
+        <div className="w-full md:w-1/2 flex flex-col justify-center rounded-[30px] border border-[#eadcc8] bg-white/78 p-4 shadow-[0_18px_40px_rgba(66,42,18,0.05)] backdrop-blur-sm sm:p-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none">
+          <h1 className="mb-3 text-[1.85rem] leading-tight font-serif text-black sm:mb-4 sm:text-4xl">{name}</h1>
           
           {/* Star Rating Display */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <div className="flex text-gold">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} className={`w-4 h-4 ${i < Math.round(product.rating || 0) ? 'fill-current' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
               ))}
             </div>
-            <span className="text-xs text-gray-500 font-medium">({product.reviewCount || 0} reviews)</span>
+            <span className="text-xs font-medium text-gray-500">({product.reviewCount || 0} reviews)</span>
           </div>
 
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <div className="rounded-full border border-[#ead9c5] bg-[#fffaf3] px-4 py-3 text-xl font-medium text-black shadow-[0_12px_28px_rgba(66,42,18,0.07)] sm:px-5 sm:text-2xl">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="rounded-[1.35rem] border border-[#ead9c5] bg-[#fffaf3] px-4 py-3 text-xl font-medium text-black shadow-[0_12px_28px_rgba(66,42,18,0.07)] sm:rounded-full sm:px-5 sm:text-2xl">
               {formatPrice(currentPrice)}
             </div>
-            <div className={`rounded-full border px-4 py-2 text-[11px] font-semibold tracking-[0.14em] sm:text-xs sm:tracking-[0.18em] ${canPurchase ? 'border-[#cfe2d0] bg-[#f2faf3] text-[#2f6b38]' : 'border-[#e8c8bc] bg-[#fff4ef] text-[#a45139]'}`}>
+            <div className={`rounded-[1.2rem] border px-4 py-2 text-[11px] font-semibold tracking-[0.14em] sm:rounded-full sm:text-xs sm:tracking-[0.18em] ${canPurchase ? 'border-[#cfe2d0] bg-[#f2faf3] text-[#2f6b38]' : 'border-[#e8c8bc] bg-[#fff4ef] text-[#a45139]'}`}>
               {canPurchase ? (t.inStock?.replace('{n}', availableStock) || `${availableStock} in stock`) : stockMessages.backSoon}
             </div>
           </div>
           
-          <p className="text-gray-600 leading-relaxed mb-8 text-sm whitespace-pre-line">
+          <p className="mb-8 text-sm leading-7 text-gray-600 whitespace-pre-line">
             {description}
           </p>
-          <div className="mb-8 flex flex-wrap gap-3">
+          <div className="mb-8 -mx-1 flex gap-3 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
             {quickBenefits.map((item) => (
               <div
                 key={item}
-                className="rounded-full border border-[#e6d7c5] bg-white/88 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7d6040] shadow-[0_8px_18px_rgba(66,42,18,0.05)]"
+                className="min-w-max rounded-full border border-[#e6d7c5] bg-white/88 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7d6040] shadow-[0_8px_18px_rgba(66,42,18,0.05)]"
               >
                 {item}
               </div>
@@ -785,7 +785,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Stock Display */}
-          <div className="mb-6 flex flex-col gap-3 rounded-[28px] border border-[#eadcc8] bg-[linear-gradient(180deg,#fffdf9_0%,#f8f0e5_100%)] p-5 text-start shadow-[0_16px_34px_rgba(66,42,18,0.06)]">
+          <div className="mb-6 flex flex-col gap-3 rounded-[28px] border border-[#eadcc8] bg-[linear-gradient(180deg,#fffdf9_0%,#f8f0e5_100%)] p-4 text-start shadow-[0_16px_34px_rgba(66,42,18,0.06)] sm:p-5">
             <span className={`text-sm font-medium ${canPurchase ? 'text-green-600' : 'text-red-500'}`}>
               {canPurchase ? (t.inStock?.replace('{n}', availableStock) || `${availableStock} in stock`) : stockMessages.backSoon}
             </span>
@@ -837,14 +837,14 @@ const ProductDetail = () => {
           <div className="mb-10 rounded-[30px] border border-[#eadcc8] bg-white/92 p-4 shadow-[0_18px_40px_rgba(66,42,18,0.07)] sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row">
             {/* Quantity Selector */}
-            <div className="flex w-full items-center justify-center rounded-full border border-[#d9c8b4] bg-[#fffaf4] sm:w-fit sm:justify-start">
-              <button onClick={decrement} className="px-4 py-3 text-[#6d563e] hover:bg-[#f5eadc] transition-colors">-</button>
-              <span className="px-4 py-3 min-w-12 text-center font-medium text-[#2f2117]">{quantity}</span>
-              <button onClick={increment} className="px-4 py-3 text-[#6d563e] hover:bg-[#f5eadc] transition-colors">+</button>
+            <div className="flex w-full items-center justify-between rounded-[1.35rem] border border-[#d9c8b4] bg-[#fffaf4] sm:w-fit sm:justify-start sm:rounded-full">
+              <button onClick={decrement} className="px-5 py-3 text-[#6d563e] transition-colors hover:bg-[#f5eadc]">-</button>
+              <span className="min-w-12 px-4 py-3 text-center font-medium text-[#2f2117]">{quantity}</span>
+              <button onClick={increment} className="px-5 py-3 text-[#6d563e] transition-colors hover:bg-[#f5eadc]">+</button>
             </div>
             
             {/* Add to Cart */}
-            <button disabled={!canPurchase} onClick={handleAddToCart} className={`flex-1 rounded-full px-6 md:px-8 py-4 text-sm font-bold uppercase tracking-[0.18em] transition-colors duration-300 border whitespace-nowrap ${canPurchase ? 'bg-[#2f2117] text-[#f8efe2] hover:bg-[#8b5e34] border-[#2f2117]' : 'bg-gray-200 text-gray-500 border-gray-200 cursor-not-allowed'}`}>
+            <button disabled={!canPurchase} onClick={handleAddToCart} className={`flex-1 rounded-[1.35rem] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] transition-colors duration-300 border whitespace-nowrap sm:rounded-full md:px-8 ${canPurchase ? 'bg-[#2f2117] text-[#f8efe2] hover:bg-[#8b5e34] border-[#2f2117]' : 'bg-gray-200 text-gray-500 border-gray-200 cursor-not-allowed'}`}>
               {canPurchase ? (t.addToCart || 'Add to Cart') : stockMessages.backSoon}
             </button>
             
@@ -852,7 +852,7 @@ const ProductDetail = () => {
               href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`} 
               target="_blank" 
               rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-4 text-sm font-medium uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-[#128C7E] sm:w-auto md:px-6 whitespace-nowrap"
+              className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] bg-[#25D366] px-4 py-4 text-sm font-medium uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-[#128C7E] sm:w-auto sm:rounded-full md:px-6 whitespace-nowrap"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.266 2.008.772 2.88l-1.01 3.692 3.774-.99a5.727 5.727 0 002.231.45h.001c3.18 0 5.767-2.586 5.767-5.766 0-3.181-2.588-5.766-5.767-5.766zm0 9.773c-.859 0-1.7-.231-2.435-.668l-.174-.103-1.808.474.484-1.763-.113-.18a4.8 4.8 0 01-.734-2.569c0-2.656 2.16-4.815 4.818-4.815 2.656 0 4.816 2.158 4.816 4.815-.001 2.657-2.16 4.815-4.816 4.815zm2.636-3.606c-.144-.072-.852-.42-984-.468-.132-.048-.228-.072-.324.072s-.372.468-.456.564-.168.108-.312.036-.607-.224-1.157-.714c-.428-.382-.716-.854-.8-1.022-.084-.168-.009-.259.063-.331.065-.065.144-.168.216-.252.072-.084.096-.144.144-.24a.455.455 0 00-.024-.432c-.048-.096-.324-.78-.444-1.068-.117-.281-.236-.243-.324-.248h-.276c-.096 0-.252.036-.384.18s-.504.492-.504 1.2.516 1.392.588 1.488c.072.096 1.016 1.55 2.46 2.174.344.148.613.237.822.303.345.11.659.094.907.057.279-.042.852-.348.972-.684.12-.336.12-.624.084-.684-.038-.059-.133-.083-.277-.155z"></path></svg>
               {ui.orderViaWhatsapp}
@@ -894,12 +894,12 @@ const ProductDetail = () => {
 
       {/* Related Products Section */}
       {relatedProducts.length > 0 && (
-        <div className="mt-24 border-t border-gray-100 pt-16">
+        <div className="mt-20 border-t border-gray-100 pt-14 sm:mt-24 sm:pt-16">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-serif text-brand mb-4">{ui.related}</h2>
             <div className="w-12 h-[2px] bg-gold mx-auto"></div>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-8">
             {relatedProducts.map(prod => (
               <ProductCard key={prod._id} product={prod} />
             ))}
@@ -909,14 +909,14 @@ const ProductDetail = () => {
 
       {/* Recently Viewed Section */}
       {recentItems && recentItems.length > 0 && (
-        <div className="mt-24 border-t border-gray-100 pt-16">
+        <div className="mt-20 border-t border-gray-100 pt-14 sm:mt-24 sm:pt-16">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-serif text-brand mb-4">{ui.recentlyViewed}</h2>
             <div className="w-12 h-[2px] bg-gold mx-auto"></div>
           </div>
-          <div className="flex gap-6 overflow-x-auto pb-8 custom-scrollbar">
+          <div className="flex gap-4 overflow-x-auto pb-8 custom-scrollbar sm:gap-6">
             {recentItems.map(item => (
-              <div key={item._id} onClick={() => { window.scrollTo(0, 0); navigate(`/product/${item.slug || item._id}`); }} className="group cursor-pointer min-w-[200px] md:min-w-[250px] flex flex-col">
+              <div key={item._id} onClick={() => { window.scrollTo(0, 0); navigate(`/product/${item.slug || item._id}`); }} className="group cursor-pointer min-w-[180px] md:min-w-[250px] flex flex-col">
                  <div className="aspect-square bg-gray-100 mb-4 overflow-hidden relative rounded-sm">
                     <img loading="lazy" src={resolveAssetUrl(item.images?.[0]?.url || item.images?.[0])} alt={item.name?.en} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                  </div>
