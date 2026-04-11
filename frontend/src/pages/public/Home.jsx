@@ -158,6 +158,19 @@ const Home = () => {
     watches: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600'
   };
 
+  const getCategoryDisplayName = (category) => {
+    const slug = String(category?.slug || '').toLowerCase();
+    if (['glasses', 'sunglasses', 'eyewear'].includes(slug)) {
+      return {
+        en: 'Sunglasses',
+        ar: 'نظارات شمسية',
+        tr: 'Gunes Gozlukleri',
+      }[language] || 'Sunglasses';
+    }
+
+    return category?.name?.[language] || category?.name?.en || 'Category';
+  };
+
   const resolveAssetUrl = (value) => {
     if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
     if (typeof value === 'object') return resolveAssetUrl(value.url);
@@ -170,11 +183,17 @@ const Home = () => {
     return value;
   };
 
-  const categoryCards = categories.map((category) => {
+  const normalizedCategories = categories.filter((category) => {
+    const slug = String(category?.slug || '').toLowerCase();
+    if (slug !== 'glasses') return true;
+    return !categories.some((entry) => String(entry?.slug || '').toLowerCase() === 'sunglasses');
+  });
+
+  const categoryCards = normalizedCategories.map((category) => {
     const forcedCategoryImage = categoryFallbackImages[category?.slug];
     const resolvedImage = forcedCategoryImage || (category?.image ? resolveAssetUrl(category.image) : '');
     return {
-      name: category?.name?.[language] || category?.name?.en || 'Category',
+      name: getCategoryDisplayName(category),
       img: resolvedImage || categoryFallbackImages.classic,
       link: `/shop?category=${category?._id || category?.slug}`,
       key: category?._id || category?.slug || category?.name?.en

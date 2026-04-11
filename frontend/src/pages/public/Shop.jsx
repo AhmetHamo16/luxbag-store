@@ -53,9 +53,9 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     {
       key: 'glasses',
       href: '/glasses',
-      en: 'Glasses',
+      en: 'Sunglasses',
       ar: 'النظارات',
-      tr: 'Gozlukler',
+      tr: 'Gunes Gozlukleri',
     },
   ];
   const collectionCards = [
@@ -87,9 +87,9 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
       key: 'glasses',
       href: '/glasses',
       image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=900&q=80',
-      en: { title: 'Glasses', subtitle: 'Modern frames with a soft statement' },
+      en: { title: 'Sunglasses', subtitle: 'Refined shades with a modern statement' },
       ar: { title: 'النظارات', subtitle: 'إطارات عصرية بلمسة أنيقة وواضحة' },
-      tr: { title: 'Gozlukler', subtitle: 'Modern cizgilerle sade ve sik durus' },
+      tr: { title: 'Gunes Gozlukleri', subtitle: 'Sik gorunum icin modern ve zarif secimler' },
     },
   ];
   const trustBadges = {
@@ -106,7 +106,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   collectionBar[0].tr = 'Tum Urunler';
   collectionBar[1].tr = 'Cantalar';
   collectionBar[3].tr = 'Parfumler';
-  collectionBar[4].tr = 'Gozlukler';
+  collectionBar[4].tr = 'Gunes Gozlukleri';
   collectionCards[0].ar = { title: 'الحقائب', subtitle: 'تصاميم أنيقة مختارة للإطلالات اليومية الراقية' };
   collectionCards[1].ar = { title: 'الساعات', subtitle: 'لمسات فاخرة بتفاصيل هادئة وأنيقة' };
   collectionCards[2].ar = { title: 'العطور', subtitle: 'روائح منتقاة لحضور أنثوي يترك أثرًا جميلًا' };
@@ -114,8 +114,11 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   collectionCards[0].tr = { title: 'Cantalar', subtitle: 'Gunluk siklik icin secilen zarif tasarimlar' };
   collectionCards[1].tr = { title: 'Saatler', subtitle: 'Zarif ve seckin detaylara sahip modeller' };
   collectionCards[2].tr = { title: 'Parfumler', subtitle: 'Kalici ve ozenle secilen yumusak notalar' };
-  collectionCards[3].tr = { title: 'Gozlukler', subtitle: 'Modern cizgilerle sade ve sik durus' };
+  collectionCards[3].tr = { title: 'Gunes Gozlukleri', subtitle: 'Sik gorunum icin modern ve zarif secimler' };
   trustBadges.ar = ['قطع مختارة بعناية', 'دعم سريع', 'أناقة يومية راقية'];
+
+  collectionBar[4].ar = 'نظارات شمسية';
+  collectionCards[3].ar = { title: 'نظارات شمسية', subtitle: 'تصاميم أنيقة تحمي حضورك وتكمل إطلالتك' };
 
   useEffect(() => {
     const defaultSeo = {
@@ -160,6 +163,14 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   const getCategoryName = (category) => {
     if (!category) return 'Unknown';
     if (typeof category === 'string') return category;
+    const slug = String(category.slug || '').toLowerCase();
+    if (['glasses', 'sunglasses', 'eyewear'].includes(slug)) {
+      return {
+        en: 'Sunglasses',
+        ar: 'نظارات شمسية',
+        tr: 'Gunes Gozlukleri',
+      }[language] || 'Sunglasses';
+    }
     return category.name?.[language] || category.name?.en || category.name || 'Unknown';
   };
 
@@ -173,6 +184,16 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
       let fetched = Array.isArray(prodRes.data) ? prodRes.data : (prodRes.data?.data || []);
       
       let categoryRows = Array.isArray(catRes.data) ? catRes.data : (catRes.data?.data || []);
+
+      const hasSunglassesCategory = categoryRows.some(
+        (category) => String(category?.slug || '').toLowerCase() === 'sunglasses'
+      );
+
+      if (hasSunglassesCategory) {
+        categoryRows = categoryRows.filter(
+          (category) => String(category?.slug || '').toLowerCase() !== 'glasses'
+        );
+      }
 
       if (Array.isArray(categorySlugs) && categorySlugs.length > 0) {
         categoryRows = categoryRows.filter((category) => categorySlugs.includes(category.slug));

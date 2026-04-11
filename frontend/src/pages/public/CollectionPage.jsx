@@ -45,16 +45,16 @@ const collectionConfigs = {
     canonicalPath: '/perfumes',
   },
   glasses: {
-    categorySlugs: ['glasses', 'sunglasses'],
+    categorySlugs: ['sunglasses'],
     seo: {
-      en: { title: 'Glasses | Melora Moda', description: 'Shop Melora Moda glasses and sunglasses with curated modern styles.' },
-      ar: { title: 'النظارات | Melora Moda', description: 'تسوقي نظارات Melora Moda الشمسية والطبية بتصاميم مختارة وعصرية.' },
-      tr: { title: 'Gozlukler | Melora Moda', description: 'Melora Moda gunes gozlukleri ve gozluk seckisini kesfedin.' },
+      en: { title: 'Sunglasses | Melora Moda', description: 'Shop Melora Moda sunglasses with curated modern styles and elegant finishing.' },
+      ar: { title: 'نظارات شمسية | Melora Moda', description: 'تسوقي نظارات Melora Moda الشمسية بتصاميم مختارة وعصرية ولمسة أنيقة.' },
+      tr: { title: 'Gunes Gozlukleri | Melora Moda', description: 'Melora Moda gunes gozlukleri seckisini zarif ve modern detaylarla kesfedin.' },
     },
     hero: {
-      en: { title: 'Our Glasses', intro: 'Curated eyewear with clean lines, strong silhouettes, and a polished look.' },
-      ar: { title: 'قسم النظارات', intro: 'نظارات مختارة بخطوط أنيقة وتصاميم تعطي حضورًا عصريًا ومرتبًا.' },
-      tr: { title: 'Gozluk Koleksiyonu', intro: 'Net cizgiler ve guclu siluetlerle secilen gozluk koleksiyonu.' },
+      en: { title: 'Our Sunglasses', intro: 'Curated sunglasses with clean lines, elegant silhouettes, and a polished finish.' },
+      ar: { title: 'قسم النظارات الشمسية', intro: 'نظارات شمسية مختارة بتفاصيل أنيقة وتصاميم تمنحك حضورًا عصريًا ومرتبًا.' },
+      tr: { title: 'Gunes Gozlugu Koleksiyonu', intro: 'Modern hatlar ve zarif durusla secilen gunes gozlugu koleksiyonu.' },
     },
     canonicalPath: '/glasses',
   },
