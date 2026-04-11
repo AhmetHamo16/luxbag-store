@@ -190,13 +190,9 @@ export default function Login() {
                 <label htmlFor="password" className="block text-sm font-medium text-[#5d4b3b]">
                 {copy.passwordLabel}
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b5e34] transition hover:text-[#2f2117]"
-                >
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b5e34]">
                   {showPassword ? copy.hide : copy.show}
-                </button>
+                </span>
               </div>
               <div className="relative">
                 <input
@@ -209,12 +205,25 @@ export default function Login() {
                   })}
                   className={`w-full rounded-2xl border bg-[#fffaf5] p-4 text-sm text-[#2f2117] outline-none transition-colors ${isArabic ? 'pl-16' : 'pr-16'} ${errors.password ? 'border-red-400' : 'border-[#d8c8b5] focus:border-[#8b5e34]'}`}
                 />
-                <div className={`pointer-events-none absolute inset-y-0 flex items-center text-[#a28769] ${isArabic ? 'left-5' : 'right-5'}`}>
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
+                <button
+                  type="button"
+                  aria-label={showPassword ? copy.hide : copy.show}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className={`absolute inset-y-0 flex items-center px-5 text-[#a28769] transition hover:text-[#2f2117] ${isArabic ? 'left-0' : 'right-0'}`}
+                >
+                  {showPassword ? (
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M3 3l18 18" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M10.584 10.587a2 2 0 102.828 2.828" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M9.363 5.365A9.466 9.466 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.771 9.771 0 01-4.204 5.207M6.228 6.228A9.775 9.775 0 002.458 12c1.274 4.057 5.065 7 9.542 7a9.45 9.45 0 005.109-1.484" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
               </div>
               {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
             </div>
