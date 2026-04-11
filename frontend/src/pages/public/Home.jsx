@@ -314,14 +314,14 @@ const Home = () => {
 
   return (
     <div className="w-full bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors">
-      <section className="relative min-h-[92vh] w-full overflow-hidden bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_48%,#f2e5d5_100%)]">
-        <div className="mx-auto grid min-h-[92vh] max-w-7xl grid-cols-1 md:min-h-screen md:grid-cols-2">
-          <div className="relative order-2 flex flex-col justify-center px-4 pb-14 pt-8 sm:px-8 md:order-1 md:px-16 md:pb-16 md:pt-24 lg:px-24">
+      <section className="relative min-h-[88vh] w-full overflow-hidden bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_48%,#f2e5d5_100%)]">
+        <div className="mx-auto grid min-h-[88vh] max-w-7xl grid-cols-1 md:min-h-screen md:grid-cols-2">
+          <div className="relative order-2 flex flex-col justify-center px-4 pb-12 pt-6 sm:px-8 md:order-1 md:px-16 md:pb-16 md:pt-24 lg:px-24">
             <div className="absolute left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
               <img loading="lazy" src="/logo.png" alt="Watermark" className="w-full h-auto object-contain" />
             </div>
             <div className="relative z-20 max-w-xl">
-              <div className="rounded-[28px] border border-white/70 bg-white/45 px-5 py-6 shadow-[0_20px_60px_rgba(77,47,19,0.08)] backdrop-blur-sm sm:px-7 sm:py-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none" style={{ minHeight: '260px', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', direction: slides[currentCopy].dir, textAlign: slides[currentCopy].dir === 'rtl' ? 'right' : 'left' }}>
+              <div className="rounded-[30px] border border-white/70 bg-white/58 px-5 py-6 shadow-[0_20px_60px_rgba(77,47,19,0.1)] backdrop-blur-md sm:px-7 sm:py-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none" style={{ minHeight: '260px', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', direction: slides[currentCopy].dir, textAlign: slides[currentCopy].dir === 'rtl' ? 'right' : 'left' }}>
                 <span className="mb-4 block text-[11px] uppercase tracking-[0.28em] text-[#8b5e34] sm:mb-6 md:text-sm">{copy.collectionLabel}</span>
                 <h1 className="mb-4 font-serif text-[2rem] leading-[1.08] text-[#2f1f15] sm:text-[2.5rem] md:mb-6 md:text-5xl lg:text-6xl">
                   {getHeroTitle(slides[currentCopy])}
@@ -331,7 +331,7 @@ const Home = () => {
                 </p>
               </div>
 
-              <div className="mb-8 mt-5 flex items-center gap-2 text-xs font-bold tracking-widest md:mb-10" dir="ltr">
+              <div className="mb-6 mt-5 inline-flex items-center gap-2 rounded-full border border-[#e3cfb9] bg-white/70 px-4 py-2 text-xs font-bold tracking-widest shadow-sm md:mb-10" dir="ltr">
                 {slides.map((slide, idx) => (
                   <React.Fragment key={slide.lang}>
                     <button type="button" onClick={() => handleLangClick(idx)} className={`${currentCopy === idx ? 'text-[#8b5e34]' : 'text-[#2f1f15]/45 hover:text-[#2f1f15]'}`}>
@@ -342,18 +342,18 @@ const Home = () => {
                 ))}
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-                <Link to="/shop" className="w-full rounded-2xl border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#fffaf4] transition-colors duration-300 hover:bg-[#8b5e34] hover:border-[#8b5e34] dark:border-gold dark:bg-gold dark:text-[#120c08] dark:hover:bg-[#e3c08a] sm:w-auto">
+              <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:gap-4">
+                <Link to="/shop" className="w-full rounded-[1.35rem] border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#fffaf4] shadow-[0_16px_30px_rgba(47,31,21,0.14)] transition-colors duration-300 hover:bg-[#8b5e34] hover:border-[#8b5e34] dark:border-gold dark:bg-gold dark:text-[#120c08] dark:hover:bg-[#e3c08a] sm:w-auto">
                   {content?.heroBanner?.buttonText?.[language] || copy.shopNow || t.shopNow || 'Shop Now'}
                 </Link>
-                <Link to="/categories" className="w-full rounded-2xl border border-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#2f1f15] transition-colors duration-300 hover:bg-[#2f1f15] hover:text-[#fffaf4] dark:border-[var(--border-color)] dark:text-[var(--text-primary)] dark:hover:bg-[var(--bg-card)] dark:hover:text-[var(--text-primary)] sm:w-auto">
+                <Link to="/categories" className="w-full rounded-[1.35rem] border border-[#2f1f15] bg-white/65 px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#2f1f15] transition-colors duration-300 hover:bg-[#2f1f15] hover:text-[#fffaf4] dark:border-[var(--border-color)] dark:text-[var(--text-primary)] dark:hover:bg-[var(--bg-card)] dark:hover:text-[var(--text-primary)] sm:w-auto">
                   {copy.viewCollection}
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="relative order-1 min-h-[42vh] overflow-hidden bg-[#e9d7c2]/25 md:order-2 md:mt-0 md:min-h-screen">
+          <div className="relative order-1 min-h-[38vh] overflow-hidden bg-[#e9d7c2]/25 md:order-2 md:mt-0 md:min-h-screen">
             <div className="absolute inset-0 will-change-transform" style={{ transform: `translateY(${scrollY * 0.16}px)` }}>
               {featuredProducts.length > 0 ? featuredProducts.map((prod, idx) => (
                 <div key={prod._id} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? 'opacity-100' : 'opacity-0'}`}>
@@ -393,15 +393,15 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-24 lg:px-8">
         <div className="mb-16 text-center observe-fade opacity-0 translate-y-10 transition-all duration-700">
           <span className="mb-3 block text-xs font-medium uppercase tracking-widest text-brand">{copy.categoryEyebrow}</span>
           <h2 className="mb-6 font-serif text-3xl text-brand md:text-4xl">{copy.categoryTitle}</h2>
           <div className="mx-auto h-[2px] w-16 bg-gold"></div>
         </div>
-        <div className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-3 md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
+        <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-4 md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
           {categoryCards.map((cat, idx) => (
-            <Link to={cat.link} key={cat.key} className="group relative block h-[320px] min-w-[240px] overflow-hidden rounded-[26px] shadow-md transition-shadow duration-500 hover:shadow-2xl observe-fade opacity-0 translate-y-10 md:h-[420px] md:min-w-0 md:rounded-sm" style={{ transitionDelay: `${idx * 100}ms` }}>
+            <Link to={cat.link} key={cat.key} className="group relative block h-[300px] min-w-[240px] snap-start overflow-hidden rounded-[28px] border border-[#eadcc8] shadow-[0_18px_40px_rgba(71,45,20,0.08)] transition-shadow duration-500 hover:shadow-2xl observe-fade opacity-0 translate-y-10 md:h-[420px] md:min-w-0 md:rounded-sm md:border-0" style={{ transitionDelay: `${idx * 100}ms` }}>
               <img loading="lazy" src={cat.img} alt={cat.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/25 transition-colors duration-500 group-hover:bg-black/50"></div>
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">

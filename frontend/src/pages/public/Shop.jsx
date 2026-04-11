@@ -332,11 +332,11 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
-      <div className="mx-auto max-w-[1500px] px-4 py-10 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-10">
       
-      <div className="mb-10 overflow-hidden rounded-[36px] border border-[#eadcc8] bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_45%,#efe1cf_100%)] shadow-[0_25px_60px_rgba(88,54,27,0.09)]">
+      <div className="mb-8 overflow-hidden rounded-[32px] border border-[#eadcc8] bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_45%,#efe1cf_100%)] shadow-[0_25px_60px_rgba(88,54,27,0.09)] sm:mb-10 sm:rounded-[36px]">
         <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="px-6 py-10 sm:px-10 lg:px-14 lg:py-16">
+          <div className="px-5 py-8 sm:px-10 sm:py-10 lg:px-14 lg:py-16">
             <span className="mb-5 inline-flex rounded-full border border-[#d9c0a2] bg-white/70 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8b5e34]">
               {luxuryCopy.curation}
             </span>
@@ -344,12 +344,12 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
             <p className="mt-5 max-w-2xl text-sm leading-7 text-[#6a5848] sm:text-base">
               {luxuryCopy.intro}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <div className="rounded-2xl border border-[#e5d5c2] bg-white/80 px-4 py-3 shadow-sm">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+              <div className="rounded-[1.35rem] border border-[#e5d5c2] bg-white/80 px-4 py-3 shadow-sm">
                 <div className="text-[10px] uppercase tracking-[0.25em] text-[#9d7a52]">{luxuryCopy.countLabel}</div>
                 <div className="mt-1 text-2xl font-semibold text-[#2c1d12]">{products.length}</div>
               </div>
-              <div className="rounded-2xl border border-[#e5d5c2] bg-white/80 px-4 py-3 shadow-sm">
+              <div className="rounded-[1.35rem] border border-[#e5d5c2] bg-white/80 px-4 py-3 shadow-sm">
                 <div className="text-[10px] uppercase tracking-[0.25em] text-[#9d7a52]">{t.categories || 'Categories'}</div>
                 <div className="mt-1 text-2xl font-semibold text-[#2c1d12]">{Math.max(dbCategories.length - 1, 0)}</div>
               </div>
@@ -414,7 +414,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
         {/* Product Grid Area */}
         <main className="w-full flex-1">
           <div className="-mx-1 mb-6 overflow-x-auto pb-2 md:mx-0 md:overflow-visible md:pb-0">
-            <div className="flex min-w-max gap-4 px-1 md:grid md:min-w-0 md:grid-cols-2 xl:grid-cols-4">
+            <div className="flex min-w-max snap-x snap-mandatory gap-4 px-1 md:grid md:min-w-0 md:grid-cols-2 xl:grid-cols-4">
             {collectionCards.map((card) => {
               const copy = card[language] || card.en;
               const isActive = location.pathname === card.href;
@@ -423,7 +423,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 <Link
                   key={card.key}
                   to={card.href}
-                  className={`group relative min-w-[260px] overflow-hidden rounded-[28px] border transition-all duration-500 md:min-w-0 ${
+                  className={`group relative min-w-[272px] snap-start overflow-hidden rounded-[28px] border transition-all duration-500 md:min-w-0 ${
                     isActive
                       ? 'border-[#2c1d12] shadow-[0_22px_46px_rgba(44,29,18,0.14)]'
                       : 'border-[#eadcc8] shadow-[0_16px_38px_rgba(71,45,20,0.08)] hover:-translate-y-1 hover:shadow-[0_24px_52px_rgba(71,45,20,0.13)]'
@@ -448,7 +448,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
             </div>
           </div>
 
-          <div className="mb-6 overflow-x-auto rounded-[30px] border border-[#eadcc8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,241,231,0.92))] p-3 shadow-[0_18px_38px_rgba(71,45,20,0.07)] backdrop-blur-sm">
+          <div className="mb-6 overflow-x-auto rounded-[26px] border border-[#eadcc8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,241,231,0.92))] p-2.5 shadow-[0_18px_38px_rgba(71,45,20,0.07)] backdrop-blur-sm sm:rounded-[30px] sm:p-3">
             <div className="flex min-w-max items-center gap-2">
               {collectionBar.map((section) => {
                 const isActive = location.pathname === section.href;
@@ -458,7 +458,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                   <Link
                     key={section.key}
                     to={section.href}
-                    className={`rounded-full border px-5 py-3 text-sm font-semibold tracking-[0.08em] transition-all ${
+                    className={`rounded-full border px-4 py-3 text-xs font-semibold tracking-[0.12em] transition-all sm:px-5 sm:text-sm sm:tracking-[0.08em] ${
                       isActive
                         ? 'border-[#2c1d12] bg-[#2c1d12] text-[#f8efe2] shadow-[0_10px_24px_rgba(44,29,18,0.18)]'
                         : 'border-[#e6d7c4] bg-white/90 text-[#6d5a48] hover:border-[#d8bea0] hover:bg-[#fbf2e7] hover:text-[#2c1d12]'
@@ -486,17 +486,17 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
             <button
               type="button"
               onClick={() => setIsMobileFiltersOpen(true)}
-              className="inline-flex flex-1 items-center justify-center rounded-2xl border border-[#d8c4ac] bg-white/92 px-4 py-3 text-sm font-semibold tracking-[0.12em] text-[#2c1d12] shadow-[0_12px_26px_rgba(71,45,20,0.08)]"
+              className="inline-flex flex-1 items-center justify-center rounded-[1.35rem] border border-[#d8c4ac] bg-white/92 px-4 py-3.5 text-sm font-semibold tracking-[0.12em] text-[#2c1d12] shadow-[0_12px_26px_rgba(71,45,20,0.08)]"
             >
               {mobileUi.filters}
             </button>
-            <div className="rounded-2xl border border-[#eadcc8] bg-white/88 px-4 py-3 text-xs font-semibold tracking-[0.14em] text-[#7a5b3a] shadow-[0_10px_22px_rgba(71,45,20,0.06)]">
+            <div className="rounded-[1.35rem] border border-[#eadcc8] bg-white/88 px-4 py-3.5 text-xs font-semibold tracking-[0.14em] text-[#7a5b3a] shadow-[0_10px_22px_rgba(71,45,20,0.06)]">
               {products.length}
             </div>
           </div>
           
           {/* Top Bar */}
-          <div className="mb-8 flex flex-col gap-4 rounded-[28px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div className="mb-8 flex flex-col gap-4 rounded-[26px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:rounded-[28px]">
             <span className="text-sm font-medium text-[#6d5a48]">{t.showing?.replace('{count}', products.length) || `Showing ${products.length} products`}</span>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-2">
               <span className="text-xs uppercase tracking-[0.18em] text-[#8b6b4b] sm:text-sm sm:normal-case sm:tracking-normal">{t.sortBy || 'Sort by:'}</span>
@@ -516,7 +516,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
           {loading ? (
             <Loader />
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
               {products.length > 0 ? products.map(product => (
                 <ProductCard key={product._id} product={product} />
               )) : (

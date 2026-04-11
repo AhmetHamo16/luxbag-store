@@ -167,9 +167,9 @@ const Navbar = () => {
 
   return (
     <>
-    <nav className={`sticky top-0 w-full z-[120] transition-all duration-300 ${isScrolled ? 'backdrop-blur-md shadow-sm dark:border-b dark:border-gold' : 'bg-transparent dark:bg-transparent'} bg-[var(--navbar-bg)] text-[var(--text-primary)]`}>
+    <nav className={`sticky top-0 w-full z-[120] transition-all duration-300 ${isScrolled ? 'backdrop-blur-xl shadow-[0_16px_40px_rgba(44,29,18,0.08)] dark:border-b dark:border-gold' : 'bg-transparent dark:bg-transparent'} bg-[var(--navbar-bg)] text-[var(--text-primary)]`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-[4.25rem] sm:h-16">
+        <div className="flex justify-between items-center h-[4.5rem] sm:h-16 rounded-b-[1.5rem] border-b border-[#eadcc8]/70 bg-white/80 px-1 shadow-[0_8px_24px_rgba(44,29,18,0.04)] backdrop-blur-md md:rounded-none md:border-b-0 md:bg-transparent md:px-0 md:shadow-none">
           
           {/* Logo (allowed to shrink so icons on right are protected) */}
           <div className="shrink flex items-center min-w-[50px]">
@@ -270,7 +270,7 @@ const Navbar = () => {
             <button 
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-[#2f2117] text-[#f8efe2] shadow-[0_10px_20px_rgba(47,33,23,0.18)] transition-colors hover:bg-[#8b5e34] shrink-0 cursor-pointer"
+              className="md:hidden flex h-11 w-11 items-center justify-center rounded-full bg-[#2f2117] text-[#f8efe2] shadow-[0_12px_24px_rgba(47,33,23,0.22)] transition-all hover:bg-[#8b5e34] active:scale-95 shrink-0 cursor-pointer"
               aria-label={copy.menu}
             >
               {isMobileMenuOpen ? (
@@ -336,7 +336,7 @@ const Navbar = () => {
         onClick={() => setIsMobileMenuOpen(false)}
     ></div>
 
-    <div className={`fixed top-[4.25rem] bottom-0 right-0 w-[92%] max-w-[360px] rounded-l-[2rem] border-l border-[#eadcc8] bg-beige dark:bg-[#0a0a0a] dark:border-gold/20 shadow-2xl z-[110] transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`fixed top-[4.5rem] bottom-0 right-0 w-[92%] max-w-[360px] rounded-l-[2rem] border-l border-[#eadcc8] bg-[linear-gradient(180deg,#fffaf5_0%,#f7efe4_100%)] dark:bg-[#0a0a0a] dark:border-gold/20 shadow-2xl z-[110] transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200 dark:border-gray-800">
           <span className="font-serif text-lg text-brand font-bold">{copy.menu}</span>
           <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-brand hover:text-gold transition-colors">
@@ -344,7 +344,7 @@ const Navbar = () => {
           </button>
         </div>
         
-        <div className="h-[calc(100vh-4.25rem-73px)] overflow-y-auto overscroll-contain px-5 py-5 flex flex-col gap-6">
+        <div className="h-[calc(100vh-4.5rem-73px)] overflow-y-auto overscroll-contain px-5 py-5 flex flex-col gap-6">
           <div className="rounded-3xl border border-[var(--border-primary)]/60 bg-white/70 dark:bg-white/5 px-4 py-4 shadow-sm">
             <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-brand/60">
               {copy.language}
@@ -354,6 +354,18 @@ const Navbar = () => {
               <button type="button" onClick={() => setLanguage('ar')} className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${language === 'ar' ? 'bg-brand text-white' : 'bg-transparent text-brand hover:text-gold'}`}>AR</button>
               <button type="button" onClick={() => setLanguage('en')} className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${language === 'en' ? 'bg-brand text-white' : 'bg-transparent text-brand hover:text-gold'}`}>EN</button>
             </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl border border-[#eadcc8] bg-white/80 px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-brand shadow-sm">
+              {t.shop}
+            </Link>
+            <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl border border-[#eadcc8] bg-white/80 px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-brand shadow-sm">
+              {copy.wishlist}
+            </Link>
+            <button type="button" onClick={handleCartClick} className="rounded-2xl border border-[#eadcc8] bg-white/80 px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-brand shadow-sm">
+              {copy.cart}
+            </button>
           </div>
 
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl border border-transparent px-3 py-3 text-brand transition-colors font-medium text-lg hover:border-[#eadcc8] hover:bg-white/65 hover:text-gold">{t.home}</Link>
