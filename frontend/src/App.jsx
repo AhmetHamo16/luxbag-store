@@ -63,6 +63,21 @@ function App() {
   const fetchCurrency = useCurrencyStore(state => state.fetchCurrency);
   const [globalContent, setGlobalContent] = React.useState(null);
 
+  const getDailyVisitKey = React.useCallback(() => {
+    const now = new Date();
+    return `melora_visit_tracked_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }, []);
+
+  const getVisitorId = React.useCallback(() => {
+    const storageKey = 'melora_visitor_id';
+    const existingVisitorId = localStorage.getItem(storageKey);
+    if (existingVisitorId) return existingVisitorId;
+
+    const generatedVisitorId = `visitor_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(storageKey, generatedVisitorId);
+    return generatedVisitorId;
+  }, []);
+
   React.useEffect(() => {
     contentService.getContent().then(res => setGlobalContent(res.data)).catch(() => {});
   }, []);
@@ -77,13 +92,17 @@ function App() {
   }, [fetchCurrency]);
 
   React.useEffect(() => {
-    const visitKey = 'melora_visit_tracked';
+    const visitKey = getDailyVisitKey();
     if (sessionStorage.getItem(visitKey)) return;
+    if (localStorage.getItem(visitKey)) return;
 
-    api.post('/analytics/visit')
-      .then(() => sessionStorage.setItem(visitKey, '1'))
+    api.post('/analytics/visit', { visitorId: getVisitorId() })
+      .then(() => {
+        sessionStorage.setItem(visitKey, '1');
+        localStorage.setItem(visitKey, '1');
+      })
       .catch(() => {});
-  }, []);
+  }, [getDailyVisitKey, getVisitorId]);
 
   return (
     <Router>
