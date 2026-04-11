@@ -9,6 +9,12 @@ const AddProduct = () => {
   const { t, language } = useTranslation('admin');
   const navigate = useNavigate();
   const currencySymbol = '₺';
+  const slugify = (value = '') =>
+    String(value)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   const copy = {
     en: {
       tabs: { general: 'General', specs: 'Specifications', variants: 'Variants & Stock', images: 'Images', seo: 'SEO' },
@@ -347,7 +353,7 @@ const AddProduct = () => {
     
     // Auto-generate slug when nameEn changes
     if (name === 'nameEn') {
-      const autoSlug = inputValue.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const autoSlug = slugify(inputValue);
       setFormData(prev => ({ ...prev, [name]: value, slug: autoSlug }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -406,7 +412,7 @@ const AddProduct = () => {
     try {
       const data = new FormData();
       
-      const finalSlug = formData.slug || formData.nameEn.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const finalSlug = formData.slug || slugify(formData.nameEn);
       const finalSku = formData.sku || `SKU-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
       // Multilingual fields using bracket notation
@@ -504,7 +510,7 @@ const AddProduct = () => {
 
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-serif text-black">{t?.products?.addProduct || 'Add New Product'}</h1>
-        <button onClick={handleSubmit} disabled={loading} className="px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gold transition-colors shadow-sm disabled:opacity-50">
+        <button type="submit" form="productForm" disabled={loading} className="px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gold transition-colors shadow-sm disabled:opacity-50">
           {loading ? '...' : t?.common?.save || 'Save Product'}
         </button>
       </div>
@@ -523,7 +529,7 @@ const AddProduct = () => {
         ))}
       </div>
 
-      <form className="space-y-8" id="productForm">
+      <form className="space-y-8" id="productForm" onSubmit={handleSubmit}>
         {/* --- GENERAL TAB --- */}
         {activeTab === 'general' && (
           <div className="space-y-6 bg-white p-6 rounded shadow-sm border border-gray-100 animate-fadeIn">
