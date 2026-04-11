@@ -15,6 +15,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [filterTrigger, setFilterTrigger] = useState(0);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   
   const { t, language } = useTranslation('shop');
   const location = useLocation();
@@ -288,6 +289,25 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     ...(heroCopy?.[language] || heroCopy?.en || {}),
   };
   const trustCopy = trustBadges[language] || trustBadges.en;
+  const mobileUi = {
+    en: { filters: 'Filters', close: 'Close', apply: 'Apply Filters', clear: 'Reset' },
+    ar: { filters: 'الفلاتر', close: 'إغلاق', apply: 'تطبيق الفلاتر', clear: 'إعادة الضبط' },
+    tr: { filters: 'Filtreler', close: 'Kapat', apply: 'Filtreleri Uygula', clear: 'Sifirla' },
+  }[language] || { filters: 'Filters', close: 'Close', apply: 'Apply Filters', clear: 'Reset' };
+
+  const handleApplyFilters = () => {
+    setFilterTrigger((prev) => prev + 1);
+    setIsMobileFiltersOpen(false);
+  };
+
+  const handleResetFilters = () => {
+    setActiveCategory('');
+    setMinPrice('');
+    setMaxPrice('');
+    setSortOption('-createdAt');
+    setFilterTrigger((prev) => prev + 1);
+    setIsMobileFiltersOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
@@ -336,7 +356,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
         
         {/* Sidebar Filters */}
-        <aside className="w-full lg:w-[310px] lg:flex-shrink-0">
+        <aside className="hidden w-full lg:block lg:w-[310px] lg:flex-shrink-0">
           <div className="space-y-8 rounded-[30px] border border-[#eadcc8] bg-white/88 p-6 shadow-[0_18px_45px_rgba(71,45,20,0.08)] backdrop-blur-md lg:sticky lg:top-28">
             
             {/* Category Filter */}
@@ -364,7 +384,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 <span className="text-[#8b5e34]">-</span>
                 <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} placeholder={t.max} className="w-full rounded-2xl border border-[#dac7b1] bg-[#fffaf5] p-3 text-sm text-[#2c1d12] outline-none transition-colors focus:border-[#8b5e34]" />
               </div>
-              <button onClick={() => setFilterTrigger(prev => prev + 1)} className="w-full rounded-2xl bg-[#2c1d12] py-3 text-sm font-semibold tracking-[0.18em] text-white transition-colors hover:bg-[#8b5e34]">{t.apply}</button>
+              <button onClick={handleApplyFilters} className="w-full rounded-2xl bg-[#2c1d12] py-3 text-sm font-semibold tracking-[0.18em] text-white transition-colors hover:bg-[#8b5e34]">{t.apply}</button>
             </div>
 
           </div>
@@ -440,6 +460,19 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
               </div>
             ))}
           </div>
+
+          <div className="mb-6 flex items-center gap-3 lg:hidden">
+            <button
+              type="button"
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="inline-flex flex-1 items-center justify-center rounded-2xl border border-[#d8c4ac] bg-white/92 px-4 py-3 text-sm font-semibold tracking-[0.12em] text-[#2c1d12] shadow-[0_12px_26px_rgba(71,45,20,0.08)]"
+            >
+              {mobileUi.filters}
+            </button>
+            <div className="rounded-2xl border border-[#eadcc8] bg-white/88 px-4 py-3 text-xs font-semibold tracking-[0.14em] text-[#7a5b3a] shadow-[0_10px_22px_rgba(71,45,20,0.06)]">
+              {products.length}
+            </div>
+          </div>
           
           {/* Top Bar */}
           <div className="mb-8 flex flex-col gap-4 rounded-[28px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5">
@@ -476,6 +509,64 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
         </main>
 
       </div>
+      </div>
+
+      <div className={`fixed inset-0 z-[140] bg-black/45 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${isMobileFiltersOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onClick={() => setIsMobileFiltersOpen(false)} />
+      <div className={`fixed inset-x-0 bottom-0 z-[150] rounded-t-[30px] border border-[#eadcc8] bg-[#fffaf4] px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-5 shadow-[0_-18px_50px_rgba(71,45,20,0.16)] transition-transform duration-300 lg:hidden ${isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+        <div className="mb-5 flex items-center justify-between">
+          <h3 className="text-lg font-serif text-[#2c1d12]">{mobileUi.filters}</h3>
+          <button
+            type="button"
+            onClick={() => setIsMobileFiltersOpen(false)}
+            className="rounded-full border border-[#e4d2bc] px-3 py-1 text-xs font-semibold tracking-[0.14em] text-[#7a5b3a]"
+          >
+            {mobileUi.close}
+          </button>
+        </div>
+
+        <div className="max-h-[65vh] overflow-y-auto pr-1">
+          <div className="mb-6">
+            <h3 className="mb-4 border-b border-[#eadcc8] pb-3 text-lg font-serif tracking-wide text-[#2c1d12]">{t.categories || 'Categories'}</h3>
+            <ul className="space-y-2">
+              {dbCategories.map((cat) => (
+                <li key={cat.value}>
+                  <button
+                    onClick={() => setActiveCategory(cat.value)}
+                    className={`w-full rounded-2xl px-4 py-3 text-left text-sm transition-all ${activeCategory === cat.value ? 'bg-[#2c1d12] text-[#f8efe2] shadow-sm' : 'text-[#6d5a48] hover:bg-[#f8f0e6] hover:text-[#2c1d12]'}`}
+                  >
+                    {cat.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="mb-4 border-b border-[#eadcc8] pb-3 text-lg font-serif tracking-wide text-[#2c1d12]">{t.priceRange}</h3>
+            <div className="mb-4 flex items-center gap-3">
+              <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder={t.min} className="w-full rounded-2xl border border-[#dac7b1] bg-[#fffaf5] p-3 text-sm text-[#2c1d12] outline-none transition-colors focus:border-[#8b5e34]" />
+              <span className="text-[#8b5e34]">-</span>
+              <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder={t.max} className="w-full rounded-2xl border border-[#dac7b1] bg-[#fffaf5] p-3 text-sm text-[#2c1d12] outline-none transition-colors focus:border-[#8b5e34]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className="rounded-2xl border border-[#d8c4ac] bg-white px-4 py-3 text-sm font-semibold tracking-[0.12em] text-[#2c1d12]"
+          >
+            {mobileUi.clear}
+          </button>
+          <button
+            type="button"
+            onClick={handleApplyFilters}
+            className="rounded-2xl bg-[#2c1d12] px-4 py-3 text-sm font-semibold tracking-[0.12em] text-[#f8efe2]"
+          >
+            {mobileUi.apply}
+          </button>
+        </div>
       </div>
     </div>
   );
