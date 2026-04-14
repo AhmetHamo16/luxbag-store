@@ -12,7 +12,7 @@ import ProductCard from '../../components/product/ProductCard';
 import toast from 'react-hot-toast';
 import { contentService } from '../../services/contentService';
 import { getAvailableStock, getStockLevel, isAvailableForPurchase } from '../../utils/stock';
-import { resolveAssetUrl as sharedResolveAssetUrl } from '../../utils/assets';
+import { getProductFallbackImage, resolveAssetUrl as sharedResolveAssetUrl } from '../../utils/assets';
 
 const ProductDetail = () => {
   const { id } = useParams(); // URL param acts as slug/id
@@ -38,9 +38,10 @@ const ProductDetail = () => {
   const imageCount = product?.images?.length || 0;
   const t = translations[language].product;
   const localizedName = product?.name?.[language] || product?.name?.en || product?.name?.ar || product?.name?.tr || 'Unknown';
+  const productFallbackImage = getProductFallbackImage(product);
   const resolveAssetUrl = useCallback(
-    (value) => sharedResolveAssetUrl(value, 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200'),
-    []
+    (value) => sharedResolveAssetUrl(value, productFallbackImage),
+    [productFallbackImage]
   );
   const stockMessages = {
     en: {
@@ -589,7 +590,10 @@ const ProductDetail = () => {
                   src={src} 
                   loading={idx === 0 ? "eager" : "lazy"} 
                   className={`absolute inset-0 h-full w-full object-contain p-6 md:p-8 transition-all duration-500 ease-out group-hover:scale-[1.015] ${mainImageIndex === idx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`} 
-                  alt={`${name} view ${idx + 1}`} 
+                  alt={`${name} view ${idx + 1}`}
+                  onError={(event) => {
+                    event.currentTarget.src = productFallbackImage;
+                  }}
                 />
               )
             })}
@@ -685,6 +689,9 @@ const ProductDetail = () => {
                 className="max-w-full max-h-[90vh] object-contain select-none transition-transform duration-300"
                 style={{ transform: `scale(${lightboxZoom})` }}
                 alt={name}
+                onError={(event) => {
+                  event.currentTarget.src = productFallbackImage;
+                }}
               />
               {/* Prev Button */}
               {product.images?.length > 1 && (

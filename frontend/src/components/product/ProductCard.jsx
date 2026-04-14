@@ -5,7 +5,7 @@ import useTranslation from '../../hooks/useTranslation';
 import useCurrencyStore from '../../store/useCurrencyStore';
 import useWishlistStore from '../../store/useWishlistStore';
 import { getAvailableStock, getStockLevel } from '../../utils/stock';
-import { resolveProductImage } from '../../utils/assets';
+import { getProductFallbackImage, resolveProductImage } from '../../utils/assets';
 
 const ProductCard = ({ product }) => {
   const toggleWishlistStoreItem = useWishlistStore((state) => state.toggleItem);
@@ -47,16 +47,7 @@ const ProductCard = ({ product }) => {
   const langName =
     language === 'ar' ? product.name?.ar : language === 'tr' ? product.name?.tr : product.name?.en;
   const safeName = langName || product.name?.en || (typeof product.name === 'string' ? product.name : 'Unknown');
-  const categorySlug = String(product.category?.slug || product.categorySlug || '').toLowerCase();
-  const categoryFallbackImage =
-    ['glasses', 'sunglasses', 'eyewear'].includes(categorySlug)
-      ? 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=900'
-      : categorySlug === 'watches'
-        ? 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=900'
-        : ['perfume', 'perfumes', 'parfum', 'parfumler'].includes(categorySlug)
-          ? 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=900'
-          : 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=900';
-
+  const categoryFallbackImage = getProductFallbackImage(product);
   const image = resolveProductImage(product, categoryFallbackImage);
   const isSaved = isInWishlist(product._id || product.id);
   const availableStock = getAvailableStock(product);
