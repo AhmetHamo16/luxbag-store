@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../../components/product/ProductCard';
 import Loader from '../../components/shared/Loader';
-import { backendOrigin } from '../../services/api';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
@@ -249,23 +248,20 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     }
   }, [location.search, dbCategories, activeCategory]);
 
-  const resolveAssetUrl = (value) => {
-    if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=900';
-    if (typeof value === 'object') return resolveAssetUrl(value.url);
-    if (typeof value === 'string' && value.includes('\\uploads\\')) {
-      return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
-    }
-    if (typeof value === 'string' && value.startsWith('/uploads/')) {
-      return `${backendOrigin}${value}`;
-    }
-    return value;
-  };
-
-  const heroImages = products.slice(0, 3).map((product) => ({
-    id: product._id,
-    src: resolveAssetUrl(product.images?.[0]?.url || product.images?.[0]),
-    alt: product.name?.[language] || product.name?.en || 'Melora bag'
-  }));
+  const heroImages = [
+    {
+      src: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Melora bags collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=900&q=80',
+      alt: 'Melora eyewear collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Melora perfumes collection',
+    },
+  ];
 
   const defaultLuxuryCopy = {
     en: {
@@ -358,13 +354,13 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
           <div className="relative hidden min-h-[280px] lg:block">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.9),transparent_38%),linear-gradient(180deg,rgba(139,105,20,0.14),rgba(26,14,8,0.04))]"></div>
             <div className="absolute left-10 top-12 h-[300px] w-[280px] overflow-hidden rounded-[36px] border border-white/70 shadow-[0_20px_60px_rgba(65,40,18,0.18)]">
-              <img src={heroImages[0]?.src || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=900'} alt={heroImages[0]?.alt || 'Melora bag'} className="h-full w-full object-cover" />
+              <img src={heroImages[0].src} alt={heroImages[0].alt} className="h-full w-full object-cover" />
             </div>
             <div className="absolute right-12 top-16 h-40 w-40 overflow-hidden rounded-full border border-white/80 shadow-[0_15px_45px_rgba(65,40,18,0.14)]">
-              <img src={heroImages[1]?.src || heroImages[0]?.src || 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=900'} alt={heroImages[1]?.alt || 'Melora bag'} className="h-full w-full object-cover" />
+              <img src={heroImages[1].src} alt={heroImages[1].alt} className="h-full w-full object-cover" />
             </div>
             <div className="absolute bottom-12 left-10 h-[145px] w-[320px] overflow-hidden rounded-[32px] border border-white/80 bg-white/30 shadow-[0_20px_50px_rgba(104,67,31,0.12)]">
-              <img src={heroImages[2]?.src || heroImages[0]?.src || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=900'} alt={heroImages[2]?.alt || 'Melora bag'} className="h-full w-full object-cover" />
+              <img src={heroImages[2].src} alt={heroImages[2].alt} className="h-full w-full object-cover" />
             </div>
             <div className="absolute inset-x-10 bottom-12 rounded-[28px] border border-[#e9d8c3] bg-white/72 p-6 backdrop-blur-md">
               <div className="text-[10px] uppercase tracking-[0.35em] text-[#9d7a52]">{luxuryCopy.precisionSearch}</div>

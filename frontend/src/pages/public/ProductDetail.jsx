@@ -12,7 +12,7 @@ import ProductCard from '../../components/product/ProductCard';
 import toast from 'react-hot-toast';
 import { contentService } from '../../services/contentService';
 import { getAvailableStock, getStockLevel, isAvailableForPurchase } from '../../utils/stock';
-import { backendOrigin } from '../../services/api';
+import { resolveAssetUrl as sharedResolveAssetUrl } from '../../utils/assets';
 
 const ProductDetail = () => {
   const { id } = useParams(); // URL param acts as slug/id
@@ -38,17 +38,10 @@ const ProductDetail = () => {
   const imageCount = product?.images?.length || 0;
   const t = translations[language].product;
   const localizedName = product?.name?.[language] || product?.name?.en || product?.name?.ar || product?.name?.tr || 'Unknown';
-  const resolveAssetUrl = useCallback((value) => {
-    if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
-    if (typeof value === 'object') return resolveAssetUrl(value.url);
-    if (typeof value === 'string' && value.includes('\\uploads\\')) {
-      return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
-    }
-    if (typeof value === 'string' && value.startsWith('/uploads/')) {
-      return `${backendOrigin}${value}`;
-    }
-    return value;
-  }, [backendOrigin]);
+  const resolveAssetUrl = useCallback(
+    (value) => sharedResolveAssetUrl(value, 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200'),
+    []
+  );
   const stockMessages = {
     en: {
       backSoon: 'This design is currently unavailable, but it will be back very soon.',
@@ -653,17 +646,17 @@ const ProductDetail = () => {
 
         {/* Fullscreen Lightbox */}
         {isLightboxOpen && (
-          <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center backdrop-blur-sm">
+          <div className="fixed inset-0 z-[220] bg-black/95 flex items-center justify-center backdrop-blur-sm">
             <button 
               onClick={() => {
                 setIsLightboxOpen(false);
                 setLightboxZoom(1);
               }}
-              className="absolute top-6 right-6 text-white text-4xl hover:text-gold transition-colors z-[110] focus:outline-none"
+              className="absolute top-6 right-6 text-white text-4xl hover:text-gold transition-colors z-[230] focus:outline-none"
             >
               &times;
             </button>
-            <div className="absolute top-6 left-6 z-[110] flex items-center gap-2">
+            <div className="absolute top-6 left-6 z-[230] flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setLightboxZoom((prev) => Math.max(1, Number((prev - 0.25).toFixed(2))))}
@@ -697,7 +690,7 @@ const ProductDetail = () => {
               {product.images?.length > 1 && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); setMainImageIndex(prev => prev === 0 ? product.images.length - 1 : prev - 1); }}
-                  className="absolute left-3 top-1/2 z-[110] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-all hover:bg-white/25 focus:outline-none md:left-8 md:h-12 md:w-12"
+                  className="absolute left-3 top-1/2 z-[230] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-all hover:bg-white/25 focus:outline-none md:left-8 md:h-12 md:w-12"
                 >
                   &#10094;
                 </button>
@@ -706,7 +699,7 @@ const ProductDetail = () => {
               {product.images?.length > 1 && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); setMainImageIndex(prev => prev === product.images.length - 1 ? 0 : prev + 1); }}
-                  className="absolute right-3 top-1/2 z-[110] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-all hover:bg-white/25 focus:outline-none md:right-8 md:h-12 md:w-12"
+                  className="absolute right-3 top-1/2 z-[230] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-all hover:bg-white/25 focus:outline-none md:right-8 md:h-12 md:w-12"
                 >
                   &#10095;
                 </button>
@@ -751,11 +744,7 @@ const ProductDetail = () => {
               </div>
             ))}
           </div>
-          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-[24px] border border-[#eadcc8] bg-[#fffaf3] px-5 py-4 shadow-[0_10px_30px_rgba(73,43,16,0.06)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a6948]">{productFacts.piecesLabel}</p>
-              <p className="mt-2 text-sm font-medium text-[#2f2117]">{productFacts.includedPieces}</p>
-            </div>
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-[24px] border border-[#eadcc8] bg-[#fffaf3] px-5 py-4 shadow-[0_10px_30px_rgba(73,43,16,0.06)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a6948]">{productFacts.materialLabel}</p>
               <p className="mt-2 text-sm font-medium text-[#2f2117]">{productFacts.material}</p>

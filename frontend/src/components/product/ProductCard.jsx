@@ -19,38 +19,22 @@ const ProductCard = ({ product }) => {
       addToWishlist: 'Add to wishlist',
       critical: (count) => `Only ${count} left`,
       out: 'Will be back very soon',
-      singlePiece: 'Single piece',
-      pieceSet: (count) => `${count}-piece set`,
     },
     ar: {
       wishlistAdded: 'تمت الإضافة إلى المفضلة',
       addToWishlist: 'إضافة إلى المفضلة',
       critical: (count) => `متبقي ${count} فقط`,
       out: 'سيتوفر قريبًا من جديد',
-      singlePiece: 'قطعة واحدة',
-      pieceSet: (count) => `طقم ${count} قطع`,
     },
     tr: {
       wishlistAdded: 'Favorilere eklendi',
       addToWishlist: 'Favorilere ekle',
       critical: (count) => `Yalnizca ${count} adet kaldi`,
       out: 'Cok yakinda yeniden stokta olacak',
-      singlePiece: 'Tek parca',
-      pieceSet: (count) => `${count} parcali set`,
     },
   };
 
   const copy = labels[language] || labels.en;
-  if (language === 'ar') {
-    Object.assign(copy, {
-      wishlistAdded: 'تمت الإضافة إلى المفضلة',
-      addToWishlist: 'إضافة إلى المفضلة',
-      critical: (count) => `متبقي ${count} فقط`,
-      out: 'سيتوفر قريبًا من جديد',
-      singlePiece: 'قطعة واحدة',
-      pieceSet: (count) => `طقم ${count} قطع`,
-    });
-  }
 
   const toggleWishlist = (item) => {
     toggleWishlistStoreItem(item);
@@ -60,14 +44,23 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  const langName = language === 'ar' ? product.name?.ar : language === 'tr' ? product.name?.tr : product.name?.en;
+  const langName =
+    language === 'ar' ? product.name?.ar : language === 'tr' ? product.name?.tr : product.name?.en;
   const safeName = langName || product.name?.en || (typeof product.name === 'string' ? product.name : 'Unknown');
-  const image = resolveProductImage(product, 'https://via.placeholder.com/300x400');
+  const categorySlug = String(product.category?.slug || product.categorySlug || '').toLowerCase();
+  const categoryFallbackImage =
+    ['glasses', 'sunglasses', 'eyewear'].includes(categorySlug)
+      ? 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=900'
+      : categorySlug === 'watches'
+        ? 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=900'
+        : ['perfume', 'perfumes', 'parfum', 'parfumler'].includes(categorySlug)
+          ? 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=900'
+          : 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=900';
+
+  const image = resolveProductImage(product, categoryFallbackImage);
   const isSaved = isInWishlist(product._id || product.id);
   const availableStock = getAvailableStock(product);
   const stockLevel = getStockLevel(availableStock);
-  const piecesIncluded = Number(product.specs?.piecesIncluded || 1);
-  const piecesLabel = piecesIncluded > 1 ? copy.pieceSet(piecesIncluded) : copy.singlePiece;
   const hasNewBadge = product.badges?.includes('New');
   const hasFeaturedBadge = product.badges?.includes('Featured') || product.isFeatured;
   const badgeLabel = hasNewBadge ? 'New' : hasFeaturedBadge ? 'Featured' : null;
@@ -91,7 +84,12 @@ const ProductCard = ({ product }) => {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
           </svg>
         </button>
 
@@ -102,18 +100,15 @@ const ProductCard = ({ product }) => {
             loading="lazy"
             className="h-full w-full object-contain object-center bg-[radial-gradient(circle_at_top,#fffefb_0%,#f7f0e6_58%,#ecdfcf_100%)] p-2.5 transition-transform duration-1000 ease-out group-hover:scale-105 sm:p-5"
             onError={(event) => {
-              event.target.src = 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=600';
+              event.currentTarget.src = categoryFallbackImage;
             }}
           />
         </Link>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/18 to-transparent"></div>
-        <div className="absolute left-3 top-3 z-20 rounded-full border border-[#ead7c1] bg-white/92 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#7a5630] shadow-sm dark:border-[var(--border-color)] dark:bg-[var(--bg-card)] dark:text-[var(--text-primary)] sm:left-4 sm:top-4 sm:px-3 sm:text-[10px] sm:tracking-[0.18em]">
-          {piecesLabel}
-        </div>
 
         {badgeLabel && (
-          <div className="absolute left-3 top-12 z-20 rounded-full bg-[#2f2117] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#f8efe2] shadow-[0_10px_18px_rgba(47,33,23,0.16)] sm:left-4 sm:top-14 sm:px-3 sm:text-[10px] sm:tracking-[0.22em]">
+          <div className="absolute left-3 top-3 z-20 rounded-full bg-[#2f2117] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#f8efe2] shadow-[0_10px_18px_rgba(47,33,23,0.16)] sm:left-4 sm:top-4 sm:px-3 sm:text-[10px] sm:tracking-[0.22em]">
             {badgeLabel}
           </div>
         )}
@@ -134,7 +129,10 @@ const ProductCard = ({ product }) => {
       <div className="flex flex-1 flex-col justify-between px-3 pb-4 pt-3 text-center sm:h-[26%] sm:px-5 sm:pb-5 sm:pt-4">
         <div className="mx-auto mb-2 h-px w-10 bg-[#c7aa82] sm:mb-3 sm:w-12"></div>
         <Link to={`/product/${product.slug || product._id || product.id}`} className="block">
-          <h3 className="line-clamp-2 min-h-[2.7rem] font-serif text-[11.5px] font-medium uppercase tracking-[0.08em] text-[#2f2117] dark:text-[var(--text-primary)] sm:min-h-0 sm:text-[15px] sm:tracking-[0.2em]" title={safeName}>
+          <h3
+            className="line-clamp-2 min-h-[2.7rem] font-serif text-[11.5px] font-medium uppercase tracking-[0.08em] text-[#2f2117] dark:text-[var(--text-primary)] sm:min-h-0 sm:text-[15px] sm:tracking-[0.2em]"
+            title={safeName}
+          >
             {safeName}
           </h3>
         </Link>
@@ -142,11 +140,17 @@ const ProductCard = ({ product }) => {
         <div className="mt-2 flex min-h-[42px] items-center justify-center gap-1.5 sm:mt-3 sm:min-h-0 sm:gap-2">
           {product.isSale ? (
             <>
-              <span className="text-[10px] font-light text-gray-400 line-through sm:text-xs">{formatPrice(product.oldPrice)}</span>
-              <span className="text-[13px] font-semibold tracking-[0.08em] text-[#2f2117] dark:text-[var(--text-primary)] sm:text-base sm:tracking-[0.14em]">{formatPrice(product.price)}</span>
+              <span className="text-[10px] font-light text-gray-400 line-through sm:text-xs">
+                {formatPrice(product.oldPrice)}
+              </span>
+              <span className="text-[13px] font-semibold tracking-[0.08em] text-[#2f2117] dark:text-[var(--text-primary)] sm:text-base sm:tracking-[0.14em]">
+                {formatPrice(product.price)}
+              </span>
             </>
           ) : (
-            <span className="rounded-full border border-[#ead9c5] bg-white/88 px-3 py-2 text-[13px] font-semibold tracking-[0.08em] text-[#2f2117] shadow-sm dark:text-[var(--text-primary)] sm:px-4 sm:text-base sm:tracking-[0.14em]">{formatPrice(product.price)}</span>
+            <span className="rounded-full border border-[#ead9c5] bg-white/88 px-3 py-2 text-[13px] font-semibold tracking-[0.08em] text-[#2f2117] shadow-sm dark:text-[var(--text-primary)] sm:px-4 sm:text-base sm:tracking-[0.14em]">
+              {formatPrice(product.price)}
+            </span>
           )}
         </div>
       </div>

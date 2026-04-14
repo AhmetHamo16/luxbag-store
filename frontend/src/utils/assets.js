@@ -4,18 +4,40 @@ export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/3
   if (!value) return fallback;
 
   if (typeof value === 'object') {
-    return resolveAssetUrl(value.url || value.image || value.src, fallback);
+    return resolveAssetUrl(
+      value.url ||
+      value.secure_url ||
+      value.image ||
+      value.src ||
+      value.path ||
+      value.publicUrl,
+      fallback
+    );
   }
 
-  if (typeof value === 'string' && value.includes('\\uploads\\')) {
-    return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
+  if (typeof value !== 'string') return fallback;
+
+  const normalized = value.trim().replace(/\\/g, '/');
+
+  if (!normalized) return fallback;
+
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (normalized.startsWith('//')) return `https:${normalized}`;
+
+  const uploadsIndex = normalized.lastIndexOf('/uploads/');
+  if (uploadsIndex >= 0) {
+    return `${backendOrigin}${normalized.slice(uploadsIndex)}`;
   }
 
-  if (typeof value === 'string' && value.startsWith('/uploads/')) {
-    return `${backendOrigin}${value}`;
+  if (normalized.startsWith('/uploads/')) {
+    return `${backendOrigin}${normalized}`;
   }
 
-  return value;
+  if (normalized.startsWith('uploads/')) {
+    return `${backendOrigin}/${normalized}`;
+  }
+
+  return normalized;
 };
 
 export const resolveProductImage = (item, fallback = 'https://via.placeholder.com/300') => {

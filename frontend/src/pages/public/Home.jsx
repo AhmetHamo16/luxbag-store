@@ -1,6 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { backendOrigin } from '../../services/api';
 import ProductCard from '../../components/product/ProductCard';
 import SkeletonCard from '../../components/shared/SkeletonCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
@@ -9,7 +8,7 @@ import { contentService } from '../../services/contentService';
 import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
 import useLangStore from '../../store/useLangStore';
-import { resolveProductImage } from '../../utils/assets';
+import { resolveAssetUrl, resolveProductImage } from '../../utils/assets';
 
 const Home = () => {
   const { language } = useLangStore();
@@ -169,18 +168,6 @@ const Home = () => {
     }
 
     return category?.name?.[language] || category?.name?.en || 'Category';
-  };
-
-  const resolveAssetUrl = (value) => {
-    if (!value) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200';
-    if (typeof value === 'object') return resolveAssetUrl(value.url);
-    if (typeof value === 'string' && value.includes('\\uploads\\')) {
-      return backendOrigin + value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/');
-    }
-    if (typeof value === 'string' && value.startsWith('/uploads/')) {
-      return backendOrigin + value;
-    }
-    return value;
   };
 
   const normalizedCategories = categories.filter((category) => {
