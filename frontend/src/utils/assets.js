@@ -21,13 +21,13 @@ export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/3
 
   if (!normalized) return fallback;
 
-  if (/^https?:\/\//i.test(normalized)) return normalized;
-  if (normalized.startsWith('//')) return `https:${normalized}`;
-
   const uploadsIndex = normalized.lastIndexOf('/uploads/');
   if (uploadsIndex >= 0) {
     return `${backendOrigin}${normalized.slice(uploadsIndex)}`;
   }
+
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  if (normalized.startsWith('//')) return `https:${normalized}`;
 
   if (normalized.startsWith('/uploads/')) {
     return `${backendOrigin}${normalized}`;
