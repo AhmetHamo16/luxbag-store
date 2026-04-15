@@ -43,13 +43,32 @@ export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/3
 export const resolveProductImage = (item, fallback = 'https://via.placeholder.com/300') => {
   if (!item) return fallback;
 
+  const pickValidImage = (images = []) => {
+    if (!Array.isArray(images) || images.length === 0) return '';
+
+    const candidates = [
+      images.find((entry) => entry?.isMain && (entry?.url || entry)),
+      ...images,
+    ].filter(Boolean);
+
+    for (const entry of candidates) {
+      const value = typeof entry === 'object'
+        ? (entry.url || entry.secure_url || entry.image || entry.src || entry.path || entry.publicUrl)
+        : entry;
+
+      if (typeof value === 'string' && value.trim()) {
+        return value;
+      }
+    }
+
+    return '';
+  };
+
   return resolveAssetUrl(
-    item.images?.[0]?.url ||
-    item.images?.[0] ||
+    pickValidImage(item.images) ||
     item.image?.url ||
     item.image ||
-    item.product?.images?.[0]?.url ||
-    item.product?.images?.[0] ||
+    pickValidImage(item.product?.images) ||
     item.product?.image?.url ||
     item.product?.image,
     fallback
