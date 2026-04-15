@@ -59,6 +59,7 @@ export const resolveProductImage = (item, fallback = 'https://via.placeholder.co
 export const getProductFallbackImage = (item) => {
   const categorySlug = String(item?.category?.slug || item?.categorySlug || '').toLowerCase();
   const name = String(item?.name?.en || item?.name?.tr || item?.name?.ar || '').toLowerCase();
+  const brandedFallback = '/logo.png';
 
   if (['glasses', 'sunglasses', 'eyewear'].includes(categorySlug)) {
     return 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=900';
@@ -78,11 +79,11 @@ export const getProductFallbackImage = (item) => {
     name.includes('cuzdan') ||
     name.includes('cüzdan')
   ) {
-    return 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&q=80&w=900';
+    return brandedFallback;
   }
 
   if (name.includes('accessory') || name.includes('aksesuar')) {
-    return 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=900';
+    return brandedFallback;
   }
 
   return 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&q=80&w=900';
