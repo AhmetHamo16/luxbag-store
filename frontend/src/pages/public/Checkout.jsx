@@ -16,6 +16,7 @@ import { couponService } from '../../services/couponService';
 const Checkout = () => {
   const [step, setStep] = useState(1);
   const [shippingData, setShippingData] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -45,6 +46,12 @@ const Checkout = () => {
       paymentMethod: 'Payment Method',
       editShipping: 'Edit Shipping',
       bankTransfer: 'Direct Bank Transfer',
+      cashOnDelivery: 'Cash on Delivery',
+      choosePaymentMethod: 'Choose how you would like to pay',
+      transferDescription: 'Transfer the full amount, then upload the receipt to confirm your order.',
+      codDescription: 'Place your order now and pay in cash when it arrives at your door.',
+      codBadge: 'No receipt upload required',
+      placeCodOrder: 'Place Cash on Delivery Order',
       accountHolder: 'Account Holder',
       amountToTransfer: 'Amount To Transfer',
       uploadPrompt: 'Upload a clear screenshot of your bank transfer receipt (JPEG, PNG)',
@@ -89,6 +96,12 @@ const Checkout = () => {
       paymentMethod: 'Odeme Yontemi',
       editShipping: 'Teslimati Duzenle',
       bankTransfer: 'Havale / EFT',
+      cashOnDelivery: 'Kapida Odeme',
+      choosePaymentMethod: 'Odeme yontemini secin',
+      transferDescription: 'Tam tutari gonderin, sonra siparisi onaylamak icin dekontu yukleyin.',
+      codDescription: 'Siparisini simdi tamamla, kapiya geldiginde nakit olarak ode.',
+      codBadge: 'Dekont gerekmez',
+      placeCodOrder: 'Kapida Odeme Siparisini Tamamla',
       accountHolder: 'Hesap Sahibi',
       amountToTransfer: 'Transfer Edilecek Tutar',
       uploadPrompt: 'Banka transfer dekontunun net bir ekran goruntusunu yukleyin (JPEG, PNG)',
@@ -109,6 +122,12 @@ const Checkout = () => {
   }[language];
   if (language === 'ar') {
     Object.assign(ui, {
+      cashOnDelivery: 'الدفع عند الباب',
+      choosePaymentMethod: 'اختاري طريقة الدفع المناسبة',
+      transferDescription: 'حوّلي المبلغ كاملًا ثم ارفعي إيصال التحويل لتأكيد الطلب.',
+      codDescription: 'أكملي طلبك الآن وادفعي نقدًا عند وصول الطلب إلى بابك.',
+      codBadge: 'لا يلزم رفع إيصال',
+      placeCodOrder: 'تأكيد طلب الدفع عند الباب',
       savedAddresses: 'العناوين المحفوظة',
       paymentMethod: 'طريقة الدفع',
       editShipping: 'تعديل الشحن',
@@ -137,6 +156,12 @@ const Checkout = () => {
     });
   } else if (language === 'tr') {
     Object.assign(ui, {
+      cashOnDelivery: 'Kapida Odeme',
+      choosePaymentMethod: 'Odeme yontemini secin',
+      transferDescription: 'Tam tutari gonderin, sonra siparisi onaylamak icin dekontu yukleyin.',
+      codDescription: 'Siparisini simdi tamamla, kapiya geldiginde nakit olarak ode.',
+      codBadge: 'Dekont gerekmez',
+      placeCodOrder: 'Kapida Odeme Siparisini Tamamla',
       confirmation: 'Onay',
       securePayment: '256-Bit SSL Guvenli Odeme',
       transferHelp: 'Lutfen tutarin tamamini asagidaki IBAN numarasina gonderin ve siparisi tamamlamak icin dekontu yukleyin.',
@@ -145,6 +170,12 @@ const Checkout = () => {
     });
   } else {
     Object.assign(ui, {
+      cashOnDelivery: 'Cash on Delivery',
+      choosePaymentMethod: 'Choose how you would like to pay',
+      transferDescription: 'Transfer the full amount, then upload the receipt to confirm your order.',
+      codDescription: 'Place your order now and pay in cash when it arrives at your door.',
+      codBadge: 'No receipt upload required',
+      placeCodOrder: 'Place Cash on Delivery Order',
       confirmation: 'Confirmation',
       securePayment: '256-Bit SSL Secure Payment',
       transferHelp: 'Please transfer the exact amount to the IBAN below, then upload your receipt.',
@@ -157,7 +188,9 @@ const Checkout = () => {
       couponApplied: 'Coupon applied successfully!',
       couponInvalid: 'Invalid coupon code.',
       uploadReceiptRequired: 'Please upload your transfer receipt before submitting.',
+      codOrderCreated: 'Cash on delivery order created successfully!',
       createOrderFailed: 'Failed to create order, please try again.',
+      paymentMethodUnavailable: 'This payment method is currently unavailable.',
     },
     ar: {
       couponApplied: 'تم تطبيق الكوبون بنجاح',
@@ -169,20 +202,26 @@ const Checkout = () => {
       couponApplied: 'Kupon basariyla uygulandi!',
       couponInvalid: 'Gecersiz kupon kodu.',
       uploadReceiptRequired: 'Siparisi gondermeden once transfer dekontunu yukleyin.',
+      codOrderCreated: 'Kapida odeme siparisi basariyla olusturuldu!',
       createOrderFailed: 'Siparis olusturulamadi, lutfen tekrar deneyin.',
+      paymentMethodUnavailable: 'Bu odeme yontemi su anda kullanilamiyor.',
     },
   }[language] || {
     couponApplied: 'Coupon applied successfully!',
     couponInvalid: 'Invalid coupon code.',
     uploadReceiptRequired: 'Please upload your transfer receipt before submitting.',
+    codOrderCreated: 'Cash on delivery order created successfully!',
     createOrderFailed: 'Failed to create order, please try again.',
+    paymentMethodUnavailable: 'This payment method is currently unavailable.',
   };
   if (language === 'ar') {
     Object.assign(feedbackCopy, {
       couponApplied: 'تم تطبيق الكوبون بنجاح',
       couponInvalid: 'رمز الكوبون غير صحيح',
       uploadReceiptRequired: 'ارفعي إيصال التحويل قبل إرسال الطلب',
+      codOrderCreated: 'تم إنشاء طلب الدفع عند الباب بنجاح',
       createOrderFailed: 'تعذر إنشاء الطلب، حاولي مرة أخرى',
+      paymentMethodUnavailable: 'طريقة الدفع غير متاحة حاليًا.',
     });
   }
 
@@ -204,6 +243,10 @@ const Checkout = () => {
       }).catch(console.error);
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    setSelectedPaymentMethod((adminSettings?.paymentMethods?.cod ?? true) ? 'cod' : 'iban');
+  }, [adminSettings]);
 
   const handleSelectAddress = (addr, idx) => {
     setSelectedAddressIndex(idx);
@@ -248,9 +291,14 @@ const Checkout = () => {
     }
   };
 
-  const handleIBANSubmit = async () => {
+  const createOrderWithPaymentMethod = async (paymentMethod) => {
     try {
-      if (!receiptFile) return toast.error(t.uploadReceiptRequired || feedbackCopy.uploadReceiptRequired);
+      if (paymentMethod === 'cod' && !(adminSettings?.paymentMethods?.cod ?? true)) {
+        return toast.error(feedbackCopy.paymentMethodUnavailable);
+      }
+      if (paymentMethod === 'iban' && !receiptFile) {
+        return toast.error(t.uploadReceiptRequired || feedbackCopy.uploadReceiptRequired);
+      }
       setIsUploading(true);
       
       const rawItems = cartItems || [];
@@ -279,7 +327,7 @@ const Checkout = () => {
           country: shippingData.country || 'TR',
         },
         payment: {
-          method: 'iban',
+          method: paymentMethod,
           receiptImage: '' // Handled by backend multer
         },
         coupon: {
@@ -293,12 +341,17 @@ const Checkout = () => {
       };
 
       const formData = new FormData();
-      formData.append('receipt', receiptFile);
+      if (paymentMethod === 'iban' && receiptFile) {
+        formData.append('receipt', receiptFile);
+      }
       formData.append('orderData', JSON.stringify(orderData));
 
       const response = await orderService.createOrder(formData);
 
       if (response.success) {
+        if (paymentMethod === 'cod') {
+          toast.success(feedbackCopy.codOrderCreated);
+        }
         clearCart();
         navigate(`/order-confirmation/${response.order._id}`);
       }
@@ -309,6 +362,9 @@ const Checkout = () => {
       setIsUploading(false);
     }
   };
+
+  const handleIBANSubmit = async () => createOrderWithPaymentMethod('iban');
+  const handleCODSubmit = async () => createOrderWithPaymentMethod('cod');
 
   const copyText = async (value, label) => {
     try {
@@ -466,6 +522,50 @@ const Checkout = () => {
                 <p className="text-sm text-gray-600">{shippingData?.address}, {shippingData?.city} {shippingData?.zipCode}</p>
               </div>
 
+              <div className="mb-8">
+                <p className="mb-4 text-sm font-medium text-gray-600">{ui.choosePaymentMethod}</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaymentMethod('iban')}
+                    className={`rounded-[24px] border p-5 text-left transition-all ${selectedPaymentMethod === 'iban' ? 'border-[#8B6914] bg-[#fff7ed] shadow-[0_18px_45px_rgba(139,105,20,0.08)]' : 'border-gray-200 bg-white hover:border-[#c9ab7b]'}`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#8f6b43]">IBAN</p>
+                        <h3 className="mt-2 font-serif text-xl text-[#2b1911]">{ui.bankTransfer}</h3>
+                      </div>
+                      <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${selectedPaymentMethod === 'iban' ? 'border-[#8B6914] bg-[#8B6914]' : 'border-gray-300 bg-white'}`}>
+                        {selectedPaymentMethod === 'iban' && <span className="h-2 w-2 rounded-full bg-white" />}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-gray-600">{ui.transferDescription}</p>
+                  </button>
+
+                  {(adminSettings?.paymentMethods?.cod ?? true) && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod('cod')}
+                      className={`rounded-[24px] border p-5 text-left transition-all ${selectedPaymentMethod === 'cod' ? 'border-[#8B6914] bg-[#fff7ed] shadow-[0_18px_45px_rgba(139,105,20,0.08)]' : 'border-gray-200 bg-white hover:border-[#c9ab7b]'}`}
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <span className="inline-flex rounded-full bg-[#2f2117] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-[#fff3e0]">
+                            {ui.codBadge}
+                          </span>
+                          <h3 className="mt-3 font-serif text-xl text-[#2b1911]">{ui.cashOnDelivery}</h3>
+                        </div>
+                        <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${selectedPaymentMethod === 'cod' ? 'border-[#8B6914] bg-[#8B6914]' : 'border-gray-300 bg-white'}`}>
+                          {selectedPaymentMethod === 'cod' && <span className="h-2 w-2 rounded-full bg-white" />}
+                        </span>
+                      </div>
+                      <p className="mt-3 text-sm leading-6 text-gray-600">{ui.codDescription}</p>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {selectedPaymentMethod === 'iban' && (
                <div className="mb-6 overflow-hidden rounded-[28px] border border-[#e9dcc9] bg-gradient-to-br from-[#fffaf4] via-[#fbf4eb] to-[#f4eadf] text-center shadow-[0_24px_80px_rgba(74,44,23,0.08)]">
                   <div className="border-b border-[#eadcc6] bg-[radial-gradient(circle_at_top,#fff6ea,transparent_65%)] px-6 py-6">
                     <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.45em] text-[#8f6b43]">Melora Bank Transfer</p>
@@ -538,13 +638,35 @@ const Checkout = () => {
                   </div>
                   </div>
                </div>
+              )}
+
+              {selectedPaymentMethod === 'cod' && (
+                <div className="mb-6 overflow-hidden rounded-[28px] border border-[#e9dcc9] bg-gradient-to-br from-[#fffaf4] via-[#fbf4eb] to-[#f4eadf] shadow-[0_24px_80px_rgba(74,44,23,0.08)]">
+                  <div className="border-b border-[#eadcc6] bg-[radial-gradient(circle_at_top,#fff6ea,transparent_65%)] px-6 py-6 text-center">
+                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.45em] text-[#8f6b43]">Melora Cash On Delivery</p>
+                    <h3 className="font-serif text-[30px] text-[#2d1a12]">{ui.cashOnDelivery}</h3>
+                  </div>
+                  <div className="space-y-5 px-6 py-6">
+                    <div className="rounded-[24px] border border-[#e8d7c2] bg-white/90 p-5 shadow-[0_18px_45px_rgba(74,44,23,0.08)]">
+                      <span className="inline-flex rounded-full bg-[#2f2117] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-[#fff3e0]">
+                        {ui.codBadge}
+                      </span>
+                      <p className="mt-4 text-sm leading-7 text-gray-700">{ui.codDescription}</p>
+                      <div className="mt-5 rounded-[18px] border border-[#f0e5d7] bg-[#fffaf4] p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#8b6b46]">{ui.amountToTransfer}</p>
+                        <p className="mt-2 font-serif text-3xl text-[#8B6914]">{formatPrice(total)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
                
                <button 
-                 onClick={handleIBANSubmit} 
-                 disabled={!receiptFile || isUploading}
+                 onClick={selectedPaymentMethod === 'cod' ? handleCODSubmit : handleIBANSubmit} 
+                 disabled={(selectedPaymentMethod === 'iban' && !receiptFile) || isUploading}
                  className="w-full bg-[#4A2C17] text-white py-4 uppercase tracking-widest text-sm font-medium hover:bg-[#8B6914] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                >
-                 {isUploading ? ui.processing : ui.submitTransfer}
+                 {isUploading ? ui.processing : selectedPaymentMethod === 'cod' ? ui.placeCodOrder : ui.submitTransfer}
                </button>
               
               <div className="mt-8 pt-6 border-t border-gray-200">

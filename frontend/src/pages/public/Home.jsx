@@ -6,6 +6,7 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { productService } from '../../services/productService';
 import { contentService } from '../../services/contentService';
 import { categoryService } from '../../services/categoryService';
+import { settingsService } from '../../services/settingsService';
 import useTranslation from '../../hooks/useTranslation';
 import useLangStore from '../../store/useLangStore';
 import { resolveAssetUrl, resolveProductImage } from '../../utils/assets';
@@ -17,6 +18,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState(null);
+  const [adminSettings, setAdminSettings] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentCopy, setCurrentCopy] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -35,7 +37,11 @@ const Home = () => {
       explore: 'Explore',
       designs: 'Signature Pieces',
       customers: 'Private Clients',
-      countries: 'Global Destinations'
+      countries: 'Global Destinations',
+      codBadge: 'Cash On Delivery Available',
+      codTitle: 'Pay at your door with confidence.',
+      codDescription: 'You can now complete your order with cash on delivery or choose direct bank transfer.',
+      heroNotice: 'Cash on delivery available'
     },
     ar: {
       collectionLabel: 'تشكيلة ميلورا الموقعة',
@@ -49,7 +55,11 @@ const Home = () => {
       explore: 'استكشفي',
       designs: 'قطع موقعة',
       customers: 'عميلات مميزات',
-      countries: 'وجهات حول العالم'
+      countries: 'وجهات حول العالم',
+      codBadge: 'الدفع عند الباب متوفر',
+      codTitle: 'اطلبي الآن وادفعي عند الباب بكل راحة.',
+      codDescription: 'يمكنك الآن إتمام الطلب عبر الدفع عند الباب أو اختيار التحويل البنكي المباشر.',
+      heroNotice: 'الدفع عند الباب متوفر'
     },
     tr: {
       collectionLabel: 'Melora Imza Koleksiyonu',
@@ -63,7 +73,11 @@ const Home = () => {
       explore: 'Kesfet',
       designs: 'Imza Parca',
       customers: 'Seckin Musteri',
-      countries: 'Ulasilan Ulke'
+      countries: 'Ulasilan Ulke',
+      codBadge: 'Kapıda ödeme mevcuttur',
+      codTitle: 'Siparisini ver, kapida guvenle ode.',
+      codDescription: 'Artik siparisini kapida odeme ile tamamlayabilir veya banka havalesini tercih edebilirsin.',
+      heroNotice: 'Kapıda ödeme mevcuttur'
     }
   };
 
@@ -82,6 +96,10 @@ const Home = () => {
       designs: 'قطع موقعة',
       customers: 'عميلات مميزات',
       countries: 'وجهات حول العالم',
+      codBadge: 'الدفع عند الباب متوفر',
+      codTitle: 'اطلبي الآن وادفعي عند الباب بكل راحة.',
+      codDescription: 'يمكنك الآن إتمام الطلب عبر الدفع عند الباب أو اختيار التحويل البنكي المباشر.',
+      heroNotice: 'الدفع عند الباب متوفر',
     });
   }
 
@@ -231,14 +249,16 @@ const Home = () => {
     const fetchHomeData = async () => {
       try {
         setLoading(true);
-        const [prodRes, contentRes, categoryRes] = await Promise.all([
+        const [prodRes, contentRes, categoryRes, settingsRes] = await Promise.all([
           productService.getProducts({ limit: 4 }),
           contentService.getContent(),
-          categoryService.getCategories()
+          categoryService.getCategories(),
+          settingsService.getSettings()
         ]);
         setFeaturedProducts(prodRes.data?.data || prodRes.data || []);
         setContent(contentRes.data);
         setCategories(categoryRes?.data || []);
+        setAdminSettings(settingsRes?.data || null);
       } catch (error) {
         console.error('Error fetching home products', error);
       } finally {
@@ -309,6 +329,12 @@ const Home = () => {
               <img loading="lazy" src="/logo.png" alt="Watermark" className="w-full h-auto object-contain" />
             </div>
             <div className="relative z-20 max-w-xl">
+              {adminSettings?.paymentMethods?.cod && (
+                <div className="mb-4 inline-flex items-center gap-3 rounded-full border border-[#c9a36a] bg-[#2f1f15] px-5 py-3 text-[12px] font-bold uppercase tracking-[0.24em] text-[#fff4df] shadow-[0_16px_40px_rgba(47,31,21,0.18)]">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#e8c27a]" />
+                  <span>{copy.codBadge}</span>
+                </div>
+              )}
               <div className="rounded-[30px] border border-white/70 bg-white/58 px-5 py-6 shadow-[0_20px_60px_rgba(77,47,19,0.1)] backdrop-blur-md sm:px-7 sm:py-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none" style={{ minHeight: '260px', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', direction: slides[currentCopy].dir, textAlign: slides[currentCopy].dir === 'rtl' ? 'right' : 'left' }}>
                 <span className="mb-4 block text-[11px] uppercase tracking-[0.28em] text-[#8b5e34] sm:mb-6 md:text-sm">{copy.collectionLabel}</span>
                 <h1 className="mb-4 font-serif text-[2rem] leading-[1.08] text-[#2f1f15] sm:text-[2.5rem] md:mb-6 md:text-5xl lg:text-6xl">

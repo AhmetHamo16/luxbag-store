@@ -24,6 +24,11 @@ const api = axios.create({
 // Request Interceptor: Attach Access Token
 api.interceptors.request.use(
   (config) => {
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+      // Let the browser set the multipart boundary automatically.
+      delete config.headers['Content-Type'];
+    }
+
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
