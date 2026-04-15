@@ -1,5 +1,15 @@
 import { backendOrigin } from '../services/api';
 
+const isLocalHost =
+  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+const uploadsOrigin =
+  typeof window === 'undefined'
+    ? 'https://luxbag-store-production.up.railway.app'
+    : isLocalHost
+      ? backendOrigin
+      : 'https://luxbag-store-production.up.railway.app';
+
 export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/300') => {
   if (!value) return fallback;
 
@@ -23,18 +33,18 @@ export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/3
 
   const uploadsIndex = normalized.lastIndexOf('/uploads/');
   if (uploadsIndex >= 0) {
-    return `${backendOrigin}${normalized.slice(uploadsIndex)}`;
+    return `${uploadsOrigin}${normalized.slice(uploadsIndex)}`;
   }
 
   if (/^https?:\/\//i.test(normalized)) return normalized;
   if (normalized.startsWith('//')) return `https:${normalized}`;
 
   if (normalized.startsWith('/uploads/')) {
-    return `${backendOrigin}${normalized}`;
+    return `${uploadsOrigin}${normalized}`;
   }
 
   if (normalized.startsWith('uploads/')) {
-    return `${backendOrigin}/${normalized}`;
+    return `${uploadsOrigin}/${normalized}`;
   }
 
   return normalized;
