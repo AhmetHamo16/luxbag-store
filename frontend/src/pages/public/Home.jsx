@@ -154,7 +154,8 @@ const Home = () => {
     eyewear: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600',
     perfumes: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600',
     perfume: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600',
-    watches: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600'
+    watches: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600',
+    wallet: '/logo.png'
   };
 
   const getCategoryDisplayName = (category) => {
@@ -389,7 +390,15 @@ const Home = () => {
         <div className="-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-4 md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
           {categoryCards.map((cat, idx) => (
             <Link to={cat.link} key={cat.key} className="group relative block h-[300px] min-w-[240px] snap-start overflow-hidden rounded-[28px] border border-[#eadcc8] shadow-[0_18px_40px_rgba(71,45,20,0.08)] transition-shadow duration-500 hover:shadow-2xl observe-fade opacity-0 translate-y-10 md:h-[420px] md:min-w-0 md:rounded-sm md:border-0" style={{ transitionDelay: `${idx * 100}ms` }}>
-              <img loading="lazy" src={cat.img} alt={cat.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+              <img
+                loading="lazy"
+                src={cat.img}
+                alt={cat.name}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                onError={(event) => {
+                  event.currentTarget.src = '/logo.png';
+                }}
+              />
               <div className="absolute inset-0 bg-black/25 transition-colors duration-500 group-hover:bg-black/50"></div>
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                 <h3 className="mb-3 font-serif text-2xl text-white drop-shadow-md">{cat.name}</h3>
