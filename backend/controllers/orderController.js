@@ -96,6 +96,70 @@ const notifyAdminForBankTransfer = async (order) => {
   }
 };
 
+const getOrderCustomerEmail = (order) => (
+  order?.shippingAddress?.email?.trim()
+  || order?.user?.email?.trim()
+  || ''
+);
+
+const getOrderCustomerName = (order) => (
+  order?.shippingAddress?.fullName?.trim()
+  || order?.user?.name?.trim()
+  || 'Melora customer'
+);
+
+const getStatusEmailContent = (status, order) => {
+  const trackingNumber = order?.trackingNumber || '';
+
+  switch (status) {
+    case 'confirmed':
+      return {
+        subject: 'Your Melora order has been confirmed',
+        message: 'Your order has been approved and confirmed by our team. We will start preparing it shortly.',
+        trackingNumber: ''
+      };
+    case 'processing':
+      return {
+        subject: 'Your Melora order is being prepared',
+        message: 'Your order is now being prepared and packed for shipment.',
+        trackingNumber: ''
+      };
+    case 'out_for_delivery':
+    case 'shipped':
+      return {
+        subject: 'Your Melora order is now in shipment',
+        message: 'Your order has been handed over for shipping and is now on the way to you.',
+        trackingNumber
+      };
+    default:
+      return null;
+  }
+};
+
+const notifyCustomerAboutOrderStatus = async (order, status) => {
+  const customerEmail = getOrderCustomerEmail(order);
+  if (!customerEmail) return;
+
+  const statusEmail = getStatusEmailContent(status, order);
+  if (!statusEmail) return;
+
+  try {
+    await sendEmail({
+      to: customerEmail,
+      subject: statusEmail.subject,
+      type: 'orderStatusUpdate',
+      data: {
+        orderId: order._id,
+        customerName: getOrderCustomerName(order),
+        message: statusEmail.message,
+        trackingNumber: statusEmail.trackingNumber
+      }
+    });
+  } catch (error) {
+    console.error('Customer status notification failed:', error.message);
+  }
+};
+
 const decrementOrderStock = async (items) => {
   for (const item of items) {
     if (item.variant) {
@@ -792,7 +856,7 @@ exports.getPosShifts = async (req, res) => {
 exports.getOrderAlerts = async (req, res) => {
   try {
     const limit = Math.min(20, Math.max(1, Number(req.query.limit || 8)));
-    const statuses = ['pending_payment', 'pending', 'processing'];
+    const statuses = ['pending_payment', 'pending', 'confirmed', 'processing'];
     const orders = await Order.find({
       salesChannel: 'online',
       status: { $in: statuses }
@@ -850,6 +914,9 @@ exports.markOrderPreparing = async (req, res) => {
 
     order.status = 'processing';
     await order.save();
+    setImmediate(() => {
+      notifyCustomerAboutOrderStatus(order, 'processing');
+    });
 
     res.status(200).json({
       success: true,
@@ -987,26 +1054,24 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate('user', 'name email');
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-    
-    if (req.body.status) {
-      order.status = req.body.status;
-      if (req.body.status === 'processing' && order.payment.method === 'iban') {
+    const nextStatus = req.body.status;
+
+    if (nextStatus) {
+      order.status = nextStatus;
+      if (['confirmed', 'processing', 'out_for_delivery', 'shipped', 'delivered'].includes(nextStatus) && order.payment.method === 'iban') {
         order.payment.status = 'paid';
       }
-      if (req.body.status === 'cancelled' && order.payment.method === 'iban' && order.payment.status === 'pending_payment') {
+      if (nextStatus === 'cancelled' && order.payment.method === 'iban' && order.payment.status === 'pending_payment') {
         order.payment.status = 'failed';
       }
     }
     if (req.body.trackingNumber) order.trackingNumber = req.body.trackingNumber;
     
     await order.save();
-    
-    if (req.body.status === 'shipped' && order.user?.email) {
-      await sendEmail({
-        to: order.user.email,
-        subject: 'Your Melora Order Has Shipped',
-        type: 'shippingUpdate',
-        data: { orderId: order._id, trackingNumber: order.trackingNumber || 'Pending Tracking ID' }
+
+    if (nextStatus) {
+      setImmediate(() => {
+        notifyCustomerAboutOrderStatus(order, nextStatus);
       });
     }
 
@@ -1029,8 +1094,8 @@ exports.cancelOrder = async (req, res) => {
       return res.status(403).json({ success: false, message: 'User not authorized to update this order' });
     }
 
-    if (order.status !== 'pending' && req.user.role !== 'admin') {
-      return res.status(400).json({ success: false, message: 'Cannot cancel an order that is already processing or shipped. Contact support.' });
+    if (!['pending', 'confirmed'].includes(order.status) && req.user.role !== 'admin') {
+      return res.status(400).json({ success: false, message: 'Cannot cancel an order that is already being prepared or sent. Contact support.' });
     }
 
     order.status = 'cancelled';

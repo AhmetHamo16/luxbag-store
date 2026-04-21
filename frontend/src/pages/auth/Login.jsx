@@ -254,11 +254,12 @@ export default function Login() {
             </div>
           </form>
 
-          <div className="mt-8 text-center text-sm text-[#7a6653]">
-            {copy.footerPrompt}{' '}
-            <Link to="/register" className="font-medium text-[#2f2117] hover:text-[#8b5e34] transition-colors">
-              {copy.footerAction}
-            </Link>
+          <div className="mt-8 rounded-2xl border border-[#eadcc8] bg-[#fff7ef] px-4 py-3 text-center text-sm text-[#7a6653]">
+            {language === 'ar'
+              ? 'تسجيل الدخول هنا مخصص فقط للأدمن والكاشير.'
+              : language === 'tr'
+                ? 'Bu giris ekrani yalnizca admin ve kasiyer icindir.'
+                : 'This sign-in screen is for admin and cashier accounts only.'}
           </div>
         </div>
         </div>

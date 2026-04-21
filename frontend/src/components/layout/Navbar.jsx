@@ -231,11 +231,7 @@ const Navbar = () => {
                   <Link to="/cashier" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">
                     {cashierLabel}
                   </Link>
-                ) : (
-                  <Link to="/user/dashboard" className="text-[10px] sm:text-sm font-medium hover:text-gold transition-colors duration-300">
-                    {t.dashboard}
-                  </Link>
-                )}
+                ) : null}
                 <button type="button" onClick={handleLogout} className="text-brand hover:text-gold transition-colors duration-300 text-[10px] sm:text-sm font-medium shrink-0">
                   {t.logout}
                 </button>
@@ -387,7 +383,7 @@ const Navbar = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Link
-                  to={user?.role === 'admin' ? '/admin' : user?.role === 'cashier' ? '/cashier' : '/user/dashboard'}
+                  to={user?.role === 'admin' ? '/admin' : user?.role === 'cashier' ? '/cashier' : '/'}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="rounded-2xl bg-[#2f2117] px-4 py-3 text-center text-sm font-semibold text-[#f8efe2] shadow-[0_12px_24px_rgba(47,33,23,0.18)]"
                 >

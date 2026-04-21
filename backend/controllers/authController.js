@@ -23,34 +23,10 @@ const getRefreshCookieOptions = () => {
 
 // Register User
 exports.register = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ success: false, message: 'User already exists' });
-    }
-    user = await User.create({ name, email, password });
-    
-    // SEND WELCOME EMAIL
-    await sendEmail({
-      to: user.email,
-      subject: 'Welcome to Melora Boutique',
-      type: 'welcome',
-      data: { name: user.name }
-    });
-    
-    const { accessToken, refreshToken } = generateTokens(user._id);
-
-    res.cookie('jwt', refreshToken, getRefreshCookieOptions());
-
-    res.status(201).json({
-      success: true,
-      data: { _id: user._id, name: user.name, email: user.email, role: user.role },
-      accessToken
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
+  return res.status(403).json({
+    success: false,
+    message: 'Customer account registration is disabled. Only admin and cashier accounts can sign in.'
+  });
 };
 
 // Login User
@@ -63,6 +39,12 @@ exports.login = async (req, res) => {
     }
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+    if (!['admin', 'cashier'].includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'This login is only for admin and cashier accounts.'
+      });
     }
 
     const { accessToken, refreshToken } = generateTokens(user._id);

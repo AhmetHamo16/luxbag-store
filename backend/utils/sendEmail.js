@@ -51,6 +51,17 @@ const sendEmail = async ({ to, subject, type, data }) => {
         </div>
       `;
       break;
+    case 'orderStatusUpdate':
+      htmlContent = `
+        <div style="font-family: Arial, sans-serif;">
+          <h2 style="color: #1E1E1E;">Melora Order Update</h2>
+          <p>Hello ${data.customerName || 'Melora customer'},</p>
+          <p>${data.message}</p>
+          <p><strong>Order ID:</strong> ${data.orderId}</p>
+          ${data.trackingNumber ? `<p><strong>Tracking Number:</strong> ${data.trackingNumber}</p>` : ''}
+        </div>
+      `;
+      break;
     case 'passwordReset':
       htmlContent = `
         <div style="font-family: Arial, sans-serif; text-align: center;">

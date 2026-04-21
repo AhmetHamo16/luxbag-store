@@ -440,21 +440,22 @@ const Checkout = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
+                    <label className="block text-sm font-medium mb-1">{t.emailAddress || 'Email Address'}</label>
+                    <input type="email" {...register("email", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
+                    {errors.email && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium mb-1">{t.firstName || 'First Name'}</label>
                     <input {...register("firstName", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
                     {errors.firstName && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">{t.lastName || 'Last Name'}</label>
-                    <input {...register("lastName", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
-                    {errors.lastName && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium mb-1">{t.emailAddress || 'Email Address'}</label>
-                    <input type="email" {...register("email", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
+                    <label className="block text-sm font-medium mb-1">{t.lastName || 'Last Name'}</label>
+                    <input {...register("lastName", { required: true })} className="w-full border border-gray-300 p-3 focus:outline-none focus:border-black" />
+                    {errors.lastName && <span className="text-red-500 text-xs mt-1">{ui.required}</span>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">{t.phoneNumber || 'Phone Number'}</label>

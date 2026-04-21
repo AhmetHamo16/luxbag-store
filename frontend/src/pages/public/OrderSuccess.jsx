@@ -112,7 +112,7 @@ const OrderSuccess = () => {
       )}
 
       <div className="space-x-4">
-        <Link to="/user/dashboard" className="inline-block bg-[#2f1f15] px-8 py-3 font-medium uppercase tracking-widest text-white transition-colors hover:bg-gold">
+        <Link to="/shop" className="inline-block bg-[#2f1f15] px-8 py-3 font-medium uppercase tracking-widest text-white transition-colors hover:bg-gold">
           {content.viewOrders}
         </Link>
         <Link to="/shop" className="inline-block border border-[var(--border-color)] bg-[var(--bg-card)] px-8 py-3 font-medium uppercase tracking-widest transition-colors hover:opacity-90">
