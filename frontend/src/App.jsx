@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import SitewideCodBanner from './components/layout/SitewideCodBanner';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminRoute from './components/admin/AdminRoute';
 import CashierRoute from './components/admin/CashierRoute';
@@ -29,7 +30,6 @@ const Cart = lazy(() => import('./pages/public/Cart'));
 const Checkout = lazy(() => import('./pages/public/Checkout'));
 const OrderSuccess = lazy(() => import('./pages/public/OrderSuccess'));
 const Login = lazy(() => import('./pages/auth/Login'));
-const Register = lazy(() => import('./pages/auth/Register'));
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const Dashboard = lazy(() => import('./pages/user/Dashboard'));
@@ -114,6 +114,7 @@ function App() {
             <>
               <AnnouncementBar content={globalContent?.announcementBar} />
               <Navbar />
+              <SitewideCodBanner />
               <CartDrawer />
               <main className="grow">
                 <Suspense fallback={<PageLoader />}>
@@ -133,14 +134,12 @@ function App() {
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/order-success" element={<OrderSuccess />} />
                     <Route path="/order-confirmation/:id" element={<OrderSuccess />} />
+                    <Route path="/checkout" element={<Checkout />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password/:token" element={<ResetPassword />} />
-                    
-                    {/* Protected User Routes */}
+
                     <Route element={<ProtectedRoute />}>
-                      <Route path="/checkout" element={<Checkout />} />
                       <Route path="/user/dashboard" element={<Dashboard />}>
                          <Route index element={<Orders />} />
                          <Route path="profile" element={<Profile />} />
@@ -186,6 +185,7 @@ function App() {
           <Route path="/cashier" element={<CashierRoute />}>
             <Route element={<CashierLayout />}>
               <Route index element={<Suspense fallback={<PageLoader />}><CashierPOS /></Suspense>} />
+              <Route path="orders" element={<Suspense fallback={<PageLoader />}><OrderList /></Suspense>} />
             </Route>
           </Route>
 
