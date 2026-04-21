@@ -8,16 +8,33 @@ const stripHtml = (html = '') =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const isPlaceholderValue = (value = '') => {
+  const normalized = String(value || '').trim().toLowerCase();
+  return !normalized || ['placeholder', 'replace_with_email_password', 'changeme'].includes(normalized);
+};
+
 const sendEmail = async ({ to, subject, type, data }) => {
-  if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn(`Email skipped for "${subject}" because email environment variables are not fully configured.`);
+  if (
+    !process.env.EMAIL_HOST ||
+    !process.env.EMAIL_USER ||
+    !process.env.EMAIL_PASS ||
+    isPlaceholderValue(process.env.EMAIL_PASS)
+  ) {
+    console.warn(
+      `Email skipped for "${subject}" because SMTP settings are missing or still using a placeholder password.`
+    );
     return false;
   }
 
+  const smtpPort = Number(process.env.EMAIL_PORT || 465);
+  const smtpSecure = String(process.env.EMAIL_SECURE || '').trim()
+    ? String(process.env.EMAIL_SECURE).trim().toLowerCase() === 'true'
+    : smtpPort === 465;
+
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT || 465,
-    secure: true,
+    port: smtpPort,
+    secure: smtpSecure,
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
@@ -106,8 +123,9 @@ const sendEmail = async ({ to, subject, type, data }) => {
   }
 
   const fromAddress = process.env.EMAIL_FROM || process.env.STORE_EMAIL || process.env.EMAIL_USER;
+  const fromName = process.env.STORE_NAME || 'Melora Boutique';
   const mailOptions = {
-    from: `"Melora Boutique" <${fromAddress}>`,
+    from: `"${fromName}" <${fromAddress}>`,
     to,
     subject,
     html: htmlContent,

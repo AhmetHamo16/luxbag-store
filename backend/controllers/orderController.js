@@ -239,7 +239,7 @@ const notifyCustomerAboutOrderStatus = async (order, status) => {
   if (!statusEmail) return;
 
   try {
-    await sendEmail({
+    const emailSent = await sendEmail({
       to: customerEmail,
       subject: statusEmail.subject,
       type: 'orderStatusUpdate',
@@ -255,6 +255,12 @@ const notifyCustomerAboutOrderStatus = async (order, status) => {
         language: getOrderPreferredLanguage(order)
       }
     });
+
+    if (!emailSent) {
+      console.warn(
+        `Customer status email was not sent for order ${order._id} because SMTP delivery is not configured correctly.`
+      );
+    }
   } catch (error) {
     console.error('Customer status notification failed:', error.message);
   }
