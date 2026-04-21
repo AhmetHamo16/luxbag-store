@@ -117,20 +117,59 @@ const sendEmail = async ({ to, subject, type, data }) => {
       `;
       break;
     case 'orderStatusUpdate':
+      const orderStatusCopy = {
+        ar: {
+          intro: 'تحديث أنيق بخصوص طلبك من ميلورا.',
+          noteLabel: 'رسالة خاصة',
+          fallbackTitle: 'تحديث طلبك من ميلورا',
+          fallbackGreeting: 'مرحباً',
+          fallbackCustomer: 'عميل ميلورا',
+          detailsLabel: 'تفاصيل الطلب',
+          orderIdLabel: 'رقم الطلب',
+          trackingLabel: 'رقم التتبع',
+          fallbackCta: 'متابعة حالة الطلب',
+          footer: 'تفاصيل راقية، خدمة مميزة، وتجربة تسوق أنيقة في كل طلب.',
+        },
+        tr: {
+          intro: 'Melora siparisinizle ilgili ozenli bir guncelleme.',
+          noteLabel: 'Size Ozel',
+          fallbackTitle: 'Melora Siparis Guncellemesi',
+          fallbackGreeting: 'Merhaba',
+          fallbackCustomer: 'Melora musterisi',
+          detailsLabel: 'Siparis Detaylari',
+          orderIdLabel: 'Siparis No',
+          trackingLabel: 'Takip Numarasi',
+          fallbackCta: 'Siparis durumunu goruntuleyin',
+          footer: 'Her sipariste ozenli detaylar, ust duzey hizmet ve rafine bir alisveris deneyimi.',
+        },
+        en: {
+          intro: 'A refined update regarding your Melora order.',
+          noteLabel: 'Personal Note',
+          fallbackTitle: 'Melora Order Update',
+          fallbackGreeting: 'Hello',
+          fallbackCustomer: 'Melora customer',
+          detailsLabel: 'Order Details',
+          orderIdLabel: 'Order ID',
+          trackingLabel: 'Tracking Number',
+          fallbackCta: 'View order status',
+          footer: 'Crafted details, elevated service, and a refined shopping experience in every order.',
+        },
+      };
+      const copy = orderStatusCopy[data.language] || orderStatusCopy.en;
       htmlContent = `
         <div style="margin:0; padding:0; background:#f5efe8; direction:${data.language === 'ar' ? 'rtl' : 'ltr'}; font-family:Georgia, 'Times New Roman', serif;">
           <div style="max-width:680px; margin:0 auto; padding:40px 18px;">
             <div style="background:radial-gradient(circle at top,#9a6b3f 0%,#5b3c24 40%,#24170f 100%); border-radius:28px 28px 0 0; padding:26px 34px; color:#fff9f1; box-shadow:0 16px 40px rgba(39,22,13,0.18);">
               <div style="font-size:12px; letter-spacing:0.42em; text-transform:uppercase; opacity:0.78;">Melora</div>
               <div style="margin-top:22px; width:72px; height:1px; background:rgba(255,248,239,0.42);"></div>
-              <h2 style="margin:22px 0 10px; font-size:34px; line-height:1.22; font-weight:700;">${data.title || 'Melora Order Update'}</h2>
-              <p style="margin:0; max-width:420px; font-family:Arial, sans-serif; font-size:14px; line-height:1.8; color:rgba(255,248,239,0.88);">A refined update regarding your Melora order.</p>
+              <h2 style="margin:22px 0 10px; font-size:34px; line-height:1.22; font-weight:700;">${data.title || copy.fallbackTitle}</h2>
+              <p style="margin:0; max-width:420px; font-family:Arial, sans-serif; font-size:14px; line-height:1.8; color:rgba(255,248,239,0.88);">${copy.intro}</p>
             </div>
 
             <div style="background:#fffdfa; border:1px solid #e8d8c8; border-top:none; border-radius:0 0 28px 28px; padding:34px; box-shadow:0 18px 40px rgba(71,42,23,0.08);">
               <p style="margin:0 0 16px; color:#2b1b12; font-family:Arial, sans-serif; font-size:17px; line-height:1.8;">
-                <span style="display:block; font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#a27b57; margin-bottom:10px;">Personal Note</span>
-                ${data.greeting || 'Hello'} ${data.customerName || 'Melora customer'},
+                <span style="display:block; font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#a27b57; margin-bottom:10px;">${copy.noteLabel}</span>
+                ${data.greeting || copy.fallbackGreeting} ${data.customerName || copy.fallbackCustomer},
               </p>
 
               <p style="margin:0 0 24px; color:#594535; font-family:Arial, sans-serif; font-size:15px; line-height:2;">
@@ -138,15 +177,15 @@ const sendEmail = async ({ to, subject, type, data }) => {
               </p>
 
               <div style="border:1px solid #eadfce; border-radius:20px; background:linear-gradient(180deg,#fffdfa 0%,#faf4ed 100%); padding:22px 22px 18px; margin:0 0 26px;">
-                <div style="font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:#ad8764; font-family:Arial, sans-serif; margin-bottom:14px;">Order Details</div>
+                <div style="font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:#ad8764; font-family:Arial, sans-serif; margin-bottom:14px;">${copy.detailsLabel}</div>
                 <table role="presentation" style="width:100%; border-collapse:collapse; font-family:Arial, sans-serif;">
                   <tr>
-                    <td style="padding:0 0 10px; color:#7c6451; font-size:13px;">Order ID</td>
+                    <td style="padding:0 0 10px; color:#7c6451; font-size:13px;">${copy.orderIdLabel}</td>
                     <td style="padding:0 0 10px; color:#2a1b12; font-size:14px; font-weight:700; text-align:${data.language === 'ar' ? 'left' : 'right'};">${data.orderId}</td>
                   </tr>
                   ${data.trackingNumber ? `
                   <tr>
-                    <td style="padding:10px 0 0; border-top:1px solid #efe4d8; color:#7c6451; font-size:13px;">Tracking Number</td>
+                    <td style="padding:10px 0 0; border-top:1px solid #efe4d8; color:#7c6451; font-size:13px;">${copy.trackingLabel}</td>
                     <td style="padding:10px 0 0; border-top:1px solid #efe4d8; color:#2a1b12; font-size:14px; font-weight:700; text-align:${data.language === 'ar' ? 'left' : 'right'};">${data.trackingNumber}</td>
                   </tr>` : ''}
                 </table>
@@ -155,14 +194,14 @@ const sendEmail = async ({ to, subject, type, data }) => {
               ${data.trackUrl ? `
               <div style="margin:0 0 26px;">
                 <a href="${data.trackUrl}" style="display:inline-block; padding:15px 28px; border-radius:999px; text-decoration:none; background:linear-gradient(135deg,#2d1d13 0%,#6c492c 100%); color:#fffaf4; font-family:Arial, sans-serif; font-size:13px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; box-shadow:0 12px 24px rgba(71,42,23,0.18);">
-                  ${data.cta || 'View order status'}
+                  ${data.cta || copy.fallbackCta}
                 </a>
               </div>` : ''}
 
               <div style="padding-top:18px; border-top:1px solid #efe4d8;">
                 <p style="margin:0; color:#8a705c; font-family:Arial, sans-serif; font-size:12px; line-height:1.9;">
                   Melora Boutique<br />
-                  Crafted details, elevated service, and a refined shopping experience in every order.
+                  ${copy.footer}
                 </p>
               </div>
             </div>

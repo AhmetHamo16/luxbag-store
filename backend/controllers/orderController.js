@@ -127,6 +127,21 @@ const getOrderPreferredLanguage = (order) => {
   return ['ar', 'tr', 'en'].includes(language) ? language : 'en';
 };
 
+const repairArabicMojibake = (value = '') => {
+  const text = String(value || '');
+
+  if (!text || !/[ÃØÙ]/.test(text)) {
+    return text;
+  }
+
+  try {
+    const repaired = Buffer.from(text, 'latin1').toString('utf8');
+    return /[\u0600-\u06FF]/.test(repaired) ? repaired : text;
+  } catch (_error) {
+    return text;
+  }
+};
+
 const getStatusEmailContent = (status, order) => {
   const language = getOrderPreferredLanguage(order);
   const trackingNumber = order?.trackingNumber || '';
@@ -248,41 +263,65 @@ const getStatusEmailContent = (status, order) => {
 
   const selected = localizedContent[language] || localizedContent.en;
 
+  let payload = null;
+
   switch (status) {
     case 'pending_payment':
-      return {
+      payload = {
         ...selected.pending_payment,
         trackingNumber: '',
         trackUrl
       };
+      break;
     case 'pending':
-      return {
+      payload = {
         ...selected.pending,
         trackingNumber: '',
         trackUrl
       };
+      break;
     case 'confirmed':
-      return {
+      payload = {
         ...selected.confirmed,
         trackingNumber: '',
         trackUrl
       };
+      break;
     case 'processing':
-      return {
+      payload = {
         ...selected.processing,
         trackingNumber: '',
         trackUrl
       };
+      break;
     case 'out_for_delivery':
     case 'shipped':
-      return {
+      payload = {
         ...selected.shipped,
         trackingNumber,
         trackUrl
       };
+      break;
     default:
-      return null;
+      payload = null;
   }
+
+  if (!payload) {
+    return null;
+  }
+
+  if (language !== 'ar') {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    subject: repairArabicMojibake(payload.subject),
+    title: repairArabicMojibake(payload.title),
+    greeting: repairArabicMojibake(payload.greeting),
+    message: repairArabicMojibake(payload.message),
+    cta: repairArabicMojibake(payload.cta),
+  };
 };
 
 const notifyCustomerAboutOrderStatus = async (order, status) => {
