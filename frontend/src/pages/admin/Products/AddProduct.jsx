@@ -171,7 +171,7 @@ const AddProduct = () => {
       basePrice: 'Temel Fiyat',
       salePrice: 'Indirimli Fiyat',
       costPrice: 'Maliyet Fiyati',
-      select: 'Sec...',
+      select: 'Seç...',
       baseSku: 'Temel SKU',
       bagType: 'Canta Turu',
       general: 'Genel',
@@ -186,23 +186,23 @@ const AddProduct = () => {
       generateBarcode: 'Barkod Uret',
       publishNow: 'Hemen Yayinla',
       featureHomepage: 'Ana sayfada one cikar',
-      productBadges: 'Urun Rozetleri',
+      productBadges: 'Ürün Rozetleri',
       specifications: 'Ozellikler',
-      variantsTitle: 'Urun Varyantlari',
+      variantsTitle: 'Ürün Varyantları',
       addVariant: 'Varyant Ekle',
-      noVariants: 'Henuz varyant yok. Urun temel stok ayarlariyla kullanilacak.',
+      noVariants: 'Henüz varyant yok. Ürün temel stok ayarlarıyla kullanılacak.',
       warehouseQty: 'Depo Adedi',
       stockHint: 'Stok 1 veya 2 adede indiginde yonetim panelinde dusuk stok uyarisı gorunur.',
       color: 'Renk *',
       size: 'Beden *',
       sku: 'SKU *',
       stockQty: 'Stok Adedi *',
-      remove: 'Kaldir',
+      remove: 'Kaldır',
       mediaGallery: 'Medya Galerisi',
-      noImages: 'Secili gorsel yok.',
+      noImages: 'Seçili görsel yok.',
       thumbnail: 'Kapak Gorseli',
       seoTitle: 'Arama Motoru Optimizasyonu',
-      seoHint: 'Urun adina ve aciklamaya gore otomatik olusturmak icin bos birakin.',
+      seoHint: 'Ürün adına ve açıklamaya göre otomatik oluşturmak için boş bırakın.',
       metaTitle: 'Meta Basligi',
       metaDescription: 'Meta Aciklamasi',
       urlSlug: 'URL Slug',
@@ -222,7 +222,7 @@ const AddProduct = () => {
       sizes: 'Mevcut Bedenler (virgulle ayirin)',
       colorsPlaceholder: 'Kirmizi, Mavi, Altin',
       sizesPlaceholder: 'S, M, L, XL',
-      failedAdd: 'Urun eklenemedi',
+      failedAdd: 'Ürün eklenemedi',
       requiredName: 'Ingilizce urun adi gereklidir.',
       requiredDescription: 'Ingilizce aciklama gereklidir.',
       requiredPrice: 'Temel fiyat gereklidir.',
@@ -778,8 +778,13 @@ const AddProduct = () => {
             {images.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {images.map((file, i) => (
-                  <div key={i} className="group relative bg-gray-200 aspect-square rounded overflow-hidden shadow-sm">
-                    <img loading="lazy" src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                  <div key={i} className="group relative aspect-square rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+                    <img
+                      loading="lazy"
+                      src={URL.createObjectURL(file)}
+                      alt="preview"
+                      className="h-full w-full object-contain"
+                    />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <button type="button" onClick={() => removeImage(i)} className="bg-red-500 text-white p-2 rounded-full text-xs hover:bg-red-600">Delete</button>
                     </div>

@@ -839,7 +839,7 @@ const EditProduct = () => {
             
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                {existingImages.map((imgObj, i) => (
-                 <div key={`exist-${i}`} className="group relative bg-gray-100 aspect-square rounded overflow-hidden shadow-sm">
+                 <div key={`exist-${i}`} className="group relative aspect-square rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
                    <img
                      loading="lazy"
                      src={resolveAssetUrl(imgObj, getProductFallbackImage({
@@ -847,7 +847,7 @@ const EditProduct = () => {
                        category: categories.find((cat) => cat._id === formData.category),
                      }))}
                      alt="existing"
-                     className="w-full h-full object-cover"
+                     className="h-full w-full object-contain"
                      onError={(event) => {
                        event.currentTarget.src = getProductFallbackImage({
                          name: { en: formData.nameEn, ar: formData.nameAr, tr: formData.nameTr },
@@ -862,8 +862,8 @@ const EditProduct = () => {
                ))}
                
                {images.map((file, i) => (
-                 <div key={`new-${i}`} className="group relative bg-blue-50 aspect-square rounded overflow-hidden shadow-sm">
-                   <img loading="lazy" src={URL.createObjectURL(file)} alt="new preview" className="w-full h-full object-cover opacity-80" />
+                 <div key={`new-${i}`} className="group relative aspect-square rounded-2xl border border-blue-200 bg-white p-3 shadow-sm">
+                   <img loading="lazy" src={URL.createObjectURL(file)} alt="new preview" className="h-full w-full object-contain opacity-90" />
                    <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded shadow">{copy.newLabel}</div>
                    <button type="button" onClick={() => removeNewImage(i)} className="absolute top-1 right-1 bg-white text-red-500 p-1 rounded-full text-xs shadow hover:bg-red-50">&times;</button>
                  </div>
