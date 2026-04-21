@@ -21,7 +21,14 @@ const sendEmail = async ({ to, subject, type, data }) => {
     isPlaceholderValue(process.env.EMAIL_PASS)
   ) {
     console.warn(
-      `Email skipped for "${subject}" because SMTP settings are missing or still using a placeholder password.`
+      `Email skipped for "${subject}" because SMTP settings are missing or still using a placeholder password.`,
+      {
+        emailHost: process.env.EMAIL_HOST || '',
+        emailUser: process.env.EMAIL_USER || '',
+        emailFrom: process.env.EMAIL_FROM || process.env.STORE_EMAIL || '',
+        hasEmailPass: Boolean(process.env.EMAIL_PASS),
+        placeholderPassword: isPlaceholderValue(process.env.EMAIL_PASS),
+      }
     );
     return false;
   }
@@ -133,11 +140,38 @@ const sendEmail = async ({ to, subject, type, data }) => {
   };
 
   try {
+    console.log('Attempting email delivery', {
+      to,
+      subject,
+      type,
+      fromAddress,
+      smtpHost: process.env.EMAIL_HOST,
+      smtpPort,
+      smtpSecure,
+    });
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.messageId}`);
+    console.log('Email sent successfully', {
+      messageId: info.messageId,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response,
+    });
     return true;
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error('Email sending failed:', {
+      message: error.message,
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode,
+      to,
+      subject,
+      type,
+      fromAddress,
+      smtpHost: process.env.EMAIL_HOST,
+      smtpPort,
+      smtpSecure,
+    });
     return false;
   }
 };

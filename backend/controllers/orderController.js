@@ -287,12 +287,33 @@ const getStatusEmailContent = (status, order) => {
 
 const notifyCustomerAboutOrderStatus = async (order, status) => {
   const customerEmail = getOrderCustomerEmail(order);
-  if (!customerEmail) return;
+  if (!customerEmail) {
+    console.warn('Customer status email skipped because no customer email was found on the order.', {
+      orderId: order?._id,
+      status,
+      shippingEmail: order?.shippingAddress?.email || '',
+      userEmail: order?.user?.email || '',
+    });
+    return;
+  }
 
   const statusEmail = getStatusEmailContent(status, order);
-  if (!statusEmail) return;
+  if (!statusEmail) {
+    console.warn('Customer status email skipped because no email template matched the order status.', {
+      orderId: order?._id,
+      status,
+      customerEmail,
+    });
+    return;
+  }
 
   try {
+    console.log('Preparing customer status email.', {
+      orderId: order?._id,
+      status,
+      customerEmail,
+      paymentMethod: order?.payment?.method || '',
+    });
     const emailSent = await sendEmail({
       to: customerEmail,
       subject: statusEmail.subject,
@@ -311,9 +332,11 @@ const notifyCustomerAboutOrderStatus = async (order, status) => {
     });
 
     if (!emailSent) {
-      console.warn(
-        `Customer status email was not sent for order ${order._id} because SMTP delivery is not configured correctly.`
-      );
+      console.warn('Customer status email was not sent.', {
+        orderId: order?._id,
+        status,
+        customerEmail,
+      });
     }
   } catch (error) {
     console.error('Customer status notification failed:', error.message);
