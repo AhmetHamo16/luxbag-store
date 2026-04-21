@@ -773,7 +773,7 @@ const AddProduct = () => {
               <h2 className="text-lg font-medium text-black">{copy.mediaGallery}</h2>
             </div>
             
-            <input type="file" multiple onChange={handleFileChange} accept="image/jpeg,image/png,image/webp" className="w-full border border-dashed border-gray-300 p-8 text-center cursor-pointer mb-6 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors" />
+            <input type="file" multiple onChange={handleFileChange} accept="image/*,.jfif,.avif,.heic,.heif" className="w-full border border-dashed border-gray-300 p-8 text-center cursor-pointer mb-6 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors" />
             
             {images.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">

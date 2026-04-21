@@ -6,12 +6,25 @@ const { cloudinary, hasCloudinaryConfig } = require('../config/cloudinary');
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'products');
 fs.mkdirSync(uploadsDir, { recursive: true });
 
+const allowedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif', '.avif', '.heic', '.heif']);
+
+const isAllowedImageFile = (file = {}) => {
+  const mime = String(file.mimetype || '').toLowerCase();
+  const ext = path.extname(file.originalname || '').toLowerCase();
+
+  if (mime.startsWith('image/')) {
+    return true;
+  }
+
+  return allowedImageExtensions.has(ext);
+};
+
 const storage = hasCloudinaryConfig
   ? new (require('multer-storage-cloudinary').CloudinaryStorage)({
       cloudinary,
       params: {
         folder: 'melora/products',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'jfif', 'avif', 'heic', 'heif'],
       },
     })
   : multer.diskStorage({
@@ -30,7 +43,14 @@ const storage = hasCloudinaryConfig
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }
+  fileFilter: (_req, file, cb) => {
+    if (isAllowedImageFile(file)) {
+      return cb(null, true);
+    }
+
+    cb(new Error('Only image files are allowed for product uploads'));
+  },
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 module.exports = upload;
