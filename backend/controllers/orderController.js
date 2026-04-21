@@ -134,6 +134,20 @@ const getStatusEmailContent = (status, order) => {
 
   const localizedContent = {
     ar: {
+      pending_payment: {
+        subject: 'ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨Ùƒ Ù…Ù† Ù…ÙŠÙ„ÙˆØ±Ø§ ÙˆØ¨Ø§Ù†ØªØ¸Ø§Ø± ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø¯ÙØ¹',
+        title: 'ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨Ùƒ',
+        greeting: 'Ù…Ø±Ø­Ø¨Ø§Ù‹',
+        message: 'Ø§Ø³ØªÙ„Ù…Ù†Ø§ Ø·Ù„Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­. Ø³Ù†Ø±Ø§Ø¬Ø¹ Ø¥ÙŠØµØ§Ù„ Ø§Ù„Ø¯ÙØ¹ ÙˆÙ†Ø±Ø³Ù„ Ù„Ùƒ ØªØ­Ø¯ÙŠØ«Ø§Øª Ø§Ù„Ø·Ù„Ø¨ Ù…Ø¨Ø§Ø´Ø±Ø© Ø¹Ù„Ù‰ Ù‡Ø°Ø§ Ø§Ù„Ø¨Ø±ÙŠØ¯.',
+        cta: 'Ù…ØªØ§Ø¨Ø¹Ø© Ø­Ø§Ù„Ø© Ø§Ù„Ø·Ù„Ø¨',
+      },
+      pending: {
+        subject: 'ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨Ùƒ Ù…Ù† Ù…ÙŠÙ„ÙˆØ±Ø§',
+        title: 'ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨Ùƒ',
+        greeting: 'Ù…Ø±Ø­Ø¨Ø§Ù‹',
+        message: 'ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­ØŒ ÙˆÙØ±ÙŠÙ‚ Ù…ÙŠÙ„ÙˆØ±Ø§ Ø³ÙŠØ¨Ø¯Ø£ Ù…Ø±Ø§Ø¬Ø¹ØªÙ‡ ÙˆØªØ­Ø¶ÙŠØ±Ù‡ ÙÙŠ Ø£Ù‚Ø±Ø¨ ÙˆÙ‚Øª.',
+        cta: 'Ù…ØªØ§Ø¨Ø¹Ø© Ø­Ø§Ù„Ø© Ø§Ù„Ø·Ù„Ø¨',
+      },
       confirmed: {
         subject: 'تم تأكيد طلبك من ميلورا',
         title: 'تم قبول طلبك',
@@ -157,6 +171,20 @@ const getStatusEmailContent = (status, order) => {
       },
     },
     tr: {
+      pending_payment: {
+        subject: 'Melora siparisiniz alindi, odeme onayi bekleniyor',
+        title: 'Siparisiniz alindi',
+        greeting: 'Merhaba',
+        message: 'Siparisinizi basariyla aldik. Odeme dekontunuz kontrol edildikten sonra size e-posta ile bilgi verecegiz.',
+        cta: 'Siparis durumunu gor',
+      },
+      pending: {
+        subject: 'Melora siparisiniz alindi',
+        title: 'Siparisiniz alindi',
+        greeting: 'Merhaba',
+        message: 'Siparisiniz basariyla alindi. Melora ekibi siparisinizi kisa sure icinde inceleyip hazirlamaya baslayacak.',
+        cta: 'Siparis durumunu gor',
+      },
       confirmed: {
         subject: 'Melora siparisiniz onaylandi',
         title: 'Siparisiniz kabul edildi',
@@ -180,6 +208,20 @@ const getStatusEmailContent = (status, order) => {
       },
     },
     en: {
+      pending_payment: {
+        subject: 'We received your Melora order and are reviewing your payment',
+        title: 'Your order has been received',
+        greeting: 'Hello',
+        message: 'We have received your order successfully. We will review your payment receipt and keep you updated by email.',
+        cta: 'View order status',
+      },
+      pending: {
+        subject: 'We received your Melora order',
+        title: 'Your order has been received',
+        greeting: 'Hello',
+        message: 'Your order has been placed successfully. The Melora team will review it and begin preparing it shortly.',
+        cta: 'View order status',
+      },
       confirmed: {
         subject: 'Your Melora order has been confirmed',
         title: 'Your order has been approved',
@@ -207,6 +249,18 @@ const getStatusEmailContent = (status, order) => {
   const selected = localizedContent[language] || localizedContent.en;
 
   switch (status) {
+    case 'pending_payment':
+      return {
+        ...selected.pending_payment,
+        trackingNumber: '',
+        trackUrl
+      };
+    case 'pending':
+      return {
+        ...selected.pending,
+        trackingNumber: '',
+        trackUrl
+      };
     case 'confirmed':
       return {
         ...selected.confirmed,
@@ -485,6 +539,12 @@ exports.createOrder = async (req, res) => {
     setImmediate(() => {
       notifyAdminForBankTransfer(saved).catch((error) => {
         console.error('Admin notification failed:', error.message);
+      });
+    });
+
+    setImmediate(() => {
+      notifyCustomerAboutOrderStatus(saved, saved.status).catch((error) => {
+        console.error('Customer order receipt notification failed:', error.message);
       });
     });
     
