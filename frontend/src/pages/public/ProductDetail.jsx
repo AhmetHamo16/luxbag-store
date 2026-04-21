@@ -573,7 +573,15 @@ const ProductDetail = () => {
                 onClick={() => setMainImageIndex(idx)}
                 className={`overflow-hidden rounded-[22px] border bg-[#f8f1e8] shadow-sm transition-all duration-300 relative h-24 md:h-[110px] ${mainImageIndex === idx ? 'border-gold opacity-100 scale-[1.02] shadow-[0_16px_30px_rgba(78,48,24,0.14)]' : 'border-[#eadcc8] opacity-75 hover:opacity-100 hover:border-[#d9c0a2]'}`}
               >
-                <img loading="lazy" src={src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover object-center" />
+                <img
+                  loading="lazy"
+                  src={src}
+                  alt={`Thumbnail ${idx + 1}`}
+                  className="w-full h-full object-cover object-center"
+                  onError={(event) => {
+                    event.currentTarget.src = productFallbackImage;
+                  }}
+                />
               </button>
             )})}
           </div>
@@ -914,7 +922,15 @@ const ProductDetail = () => {
             {recentItems.map(item => (
               <div key={item._id} onClick={() => { window.scrollTo(0, 0); navigate(`/product/${item.slug || item._id}`); }} className="group cursor-pointer min-w-[180px] md:min-w-[250px] flex flex-col">
                  <div className="aspect-square bg-gray-100 mb-4 overflow-hidden relative rounded-sm">
-                    <img loading="lazy" src={resolveAssetUrl(item.images?.[0]?.url || item.images?.[0])} alt={item.name?.en} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <img
+                      loading="lazy"
+                      src={resolveAssetUrl(item.images?.[0]?.url || item.images?.[0])}
+                      alt={item.name?.en}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      onError={(event) => {
+                        event.currentTarget.src = getProductFallbackImage(item);
+                      }}
+                    />
                  </div>
                  <h3 className="font-serif text-brand text-sm md:text-md group-hover:text-gold transition-colors truncate">{item.name?.en || item.name}</h3>
                  <p className="text-brand font-bold mt-1 uppercase text-sm">{formatPrice(item.salePrice || item.price)}</p>
