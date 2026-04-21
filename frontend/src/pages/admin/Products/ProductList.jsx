@@ -403,12 +403,12 @@ const ProductList = () => {
                           <tr key={product._id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100 transition-colors`}>
                             <td className="px-4 py-4 text-center"><input type="checkbox" checked={selectedIds.includes(product._id)} onChange={() => handleSelectOne(product._id)} className="w-4 h-4 accent-[#8B6914]" /></td>
                             <td className="px-4 py-4">
-                              <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden border border-gray-100">
+                              <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
                                 <img
                                   loading="lazy"
                                   src={imageSrc}
                                   alt={name}
-                                  className="w-full h-full object-cover"
+                                  className="max-h-full max-w-full object-contain"
                                   onError={(event) => {
                                     event.currentTarget.src = productFallbackImage;
                                   }}
