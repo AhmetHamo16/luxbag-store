@@ -7,7 +7,7 @@ import useTranslation from '../../../hooks/useTranslation';
 import useCurrencyStore from '../../../store/useCurrencyStore';
 import toast from 'react-hot-toast';
 import ConfirmationModal from '../../../components/shared/ConfirmationModal';
-import { resolveProductImage } from '../../../utils/assets';
+import { getProductFallbackImage, resolveProductImage } from '../../../utils/assets';
 
 const ProductList = () => {
   const { t, language } = useTranslation('admin');
@@ -389,7 +389,8 @@ const ProductList = () => {
                       {paginatedProducts.length > 0 ? paginatedProducts.map((product, index) => {
                         const name = getLocalizedValue(product.name) || ui.unknown;
                         const categoryName = getLocalizedValue(product.category?.name) || ui.uncategorized;
-                        const resolvedImage = resolveProductImage(product, 'https://via.placeholder.com/100?text=Melora');
+                        const productFallbackImage = getProductFallbackImage(product);
+                        const resolvedImage = resolveProductImage(product, productFallbackImage);
                         const cacheKey = product.updatedAt ? new Date(product.updatedAt).getTime() : Date.now();
                         const imageSrc = resolvedImage.includes('via.placeholder.com')
                           ? resolvedImage
@@ -403,7 +404,15 @@ const ProductList = () => {
                             <td className="px-4 py-4 text-center"><input type="checkbox" checked={selectedIds.includes(product._id)} onChange={() => handleSelectOne(product._id)} className="w-4 h-4 accent-[#8B6914]" /></td>
                             <td className="px-4 py-4">
                               <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden border border-gray-100">
-                                <img loading="lazy" src={imageSrc} alt={name} className="w-full h-full object-cover" onError={(event) => { event.currentTarget.src = 'https://via.placeholder.com/100?text=Melora'; }} />
+                                <img
+                                  loading="lazy"
+                                  src={imageSrc}
+                                  alt={name}
+                                  className="w-full h-full object-cover"
+                                  onError={(event) => {
+                                    event.currentTarget.src = productFallbackImage;
+                                  }}
+                                />
                               </div>
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-black">

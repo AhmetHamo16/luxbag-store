@@ -1,6 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { backendOrigin } from '../../services/api';
 import { orderService } from '../../services/orderService';
 import { settingsService } from '../../services/settingsService';
 import Loader from '../../components/shared/Loader';
@@ -10,6 +9,7 @@ import useLangStore from '../../store/useLangStore';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { TrendingUp, TrendingDown, AlertTriangle, Package, Users, DollarSign, ShoppingBag, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getProductFallbackImage, resolveAssetUrl as resolveSharedAssetUrl } from '../../utils/assets';
 
 const dashboardUi = {
   en: {
@@ -143,7 +143,7 @@ const dashboardUi = {
     weekRevenue: 'Bu haftanin hedefe gore satis hizi',
     posOverview: 'POS Ozeti',
     posMonth: 'Bu Ay POS',
-    topPosProducts: 'En Iyi POS Urunleri',
+    topPosProducts: 'En İyi POS Ürünleri',
     recentPosSales: 'Son POS Satislari',
     cashierShifts: 'Kasiyer Vardiyalari',
     warehouse: 'Depo Ozeti',
@@ -157,8 +157,8 @@ const dashboardUi = {
     bestDay: 'En Iyi Gun',
     bestDaySales: 'En Iyi Gun Satisi',
     sold: 'satildi',
-    noPosSales: 'Henuz POS satisi yok.',
-    noRecentPosSales: 'Henuz son POS satisi yok.',
+    noPosSales: 'Henüz POS satışı yok.',
+    noRecentPosSales: 'Henüz son POS satışı yok.',
     opened: 'Acilis',
     closed: 'Kapanis',
     expected: 'Beklenen',
@@ -174,22 +174,22 @@ const dashboardUi = {
     thisMonth: 'Bu Ay',
     thisYear: 'Bu Yil',
     allTime: 'Tum Zamanlar',
-    exportCsv: 'Siparisleri Disa Aktar (CSV)',
+    exportCsv: 'Siparişleri Dışa Aktar (CSV)',
     revenueOverview: 'Gelir Gorunumu (Son 30 Gun)',
     ordersByStatus: 'Duruma Gore Siparisler',
-    topProductsTitle: 'En Iyi Urunler',
+    topProductsTitle: 'En İyi Ürünler',
     recentOrdersTitle: 'Son Siparisler',
     viewAllOrders: 'Tum Siparisleri Gor',
     noTopProducts: 'Veri bulunamadi',
-    noRecentOrders: 'Son siparis yok',
+    noRecentOrders: 'Son sipariş yok',
     orderId: 'Siparis No',
-    customer: 'Musteri',
+    customer: 'Müşteri',
     date: 'Tarih',
     total: 'Toplam',
     status: 'Durum',
     criticalStock: 'Kritik Stok Uyarilari',
     leftInWarehouse: 'depoda kalan',
-    pendingPayment: 'Odeme Bekliyor'
+    pendingPayment: 'Ödeme Bekliyor'
   }
 };
 
@@ -336,17 +336,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const resolveAssetUrl = (value) => {
-    if (!value) return '/placeholder.jpg';
-    if (typeof value === 'object') return resolveAssetUrl(value.url);
-    if (typeof value === 'string' && value.includes('\\uploads\\')) {
-      return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
-    }
-    if (typeof value === 'string' && value.startsWith('/uploads/')) {
-      return `${backendOrigin}${value}`;
-    }
-    return value;
-  };
+  const resolveAssetUrl = (value, fallback = '/placeholder.jpg') => resolveSharedAssetUrl(value, fallback);
 
   if (loading) return <Loader />;
 
@@ -575,7 +565,7 @@ const AdminDashboard = () => {
                   <span className="font-bold text-brand">{formatPrice(sale.total || 0)}</span>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-3 text-xs text-gray-500">
-                  <span>{sale.customerName || (language === 'ar' ? 'عميل مباشر' : language === 'tr' ? 'Magaza Musterisi' : 'Walk-in Customer')}</span>
+                  <span>{sale.customerName || (language === 'ar' ? 'عميل مباشر' : language === 'tr' ? 'Mağaza Müşterisi' : 'Walk-in Customer')}</span>
                   <span>{new Date(sale.createdAt).toLocaleTimeString()}</span>
                 </div>
               </div>
@@ -619,7 +609,7 @@ const AdminDashboard = () => {
               </div>
             </div>
           )) : (
-            <div className="px-6 py-8 text-sm text-gray-500">{language === 'ar' ? 'لا توجد ورديات كاشير مسجلة بعد.' : language === 'tr' ? 'Henuz kasiyer vardiyasi yok.' : 'No cashier shifts recorded yet.'}</div>
+            <div className="px-6 py-8 text-sm text-gray-500">{language === 'ar' ? 'لا توجد ورديات كاشير مسجلة بعد.' : language === 'tr' ? 'Henüz kasiyer vardiyası yok.' : 'No cashier shifts recorded yet.'}</div>
           )}
         </div>
       </div>
@@ -698,7 +688,15 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {lowStockAlerts.map(prod => (
               <div key={prod.id} className="bg-white p-3 rounded-lg flex items-center gap-3 shadow-sm border border-red-100">
-                <img loading="lazy" src={resolveAssetUrl(prod.image)} alt={prod.name} className="w-12 h-12 object-cover rounded" />
+                <img
+                  loading="lazy"
+                  src={resolveAssetUrl(prod.image, getProductFallbackImage({ name: { en: prod.name } }))}
+                  alt={prod.name}
+                  className="w-12 h-12 object-cover rounded"
+                  onError={(event) => {
+                    event.currentTarget.src = getProductFallbackImage({ name: { en: prod.name } });
+                  }}
+                />
                 <div>
                   <p className="text-xs font-medium text-gray-900 line-clamp-1">{prod.name}</p>
                   <p className="text-xs font-bold text-red-600 mt-1">{prod.stock} left in warehouse</p>
@@ -766,7 +764,7 @@ const AdminDashboard = () => {
                       order.status === 'pending_payment' ? 'bg-red-600 text-white' :
                       'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {order.status === 'pending_payment' ? 'ðŸ”´ Pending Payment' : order.status}
+                      {order.status === 'pending_payment' ? '● Pending Payment' : order.status}
                     </span>
                   </td>
                 </tr>

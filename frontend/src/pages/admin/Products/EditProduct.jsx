@@ -1,11 +1,11 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { backendOrigin } from '../../../services/api';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
 import Loader from '../../../components/shared/Loader';
 import useTranslation from '../../../hooks/useTranslation';
 import toast from 'react-hot-toast';
+import { getProductFallbackImage, resolveAssetUrl } from '../../../utils/assets';
 
 const EditProduct = () => {
   const { t, language } = useTranslation('admin');
@@ -176,7 +176,7 @@ const EditProduct = () => {
       basePrice: 'Temel Fiyat',
       salePrice: 'Indirimli Fiyat',
       costPrice: 'Maliyet Fiyati',
-      select: 'Sec...',
+      select: 'Seç...',
       baseSku: 'Temel SKU',
       bagType: 'Canta Turu',
       general: 'Genel',
@@ -191,20 +191,20 @@ const EditProduct = () => {
       generateBarcode: 'Barkod Uret',
       publishNow: 'Hemen Yayinla',
       featureHomepage: 'Ana sayfada one cikar',
-      productBadges: 'Urun Rozetleri',
+      productBadges: 'Ürün Rozetleri',
       specifications: 'Ozellikler',
-      variantsTitle: 'Urun Varyantlari',
+      variantsTitle: 'Ürün Varyantları',
       addVariant: 'Varyant Ekle',
-      noVariants: 'Henuz varyant yok. Urun temel parametrelerle kullanilacak.',
+      noVariants: 'Henüz varyant yok. Ürün temel parametrelerle kullanılacak.',
       warehouseQty: 'Depo Adedi',
       stockHint: 'Stok 1 veya 2 adede dustugunde yonetim paneli otomatik uyari verir.',
       color: 'Renk *',
       size: 'Beden *',
       sku: 'SKU *',
       stockQty: 'Stok Adedi *',
-      remove: 'Kaldir',
+      remove: 'Kaldır',
       mediaGallery: 'Medya Galerisi',
-      noImages: 'Secili gorsel yok.',
+      noImages: 'Seçili görsel yok.',
       thumbnail: 'Kapak Gorseli',
       newLabel: 'YENI',
       seoTitle: 'Arama Motoru Optimizasyonu',
@@ -227,8 +227,8 @@ const EditProduct = () => {
       sizes: 'Mevcut Bedenler (virgulle ayirin)',
       colorsPlaceholder: 'Kirmizi, Mavi, Altin',
       sizesPlaceholder: 'S, M, L, XL',
-      failedEdit: 'Urun duzenlenemedi',
-      failedFetch: 'Urun verileri yuklenemedi',
+      failedEdit: 'Ürün düzenlenemedi',
+      failedFetch: 'Ürün verileri yüklenemedi',
       requiredName: 'Ingilizce urun adi gereklidir.',
       requiredDescription: 'Ingilizce aciklama gereklidir.',
       requiredPrice: 'Temel fiyat gereklidir.',
@@ -459,18 +459,6 @@ const EditProduct = () => {
     if (message.includes('price')) return copy.requiredPrice;
     if (message.includes('category')) return copy.requiredCategory;
     return message || copy.failedEdit;
-  };
-
-  const resolveAssetUrl = (value) => {
-    if (!value) return '';
-    if (typeof value === 'object') return resolveAssetUrl(value.url);
-    if (typeof value === 'string' && value.includes('\\uploads\\')) {
-      return `${backendOrigin}${value.slice(value.lastIndexOf('\\uploads\\')).replace(/\\/g, '/')}`;
-    }
-    if (typeof value === 'string' && value.startsWith('/uploads/')) {
-      return `${backendOrigin}${value}`;
-    }
-    return value;
   };
 
   const handleSubmit = async (e) => {
@@ -852,7 +840,21 @@ const EditProduct = () => {
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                {existingImages.map((imgObj, i) => (
                  <div key={`exist-${i}`} className="group relative bg-gray-100 aspect-square rounded overflow-hidden shadow-sm">
-                   <img loading="lazy" src={resolveAssetUrl(imgObj)} alt="existing" className="w-full h-full object-cover" />
+                   <img
+                     loading="lazy"
+                     src={resolveAssetUrl(imgObj, getProductFallbackImage({
+                       name: { en: formData.nameEn, ar: formData.nameAr, tr: formData.nameTr },
+                       category: categories.find((cat) => cat._id === formData.category),
+                     }))}
+                     alt="existing"
+                     className="w-full h-full object-cover"
+                     onError={(event) => {
+                       event.currentTarget.src = getProductFallbackImage({
+                         name: { en: formData.nameEn, ar: formData.nameAr, tr: formData.nameTr },
+                         category: categories.find((cat) => cat._id === formData.category),
+                       });
+                     }}
+                   />
                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                      <button type="button" onClick={() => removeExistingImage(i)} className="bg-red-500 text-white p-2 rounded-full text-xs hover:bg-red-600">Delete</button>
                    </div>
