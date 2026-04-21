@@ -316,13 +316,20 @@ exports.updateProduct = async (req, res) => {
     });
 
     if (req.files && req.files.length > 0) {
+      const normalizedExistingImages = existingImages.map((image, index) => ({
+        ...(typeof image === 'string' ? { url: image } : image),
+        isMain: false,
+        sortOrder: req.files.length + index,
+      }));
+
       const addedImages = req.files.map((file, index) => ({
         url: getUploadedFileUrl(file, req),
         altText: updateData.name?.en || 'Product Image',
-        isMain: existingImages.length === 0 && index === 0,
-        sortOrder: existingImages.length + index
+        isMain: index === 0,
+        sortOrder: index
       }));
-      updateData.images = [...existingImages, ...addedImages]; 
+
+      updateData.images = [...addedImages, ...normalizedExistingImages];
     } else if (req.body.existingImages !== undefined) {
       updateData.images = existingImages;
     } else if (req.body.clearImages === 'true') {
