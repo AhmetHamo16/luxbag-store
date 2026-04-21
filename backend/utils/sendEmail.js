@@ -1,5 +1,13 @@
 const nodemailer = require('nodemailer');
 
+const stripHtml = (html = '') =>
+  String(html)
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
 const sendEmail = async ({ to, subject, type, data }) => {
   if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.warn(`Email skipped for "${subject}" because email environment variables are not fully configured.`);
@@ -53,12 +61,22 @@ const sendEmail = async ({ to, subject, type, data }) => {
       break;
     case 'orderStatusUpdate':
       htmlContent = `
-        <div style="font-family: Arial, sans-serif;">
-          <h2 style="color: #1E1E1E;">Melora Order Update</h2>
-          <p>Hello ${data.customerName || 'Melora customer'},</p>
-          <p>${data.message}</p>
-          <p><strong>Order ID:</strong> ${data.orderId}</p>
-          ${data.trackingNumber ? `<p><strong>Tracking Number:</strong> ${data.trackingNumber}</p>` : ''}
+        <div style="font-family: Arial, sans-serif; background:#f7f3ee; padding:32px 16px; direction:${data.language === 'ar' ? 'rtl' : 'ltr'};">
+          <div style="max-width:620px; margin:0 auto; background:#ffffff; border:1px solid #eadcc8; border-radius:18px; overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#2f2117,#8b5e34); color:#fff8ef; padding:28px 32px;">
+              <div style="font-size:11px; letter-spacing:0.28em; text-transform:uppercase; opacity:0.86;">Melora</div>
+              <h2 style="margin:14px 0 0; font-size:28px; line-height:1.3;">${data.title || 'Melora Order Update'}</h2>
+            </div>
+            <div style="padding:30px 32px; color:#2b1a12;">
+              <p style="margin:0 0 14px; font-size:16px;">${data.greeting || 'Hello'} ${data.customerName || 'Melora customer'},</p>
+              <p style="margin:0 0 18px; font-size:15px; line-height:1.9; color:#5c4939;">${data.message}</p>
+              <div style="background:#fcf8f3; border:1px solid #eadcc8; border-radius:14px; padding:18px 20px; margin:18px 0;">
+                <p style="margin:0 0 8px; font-size:14px;"><strong>Order ID:</strong> ${data.orderId}</p>
+                ${data.trackingNumber ? `<p style="margin:0; font-size:14px;"><strong>Tracking Number:</strong> ${data.trackingNumber}</p>` : ''}
+              </div>
+              ${data.trackUrl ? `<div style="margin-top:24px;"><a href="${data.trackUrl}" style="display:inline-block; background:#2f2117; color:#fff8ef; text-decoration:none; padding:14px 22px; border-radius:999px; font-size:13px; font-weight:700; letter-spacing:0.08em;">${data.cta || 'View order status'}</a></div>` : ''}
+            </div>
+          </div>
         </div>
       `;
       break;
@@ -87,11 +105,13 @@ const sendEmail = async ({ to, subject, type, data }) => {
       htmlContent = `<p>Hello from Melora</p>`;
   }
 
+  const fromAddress = process.env.EMAIL_FROM || process.env.STORE_EMAIL || process.env.EMAIL_USER;
   const mailOptions = {
-    from: `"Melora Boutique" <${process.env.EMAIL_USER}>`,
+    from: `"Melora Boutique" <${fromAddress}>`,
     to,
     subject,
     html: htmlContent,
+    text: stripHtml(htmlContent),
   };
 
   try {

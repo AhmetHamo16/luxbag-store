@@ -48,6 +48,20 @@ const getUploadedReceiptUrl = (file, req) => {
   return null;
 };
 
+const getStorefrontBaseUrl = () => {
+  const explicitClientUrl = String(process.env.CLIENT_URL || '').trim();
+  if (explicitClientUrl) return explicitClientUrl.replace(/\/$/, '');
+
+  const firstClientUrl = String(process.env.CLIENT_URLS || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)[0];
+
+  return (firstClientUrl || 'https://meloramoda.com').replace(/\/$/, '');
+};
+
+const getPublicOrderTrackingUrl = (orderId) => `${getStorefrontBaseUrl()}/order-confirmation/${orderId}`;
+
 const calculateCouponDiscount = (coupon, subtotal, shippingCost = 0) => {
   if (!coupon) return 0;
 
@@ -108,28 +122,109 @@ const getOrderCustomerName = (order) => (
   || 'Melora customer'
 );
 
+const getOrderPreferredLanguage = (order) => {
+  const language = String(order?.preferredLanguage || '').trim().toLowerCase();
+  return ['ar', 'tr', 'en'].includes(language) ? language : 'en';
+};
+
 const getStatusEmailContent = (status, order) => {
+  const language = getOrderPreferredLanguage(order);
   const trackingNumber = order?.trackingNumber || '';
+  const trackUrl = getPublicOrderTrackingUrl(order?._id);
+
+  const localizedContent = {
+    ar: {
+      confirmed: {
+        subject: 'تم تأكيد طلبك من ميلورا',
+        title: 'تم قبول طلبك',
+        greeting: 'مرحباً',
+        message: 'يسعدنا إبلاغك أن طلبك تمت الموافقة عليه بنجاح، وسنبدأ بتجهيزه قريباً.',
+        cta: 'متابعة حالة الطلب',
+      },
+      processing: {
+        subject: 'طلبك من ميلورا قيد التحضير',
+        title: 'طلبك يتحضر الآن',
+        greeting: 'مرحباً',
+        message: 'فريق ميلورا بدأ الآن بتجهيز طلبك وتجهيزه للشحن.',
+        cta: 'متابعة حالة الطلب',
+      },
+      shipped: {
+        subject: 'طلبك من ميلورا أصبح في الشحن',
+        title: 'طلبك في الطريق إليك',
+        greeting: 'مرحباً',
+        message: 'تم تسليم طلبك إلى شركة الشحن وهو الآن في الطريق إليك.',
+        cta: 'تتبع الطلب',
+      },
+    },
+    tr: {
+      confirmed: {
+        subject: 'Melora siparisiniz onaylandi',
+        title: 'Siparisiniz kabul edildi',
+        greeting: 'Merhaba',
+        message: 'Siparisiniz ekibimiz tarafindan onaylandi. Kisa sure icinde hazirlamaya baslayacagiz.',
+        cta: 'Siparis durumunu gor',
+      },
+      processing: {
+        subject: 'Melora siparisiniz hazirlaniyor',
+        title: 'Siparisiniz hazirlaniyor',
+        greeting: 'Merhaba',
+        message: 'Melora ekibi siparisinizi su anda paketleme ve hazirlama asamasina aldi.',
+        cta: 'Siparis durumunu gor',
+      },
+      shipped: {
+        subject: 'Melora siparisiniz kargoya verildi',
+        title: 'Siparisiniz yolda',
+        greeting: 'Merhaba',
+        message: 'Siparisiniz kargo firmasina teslim edildi ve size dogru yola cikti.',
+        cta: 'Siparisi takip et',
+      },
+    },
+    en: {
+      confirmed: {
+        subject: 'Your Melora order has been confirmed',
+        title: 'Your order has been approved',
+        greeting: 'Hello',
+        message: 'We are happy to let you know that your order has been approved successfully and will be prepared shortly.',
+        cta: 'View order status',
+      },
+      processing: {
+        subject: 'Your Melora order is being prepared',
+        title: 'Your order is being prepared',
+        greeting: 'Hello',
+        message: 'The Melora team has started preparing and packing your order for shipment.',
+        cta: 'View order status',
+      },
+      shipped: {
+        subject: 'Your Melora order is now in shipment',
+        title: 'Your order is on the way',
+        greeting: 'Hello',
+        message: 'Your order has been handed over to the shipping carrier and is now on its way to you.',
+        cta: 'Track your order',
+      },
+    },
+  };
+
+  const selected = localizedContent[language] || localizedContent.en;
 
   switch (status) {
     case 'confirmed':
       return {
-        subject: 'Your Melora order has been confirmed',
-        message: 'Your order has been approved and confirmed by our team. We will start preparing it shortly.',
-        trackingNumber: ''
+        ...selected.confirmed,
+        trackingNumber: '',
+        trackUrl
       };
     case 'processing':
       return {
-        subject: 'Your Melora order is being prepared',
-        message: 'Your order is now being prepared and packed for shipment.',
-        trackingNumber: ''
+        ...selected.processing,
+        trackingNumber: '',
+        trackUrl
       };
     case 'out_for_delivery':
     case 'shipped':
       return {
-        subject: 'Your Melora order is now in shipment',
-        message: 'Your order has been handed over for shipping and is now on the way to you.',
-        trackingNumber
+        ...selected.shipped,
+        trackingNumber,
+        trackUrl
       };
     default:
       return null;
@@ -151,8 +246,13 @@ const notifyCustomerAboutOrderStatus = async (order, status) => {
       data: {
         orderId: order._id,
         customerName: getOrderCustomerName(order),
+        greeting: statusEmail.greeting,
+        title: statusEmail.title,
         message: statusEmail.message,
-        trackingNumber: statusEmail.trackingNumber
+        trackingNumber: statusEmail.trackingNumber,
+        trackUrl: statusEmail.trackUrl,
+        cta: statusEmail.cta,
+        language: getOrderPreferredLanguage(order)
       }
     });
   } catch (error) {
@@ -353,6 +453,9 @@ exports.createOrder = async (req, res) => {
         ...orderData.payment,
         status: orderData?.payment?.method === 'iban' ? 'pending_payment' : 'pending'
       },
+      preferredLanguage: ['en', 'ar', 'tr'].includes(String(orderData?.preferredLanguage || '').toLowerCase())
+        ? String(orderData.preferredLanguage).toLowerCase()
+        : 'en',
       status: orderData?.payment?.method === 'iban' ? 'pending_payment' : 'pending'
     };
     if (receiptImage && orderPayload.payment) {
@@ -512,6 +615,9 @@ exports.createPosOrder = async (req, res) => {
       shippingCost: 0,
       discountAmount: parsedDiscount,
       total,
+      preferredLanguage: ['en', 'ar', 'tr'].includes(String(req.body?.preferredLanguage || '').toLowerCase())
+        ? String(req.body.preferredLanguage).toLowerCase()
+        : 'en',
       status: 'delivered',
       notes: notes?.trim() || ''
     });
@@ -1339,5 +1445,37 @@ exports.uploadOrderReceipt = async (req, res) => {
   } catch (error) {
     console.error('RECEIPT UPLOAD FAILED', error);
     res.status(500).json({ success: false, message: error.message || 'Failed to upload receipt' });
+  }
+};
+
+// @desc    Get limited public order status by ID
+// @route   GET /api/orders/public/:id
+// @access  Public
+exports.getPublicOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).lean();
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: order._id,
+        invoiceNumber: order.invoiceNumber,
+        status: order.status,
+        trackingNumber: order.trackingNumber || '',
+        preferredLanguage: getOrderPreferredLanguage(order),
+        fullName: order.shippingAddress?.fullName || '',
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        items: (order.items || []).map((item) => ({
+          name: item.name,
+          quantity: item.quantity
+        }))
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

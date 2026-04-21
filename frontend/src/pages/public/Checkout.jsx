@@ -334,6 +334,7 @@ const Checkout = () => {
           code: appliedCoupon?.code || couponCode || null,
           discount: discountAmount
         },
+        preferredLanguage: language,
         subtotal,
         shippingCost,
         discountAmount,

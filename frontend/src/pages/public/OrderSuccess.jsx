@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import api from '../../services/api';
+import { orderService } from '../../services/orderService';
 import toast from 'react-hot-toast';
 import useLangStore from '../../store/useLangStore';
 
@@ -12,6 +13,89 @@ const OrderSuccess = () => {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [orderStatus, setOrderStatus] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(Boolean(id));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadOrderStatus = async () => {
+      if (!id) {
+        setStatusLoading(false);
+        return;
+      }
+
+      try {
+        setStatusLoading(true);
+        const response = await orderService.getPublicOrderStatus(id);
+        if (isMounted) {
+          setOrderStatus(response.data || null);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setOrderStatus(null);
+        }
+      } finally {
+        if (isMounted) {
+          setStatusLoading(false);
+        }
+      }
+    };
+
+    loadOrderStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  const statusLabels = {
+    ar: {
+      pending_payment: 'بانتظار تأكيد الدفع',
+      pending: 'تم استلام الطلب',
+      confirmed: 'تم قبول الطلب',
+      processing: 'الطلب يتحضر',
+      out_for_delivery: 'الطلب في الطريق',
+      shipped: 'الطلب في الشحن',
+      delivered: 'تم التسليم',
+      cancelled: 'تم إلغاء الطلب',
+      trackingNumber: 'رقم التتبع',
+      orderNumber: 'رقم الطلب',
+      currentStatus: 'الحالة الحالية',
+      items: 'المنتجات',
+      trackHint: 'يمكنك الرجوع إلى هذه الصفحة في أي وقت لمتابعة طلبك.',
+    },
+    tr: {
+      pending_payment: 'Odeme onayi bekleniyor',
+      pending: 'Siparis alindi',
+      confirmed: 'Siparis onaylandi',
+      processing: 'Siparis hazirlaniyor',
+      out_for_delivery: 'Siparis yolda',
+      shipped: 'Siparis kargoda',
+      delivered: 'Teslim edildi',
+      cancelled: 'Iptal edildi',
+      trackingNumber: 'Takip numarasi',
+      orderNumber: 'Siparis numarasi',
+      currentStatus: 'Guncel durum',
+      items: 'Urunler',
+      trackHint: 'Siparisinizi takip etmek icin bu sayfaya istediginiz zaman donebilirsiniz.',
+    },
+    en: {
+      pending_payment: 'Waiting for payment confirmation',
+      pending: 'Order received',
+      confirmed: 'Order approved',
+      processing: 'Order is being prepared',
+      out_for_delivery: 'Order is on the way',
+      shipped: 'Order is in shipment',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled',
+      trackingNumber: 'Tracking number',
+      orderNumber: 'Order number',
+      currentStatus: 'Current status',
+      items: 'Items',
+      trackHint: 'You can return to this page anytime to follow your order updates.',
+    },
+  }[language] || {};
 
   const handleUpload = async () => {
     if (!file || !id) return;
@@ -61,6 +145,7 @@ const OrderSuccess = () => {
     viewOrders: 'View My Orders',
     continueShopping: 'Continue Shopping',
   };
+  const currentStatusLabel = orderStatus?.status ? (statusLabels[orderStatus.status] || orderStatus.status) : '';
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center text-[var(--text-primary)]">
@@ -72,6 +157,52 @@ const OrderSuccess = () => {
 
       <h1 className="mb-4 text-4xl font-serif text-[var(--text-primary)]">{content.title}</h1>
       <p className="mb-8 max-w-md text-[var(--text-secondary)]">{content.description}</p>
+
+      {id && (
+        <div className="mb-8 w-full max-w-2xl rounded-[24px] border border-[#e8d7c2] bg-[#fdfaf6] p-6 text-left shadow-sm">
+          {statusLoading ? (
+            <p className="text-sm text-gray-500">Loading order status...</p>
+          ) : orderStatus ? (
+            <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-[18px] border border-[#eadcc8] bg-white p-4">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#8b5e34]">{statusLabels.orderNumber}</p>
+                  <p className="text-sm font-medium text-[#2b1911]">{orderStatus.invoiceNumber || orderStatus._id}</p>
+                </div>
+                <div className="rounded-[18px] border border-[#eadcc8] bg-white p-4">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#8b5e34]">{statusLabels.currentStatus}</p>
+                  <p className="text-sm font-medium text-[#2b1911]">{currentStatusLabel}</p>
+                </div>
+              </div>
+
+              {orderStatus.trackingNumber ? (
+                <div className="rounded-[18px] border border-[#eadcc8] bg-white p-4">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#8b5e34]">{statusLabels.trackingNumber}</p>
+                  <p className="text-sm font-medium text-[#2b1911]">{orderStatus.trackingNumber}</p>
+                </div>
+              ) : null}
+
+              {Array.isArray(orderStatus.items) && orderStatus.items.length > 0 ? (
+                <div className="rounded-[18px] border border-[#eadcc8] bg-white p-4">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#8b5e34]">{statusLabels.items}</p>
+                  <div className="space-y-2">
+                    {orderStatus.items.map((item, index) => (
+                      <div key={`${item.name}-${index}`} className="flex items-center justify-between text-sm text-[#2b1911]">
+                        <span>{item.name}</span>
+                        <span>x{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <p className="text-sm text-gray-500">{statusLabels.trackHint}</p>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">Order status is not available right now.</p>
+          )}
+        </div>
+      )}
 
       {paymentIntent && (
         <div className="mb-8 w-full max-w-sm rounded border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left">

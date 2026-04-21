@@ -21,6 +21,7 @@ const {
   markOrderPreparing,
   exportOrdersCSV,
   getOrderById,
+  getPublicOrderStatus,
   createPosOrder,
   uploadOrderReceipt
 } = require('../controllers/orderController');
@@ -165,6 +166,9 @@ router.route('/reset-demo')
 router.route('/export')
   .get(protect, admin, exportOrdersCSV);
 
+router.route('/public/:id')
+  .get(getPublicOrderStatus);
+
 router.route('/:id')
   .get(protect, getOrderById);
 
@@ -172,7 +176,7 @@ router.route('/:id/receipt')
   .post(upload.single('receipt'), uploadOrderReceipt);
 
 router.route('/:id/status')
-  .put(protect, admin, updateOrderStatus);
+  .put(protect, adminOrCashier, updateOrderStatus);
 
 router.route('/:id/cancel')
   .put(protect, cancelOrder);

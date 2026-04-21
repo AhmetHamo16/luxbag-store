@@ -76,6 +76,11 @@ export const orderService = {
     return response.data;
   },
 
+  getPublicOrderStatus: async (id) => {
+    const response = await api.get(`/orders/public/${id}`);
+    return response.data;
+  },
+
   cancelOrder: async (id) => {
     const response = await api.put(`/orders/${id}/cancel`);
     return response.data;
