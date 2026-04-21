@@ -50,6 +50,15 @@ export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/3
   return normalized;
 };
 
+export const isBrokenCatalogImageUrl = (value) => {
+  const raw =
+    typeof value === 'object'
+      ? value?.url || value?.secure_url || value?.image || value?.src || value?.path || value?.publicUrl
+      : value;
+
+  return /railway\.app\/uploads/i.test(String(raw || ''));
+};
+
 export const resolveProductImage = (item, fallback = 'https://via.placeholder.com/300') => {
   if (!item) return fallback;
 
@@ -61,20 +70,30 @@ export const resolveProductImage = (item, fallback = 'https://via.placeholder.co
       ...images,
     ].filter(Boolean);
 
+    let firstDetectedImage = '';
+
     for (const entry of candidates) {
       const value = typeof entry === 'object'
         ? (entry.url || entry.secure_url || entry.image || entry.src || entry.path || entry.publicUrl)
         : entry;
 
       if (typeof value === 'string' && value.trim()) {
+        if (!firstDetectedImage) {
+          firstDetectedImage = value;
+        }
+
+        if (isBrokenCatalogImageUrl(value)) {
+          continue;
+        }
+
         return value;
       }
     }
 
-    return '';
+    return firstDetectedImage;
   };
 
-  return resolveAssetUrl(
+  const resolved = resolveAssetUrl(
     pickValidImage(item.images) ||
     item.image?.url ||
     item.image ||
@@ -83,6 +102,12 @@ export const resolveProductImage = (item, fallback = 'https://via.placeholder.co
     item.product?.image,
     fallback
   );
+
+  if (isBrokenCatalogImageUrl(resolved)) {
+    return fallback;
+  }
+
+  return resolved;
 };
 
 export const getProductFallbackImage = (item) => {

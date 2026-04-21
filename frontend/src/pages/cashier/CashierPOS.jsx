@@ -934,7 +934,7 @@ const CashierPOS = () => {
                 const tone = getStockTone(stock);
                 return (
                   <article key={product._id} className="overflow-hidden rounded-[1.75rem] border border-[#eadbca] bg-[#fffdf9] shadow-sm">
-                    <div className="aspect-[4/3] overflow-hidden bg-[#f7efe5]"><img src={resolveImageUrl(product.images?.[0])} alt={getLocalizedValue(product.name)} className="h-full w-full object-cover" /></div>
+                    <div className="aspect-[4/3] overflow-hidden bg-[#f7efe5]"><img src={resolveImageUrl(product.images?.[0])} alt={getLocalizedValue(product.name)} className="h-full w-full object-cover" onError={(event) => { event.currentTarget.src = 'https://via.placeholder.com/300?text=Melora'; }} /></div>
                     <div className="p-5">
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -1059,7 +1059,7 @@ const CashierPOS = () => {
               ) : (
                 cart.map((item) => (
                   <div key={item._id} className="flex gap-4 rounded-[1.5rem] border border-[#efe3d4] p-4">
-                    <img src={item.image} alt={item.name} className="h-20 w-20 rounded-2xl object-cover" />
+                    <img src={item.image} alt={item.name} className="h-20 w-20 rounded-2xl object-cover" onError={(event) => { event.currentTarget.src = 'https://via.placeholder.com/300?text=Melora'; }} />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div><p className="font-semibold text-[#25170f]">{item.name}</p><p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#8f7558]">{item.sku || '-'}</p></div>
