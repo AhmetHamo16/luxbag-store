@@ -14,20 +14,24 @@ const isPlaceholderValue = (value = '') => {
 };
 
 const sendEmail = async ({ to, subject, type, data }) => {
+  const emailHost = String(process.env.EMAIL_HOST || '').trim();
+  const emailUser = String(process.env.EMAIL_USER || '').trim();
+  const emailPass = String(process.env.EMAIL_PASS || '');
+
   if (
-    !process.env.EMAIL_HOST ||
-    !process.env.EMAIL_USER ||
-    !process.env.EMAIL_PASS ||
-    isPlaceholderValue(process.env.EMAIL_PASS)
+    !emailHost ||
+    !emailUser ||
+    !emailPass ||
+    isPlaceholderValue(emailPass)
   ) {
     console.warn(
       `Email skipped for "${subject}" because SMTP settings are missing or still using a placeholder password.`,
       {
-        emailHost: process.env.EMAIL_HOST || '',
-        emailUser: process.env.EMAIL_USER || '',
-        emailFrom: process.env.EMAIL_FROM || process.env.STORE_EMAIL || '',
-        hasEmailPass: Boolean(process.env.EMAIL_PASS),
-        placeholderPassword: isPlaceholderValue(process.env.EMAIL_PASS),
+        emailHost,
+        emailUser,
+        emailFrom: String(process.env.EMAIL_FROM || process.env.STORE_EMAIL || '').trim(),
+        hasEmailPass: Boolean(emailPass),
+        placeholderPassword: isPlaceholderValue(emailPass),
       }
     );
     return false;
@@ -39,15 +43,15 @@ const sendEmail = async ({ to, subject, type, data }) => {
     : smtpPort === 465;
 
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
+    host: emailHost,
     port: smtpPort,
     secure: smtpSecure,
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: emailUser,
+      pass: emailPass,
     },
   });
 
@@ -129,8 +133,10 @@ const sendEmail = async ({ to, subject, type, data }) => {
       htmlContent = `<p>Hello from Melora</p>`;
   }
 
-  const fromAddress = process.env.EMAIL_FROM || process.env.STORE_EMAIL || process.env.EMAIL_USER;
-  const fromName = process.env.STORE_NAME || 'Melora Boutique';
+  const fromAddress = String(
+    process.env.EMAIL_FROM || process.env.STORE_EMAIL || emailUser
+  ).trim();
+  const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();
   const mailOptions = {
     from: `"${fromName}" <${fromAddress}>`,
     to,
@@ -145,7 +151,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
       subject,
       type,
       fromAddress,
-      smtpHost: process.env.EMAIL_HOST,
+      smtpHost: emailHost,
       smtpPort,
       smtpSecure,
     });
@@ -168,7 +174,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
       subject,
       type,
       fromAddress,
-      smtpHost: process.env.EMAIL_HOST,
+      smtpHost: emailHost,
       smtpPort,
       smtpSecure,
     });
