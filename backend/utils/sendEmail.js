@@ -13,6 +13,35 @@ const isPlaceholderValue = (value = '') => {
   return !normalized || ['placeholder', 'replace_with_email_password', 'changeme'].includes(normalized);
 };
 
+const sendWithResendApi = async ({ apiKey, fromAddress, fromName, to, subject, html, text }) => {
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `${fromName} <${fromAddress}>`,
+      to: [to],
+      subject,
+      html,
+      text,
+    }),
+  });
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(payload?.message || `Resend API request failed with status ${response.status}`);
+    error.code = 'RESEND_API_ERROR';
+    error.response = payload;
+    error.responseCode = response.status;
+    throw error;
+  }
+
+  return payload;
+};
+
 const sendEmail = async ({ to, subject, type, data }) => {
   const emailHost = String(process.env.EMAIL_HOST || '').trim();
   const emailUser = String(process.env.EMAIL_USER || '').trim();
@@ -146,6 +175,40 @@ const sendEmail = async ({ to, subject, type, data }) => {
   };
 
   try {
+    const canUseResendApi =
+      typeof fetch === 'function'
+      && fromAddress
+      && emailPass
+      && (String(process.env.RESEND_API_KEY || '').trim() || emailPass).startsWith('re_')
+      && (emailHost.includes('resend.com') || fromAddress.endsWith('@meloramoda.com'));
+
+    if (canUseResendApi) {
+      const resendApiKey = String(process.env.RESEND_API_KEY || emailPass).trim();
+      console.log('Attempting email delivery via Resend API', {
+        to,
+        subject,
+        type,
+        fromAddress,
+      });
+
+      const apiResult = await sendWithResendApi({
+        apiKey: resendApiKey,
+        fromAddress,
+        fromName,
+        to,
+        subject,
+        html: htmlContent,
+        text: stripHtml(htmlContent),
+      });
+
+      console.log('Email sent successfully via Resend API', {
+        id: apiResult?.id,
+        to,
+        subject,
+      });
+      return true;
+    }
+
     console.log('Attempting email delivery', {
       to,
       subject,
