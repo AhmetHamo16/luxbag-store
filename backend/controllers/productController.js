@@ -1,6 +1,7 @@
 const Product = require('../models/Product');
 const { safeDestroy } = require('../config/cloudinary');
 const mongoose = require('mongoose');
+const { resolveUploadedFileUrl } = require('../utils/uploadedFile');
 
 // Helper to extract Cloudinary public_id from URL
 const extractPublicId = (url) => {
@@ -8,36 +9,6 @@ const extractPublicId = (url) => {
   const parts = url.split('/');
   const fileWithExtension = parts[parts.length - 1];
   return fileWithExtension.split('.')[0];
-};
-
-const getRequestBaseUrl = (req) => {
-  const forwardedProto = req.headers['x-forwarded-proto'];
-  const protocol = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol || 'https')
-    .toString()
-    .split(',')[0]
-    .trim();
-  return `${protocol}://${req.get('host')}`;
-};
-
-const getUploadedFileUrl = (file, req) => {
-  if (!file) return '';
-  if (file.path && /^https?:\/\//i.test(file.path)) {
-    return file.path;
-  }
-  const baseUrl = req ? getRequestBaseUrl(req) : '';
-  if (file.filename) {
-    return baseUrl ? `${baseUrl}/uploads/products/${file.filename}` : `/uploads/products/${file.filename}`;
-  }
-  if (file.path) {
-    const normalized = file.path.replace(/\\/g, '/');
-    const marker = '/uploads/';
-    const markerIndex = normalized.lastIndexOf(marker);
-    if (markerIndex >= 0) {
-      const relativePath = normalized.slice(markerIndex);
-      return baseUrl ? `${baseUrl}${relativePath}` : relativePath;
-    }
-  }
-  return '';
 };
 
 // Helper to safely parse JSON from FormData
@@ -74,6 +45,10 @@ const parseJSONFields = (body) => {
 
 const normalizeStockData = (payload) => {
   const normalized = { ...payload };
+  const shouldRecalculateStock =
+    normalized.stock !== undefined ||
+    normalized.variants !== undefined ||
+    normalized.stockControl !== undefined;
 
   if (normalized.stock !== undefined && normalized.stock !== '') {
     normalized.stock = Math.max(0, Number(normalized.stock));
@@ -99,15 +74,17 @@ const normalizeStockData = (payload) => {
     }));
   }
 
-  const totalStock = normalized.variants?.length
-    ? normalized.variants.reduce((total, variant) => total + (Number(variant.stock) || 0), 0)
-    : Math.max(0, Number(normalized.stock || 0));
+  if (shouldRecalculateStock) {
+    const totalStock = normalized.variants?.length
+      ? normalized.variants.reduce((total, variant) => total + (Number(variant.stock) || 0), 0)
+      : Math.max(0, Number(normalized.stock || 0));
 
-  normalized.stockControl = {
-    ...(normalized.stockControl || {}),
-    totalStock,
-    lowStockAlert: totalStock > 0 && totalStock <= 2
-  };
+    normalized.stockControl = {
+      ...(normalized.stockControl || {}),
+      totalStock,
+      lowStockAlert: totalStock > 0 && totalStock <= 2
+    };
+  }
 
   return normalized;
 };
@@ -253,12 +230,12 @@ exports.createProduct = async (req, res) => {
     
     let uploadedImages = [];
     if (req.files && req.files.length > 0) {
-      uploadedImages = req.files.map((file, index) => ({
-        url: getUploadedFileUrl(file, req),
+      uploadedImages = await Promise.all(req.files.map(async (file, index) => ({
+        url: await resolveUploadedFileUrl(file, req, { folder: 'melora/products', resourceType: 'image' }),
         altText: productData.name?.en || 'Product Image',
         isMain: index === 0 && existingImages.length === 0, // First uploaded is main if no existing
         sortOrder: existingImages.length + index
-      }));
+      })));
     }
     
     productData.images = [...existingImages, ...uploadedImages];
@@ -322,12 +299,12 @@ exports.updateProduct = async (req, res) => {
         sortOrder: req.files.length + index,
       }));
 
-      const addedImages = req.files.map((file, index) => ({
-        url: getUploadedFileUrl(file, req),
+      const addedImages = await Promise.all(req.files.map(async (file, index) => ({
+        url: await resolveUploadedFileUrl(file, req, { folder: 'melora/products', resourceType: 'image' }),
         altText: updateData.name?.en || 'Product Image',
         isMain: index === 0,
         sortOrder: index
-      }));
+      })));
 
       updateData.images = [...addedImages, ...normalizedExistingImages];
     } else if (req.body.existingImages !== undefined) {

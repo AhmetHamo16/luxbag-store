@@ -1,4 +1,5 @@
 const Content = require('../models/Content');
+const { resolveUploadedFileUrl } = require('../utils/uploadedFile');
 
 // @desc    Get Global Content blocks
 // @route   GET /api/content
@@ -56,7 +57,7 @@ exports.updateContent = async (req, res) => {
     // Detect if Multer mapped a file hook to req.file (Hero Image)
     if (req.file) {
       if (!payload.heroBanner) payload.heroBanner = {};
-      payload.heroBanner.backgroundImage = req.file.path;
+      payload.heroBanner.backgroundImage = await resolveUploadedFileUrl(req.file, req, { folder: 'melora/content', resourceType: 'image' });
     }
 
     if (!content) {

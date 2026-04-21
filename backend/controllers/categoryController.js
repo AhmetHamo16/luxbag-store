@@ -1,38 +1,5 @@
 const Category = require('../models/Category');
-
-const getRequestBaseUrl = (req) => {
-  const forwardedProto = req.headers['x-forwarded-proto'];
-  const protocol = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol || 'https')
-    .toString()
-    .split(',')[0]
-    .trim();
-  return `${protocol}://${req.get('host')}`;
-};
-
-const getUploadedFileUrl = (file, req) => {
-  if (!file) return '';
-  if (file.path && /^https?:\/\//i.test(file.path)) {
-    return file.path;
-  }
-
-  const baseUrl = req ? getRequestBaseUrl(req) : '';
-
-  if (file.filename) {
-    return baseUrl ? `${baseUrl}/uploads/products/${file.filename}` : `/uploads/products/${file.filename}`;
-  }
-
-  if (file.path) {
-    const normalized = file.path.replace(/\\/g, '/');
-    const marker = '/uploads/';
-    const markerIndex = normalized.lastIndexOf(marker);
-    if (markerIndex >= 0) {
-      const relativePath = normalized.slice(markerIndex);
-      return baseUrl ? `${baseUrl}${relativePath}` : relativePath;
-    }
-  }
-
-  return '';
-};
+const { resolveUploadedFileUrl } = require('../utils/uploadedFile');
 
 const parseCategoryPayload = (body = {}) => {
   const parsed = { ...body };
@@ -97,7 +64,7 @@ exports.createCategory = async (req, res) => {
   try {
     let categoryData = parseCategoryPayload(req.body);
     if (req.file) {
-      categoryData.image = getUploadedFileUrl(req.file, req);
+      categoryData.image = await resolveUploadedFileUrl(req.file, req, { folder: 'melora/categories', resourceType: 'image' });
     }
 
     categoryData.slug = categoryData.slug || slugify(categoryData?.name?.en);
@@ -124,7 +91,7 @@ exports.updateCategory = async (req, res) => {
   try {
     let updateData = parseCategoryPayload(req.body);
     if (req.file) {
-      updateData.image = getUploadedFileUrl(req.file, req);
+      updateData.image = await resolveUploadedFileUrl(req.file, req, { folder: 'melora/categories', resourceType: 'image' });
     }
 
     if (!updateData.slug && updateData?.name?.en) {
