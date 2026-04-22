@@ -227,7 +227,6 @@ exports.createProduct = async (req, res) => {
         existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [];
       }
     }
-    
     let uploadedImages = [];
     if (req.files && req.files.length > 0) {
       uploadedImages = await Promise.all(req.files.map(async (file, index) => ({
@@ -274,6 +273,10 @@ exports.updateProduct = async (req, res) => {
       } catch (e) {
         existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [];
       }
+    }
+    const shouldReplaceImages = req.body.replaceImages === 'true';
+    if (shouldReplaceImages) {
+      existingImages = [];
     }
     
     // Find old product to detect deleted images

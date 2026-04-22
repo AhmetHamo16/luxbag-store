@@ -443,7 +443,10 @@ const EditProduct = () => {
     });
 
     if (validFiles.length) {
-      setImages((current) => [...current, ...validFiles]);
+      // Replacing product media in edit mode should feel deterministic:
+      // the newly selected files become the new gallery and main image.
+      setExistingImages([]);
+      setImages(validFiles);
     }
 
     e.target.value = '';
@@ -555,6 +558,7 @@ const EditProduct = () => {
          data.append('existingImages', JSON.stringify(existingImages));
       }
       if (images.length > 0) {
+        data.append('replaceImages', 'true');
         for(let i = 0; i < images.length; i++) {
           data.append('images', images[i]);
         }
