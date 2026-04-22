@@ -35,10 +35,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 const path = require('path');
-app.use('/uploads', (req, res, next) => {
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    next();
-}, express.static(path.join(__dirname, 'uploads')));
+const uploadsStaticMiddleware = [
+    (req, res, next) => {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        next();
+    },
+    express.static(path.join(__dirname, 'uploads'))
+];
+app.use('/uploads', ...uploadsStaticMiddleware);
+app.use('/api/uploads', ...uploadsStaticMiddleware);
 
 // Basic Route for testing
 app.get('/', (req, res) => {

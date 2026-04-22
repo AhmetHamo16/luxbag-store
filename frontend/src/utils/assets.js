@@ -28,8 +28,21 @@ export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/3
     return `${uploadsOrigin}${normalized.slice(uploadsIndex)}`;
   }
 
+  const apiUploadsIndex = normalized.lastIndexOf('/api/uploads/');
+  if (apiUploadsIndex >= 0) {
+    return `${uploadsOrigin}${normalized.slice(apiUploadsIndex + 4)}`;
+  }
+
   if (/^https?:\/\//i.test(normalized)) return normalized;
   if (normalized.startsWith('//')) return `https:${normalized}`;
+
+  if (normalized.startsWith('/api/uploads/')) {
+    return `${uploadsOrigin}${normalized.slice(4)}`;
+  }
+
+  if (normalized.startsWith('api/uploads/')) {
+    return `${uploadsOrigin}/${normalized.slice(4)}`;
+  }
 
   if (normalized.startsWith('/uploads/')) {
     return `${uploadsOrigin}${normalized}`;
