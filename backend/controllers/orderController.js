@@ -15,6 +15,16 @@ const normalizeItemName = (name) => {
   return String(name);
 };
 
+const extractProductImageUrl = (product) => {
+  const images = Array.isArray(product?.images) ? product.images : [];
+  const selectedImage = images.find((entry) => entry?.isMain && (entry?.url || entry)) || images[0];
+
+  if (!selectedImage) return '';
+  if (typeof selectedImage === 'string') return selectedImage;
+
+  return selectedImage.url || selectedImage.secure_url || selectedImage.image || selectedImage.src || selectedImage.path || selectedImage.publicUrl || '';
+};
+
 const getRequestBaseUrl = (req) => {
   const forwardedProto = req.headers['x-forwarded-proto'];
   const protocol = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol || 'https')
@@ -297,7 +307,54 @@ const getStatusEmailContent = (status, order) => {
     },
   };
 
-  const selected = localizedContent[language] || localizedContent.en;
+  const arabicOverrides = {
+    pending_payment: {
+      subject: 'تم استلام طلبك من ميلورا وبانتظار تأكيد الدفع',
+      title: 'تم استلام طلبك',
+      greeting: 'مرحباً',
+      message: 'استلمنا طلبك بنجاح. سنراجع إشعار الدفع ونرسل لك تحديثات الطلب مباشرة على هذا البريد.',
+      cta: 'متابعة حالة الطلب',
+    },
+    pending: {
+      subject: 'تم استلام طلبك من ميلورا',
+      title: 'تم استلام طلبك',
+      greeting: 'مرحباً',
+      message: 'تم استلام طلبك بنجاح، وفريق ميلورا سيبدأ مراجعته وتحضيره في أقرب وقت.',
+      cta: 'متابعة حالة الطلب',
+    },
+    confirmed: {
+      subject: 'تم تأكيد طلبك من ميلورا',
+      title: 'تم قبول طلبك',
+      greeting: 'مرحباً',
+      message: 'يسعدنا إبلاغك أن طلبك تمت الموافقة عليه بنجاح، وسنبدأ بتجهيزه قريباً.',
+      cta: 'متابعة حالة الطلب',
+    },
+    processing: {
+      subject: 'طلبك من ميلورا قيد التحضير',
+      title: 'طلبك يتحضر الآن',
+      greeting: 'مرحباً',
+      message: 'فريق ميلورا بدأ الآن بتجهيز طلبك وتحضيره للشحن.',
+      cta: 'متابعة حالة الطلب',
+    },
+    shipped: {
+      subject: 'طلبك من ميلورا أصبح في الشحن',
+      title: 'طلبك في الطريق إليك',
+      greeting: 'مرحباً',
+      message: 'تم تسليم طلبك إلى شركة الشحن وهو الآن في الطريق إليك.',
+      cta: 'تتبع الطلب',
+    },
+    delivered: {
+      subject: 'تم تسليم طلبك من ميلورا',
+      title: 'تم تسليم الطلب بنجاح',
+      greeting: 'مرحباً',
+      message: 'يسعدنا إبلاغك بأن طلبك تم تسليمه بنجاح. نتمنى أن تنال تجربتك مع ميلورا إعجابك، وسنكون سعداء بخدمتك مجدداً في أي وقت.',
+      cta: 'عرض تفاصيل الطلب',
+    },
+  };
+
+  const selected = language === 'ar'
+    ? arabicOverrides
+    : (localizedContent[language] || localizedContent.en);
 
   let payload = null;
 
@@ -539,17 +596,9 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Order items missing' });
     }
 
-    const sanitizedItems = orderData.items.map(item => ({
-      product: item.product,
-      name: normalizeItemName(item.name),
-      quantity: Number(item.quantity) || 1,
-      price: Number(item.price) || 0,
-      image: typeof item.image === 'object' ? (item.image?.url || '/placeholder.jpg') : (item.image || '/placeholder.jpg'),
-      color: item.color,
-      variant: item.variant
-    }));
+    const sanitizedItems = [];
 
-    for (const item of sanitizedItems) {
+    for (const item of orderData.items) {
       const productDoc = await Product.findById(item.product).lean();
       if (!productDoc) {
         return res.status(404).json({ message: 'One of the selected products was not found' });
@@ -558,14 +607,30 @@ exports.createOrder = async (req, res) => {
       if (item.variant) {
         const variant = productDoc.variants?.find((entry) => String(entry._id) === String(item.variant));
         if (!variant) {
-          return res.status(400).json({ message: `Variant not found for ${item.name}` });
+          return res.status(400).json({ message: `Variant not found for ${normalizeItemName(item.name)}` });
         }
         if (Number(variant.stock || 0) < Number(item.quantity || 0)) {
-          return res.status(400).json({ message: `${item.name} does not have enough stock` });
+          return res.status(400).json({ message: `${normalizeItemName(item.name)} does not have enough stock` });
         }
       } else if (Number(productDoc.stock || 0) < Number(item.quantity || 0)) {
-        return res.status(400).json({ message: `${item.name} does not have enough stock` });
+        return res.status(400).json({ message: `${normalizeItemName(item.name)} does not have enough stock` });
       }
+
+      const submittedImage = typeof item.image === 'object'
+        ? (item.image?.url || item.image?.secure_url || item.image?.src || '')
+        : String(item.image || '').trim();
+
+      sanitizedItems.push({
+        product: item.product,
+        name: normalizeItemName(item.name),
+        quantity: Number(item.quantity) || 1,
+        price: Number(item.price) || Number(productDoc.salePrice || productDoc.price || 0),
+        costPrice: Number(item.costPrice) || Number(productDoc.costPrice || 0),
+        image: submittedImage || extractProductImageUrl(productDoc) || '/placeholder.jpg',
+        color: item.color,
+        size: item.size,
+        variant: item.variant || null
+      });
     }
 
     let validatedCoupon = null;
@@ -1213,7 +1278,9 @@ exports.markOrderPreparing = async (req, res) => {
 // @access  Private
 exports.getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort('-createdAt');
+    const orders = await Order.find({ user: req.user._id })
+      .sort('-createdAt')
+      .populate('items.product', 'images slug name');
     res.status(200).json({ success: true, count: orders.length, data: orders });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

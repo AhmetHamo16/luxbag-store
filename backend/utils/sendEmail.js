@@ -206,7 +206,21 @@ const sendEmail = async ({ to, subject, type, data }) => {
           footer: 'Crafted details, elevated service, and a refined shopping experience in every order.',
         },
       };
-      const copy = orderStatusCopy[data.language] || orderStatusCopy.en;
+      const arabicStatusCopy = {
+        intro: 'تحديث أنيق بخصوص طلبك من ميلورا.',
+        noteLabel: 'رسالة خاصة',
+        fallbackTitle: 'تحديث طلبك من ميلورا',
+        fallbackGreeting: 'مرحباً',
+        fallbackCustomer: 'عميل ميلورا',
+        detailsLabel: 'تفاصيل الطلب',
+        orderIdLabel: 'رقم الطلب',
+        trackingLabel: 'رقم التتبع',
+        fallbackCta: 'متابعة حالة الطلب',
+        footer: 'تفاصيل راقية، خدمة مميزة، وتجربة تسوق أنيقة في كل طلب.',
+      };
+      const copy = data.language === 'ar'
+        ? arabicStatusCopy
+        : (orderStatusCopy[data.language] || orderStatusCopy.en);
       const localizedCopy = data.language === 'ar'
         ? Object.fromEntries(
             Object.entries(copy).map(([key, value]) => [key, repairArabicMojibake(value)])
