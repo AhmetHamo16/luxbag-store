@@ -71,19 +71,28 @@ const sendEmail = async ({ to, subject, type, data }) => {
   const emailHost = String(process.env.EMAIL_HOST || '').trim();
   const emailUser = String(process.env.EMAIL_USER || '').trim();
   const emailPass = String(process.env.EMAIL_PASS || '');
+  const resendApiKey = String(process.env.RESEND_API_KEY || '').trim()
+    || (String(emailPass || '').trim().startsWith('re_') ? String(emailPass || '').trim() : '');
+  const fromAddress = String(
+    process.env.EMAIL_FROM || process.env.STORE_EMAIL || emailUser
+  ).trim();
+  const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();
+  const hasResendApiConfig = Boolean(typeof fetch === 'function' && resendApiKey && fromAddress);
+  const hasSmtpConfig = Boolean(
+    emailHost &&
+    emailUser &&
+    emailPass &&
+    !isPlaceholderValue(emailPass)
+  );
 
-  if (
-    !emailHost ||
-    !emailUser ||
-    !emailPass ||
-    isPlaceholderValue(emailPass)
-  ) {
+  if (!hasResendApiConfig && !hasSmtpConfig) {
     console.warn(
-      `Email skipped for "${subject}" because SMTP settings are missing or still using a placeholder password.`,
+      `Email skipped for "${subject}" because neither Resend API nor SMTP settings are configured correctly.`,
       {
         emailHost,
         emailUser,
-        emailFrom: String(process.env.EMAIL_FROM || process.env.STORE_EMAIL || '').trim(),
+        emailFrom: fromAddress,
+        hasResendApiKey: Boolean(resendApiKey),
         hasEmailPass: Boolean(emailPass),
         placeholderPassword: isPlaceholderValue(emailPass),
       }
@@ -95,19 +104,20 @@ const sendEmail = async ({ to, subject, type, data }) => {
   const smtpSecure = String(process.env.EMAIL_SECURE || '').trim()
     ? String(process.env.EMAIL_SECURE).trim().toLowerCase() === 'true'
     : smtpPort === 465;
-
-  const transporter = nodemailer.createTransport({
-    host: emailHost,
-    port: smtpPort,
-    secure: smtpSecure,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    auth: {
-      user: emailUser,
-      pass: emailPass,
-    },
-  });
+  const transporter = hasSmtpConfig
+    ? nodemailer.createTransport({
+        host: emailHost,
+        port: smtpPort,
+        secure: smtpSecure,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+        auth: {
+          user: emailUser,
+          pass: emailPass,
+        },
+      })
+    : null;
 
   let htmlContent = '';
 
@@ -264,10 +274,6 @@ const sendEmail = async ({ to, subject, type, data }) => {
       htmlContent = `<p>Hello from Melora</p>`;
   }
 
-  const fromAddress = String(
-    process.env.EMAIL_FROM || process.env.STORE_EMAIL || emailUser
-  ).trim();
-  const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();
   const mailOptions = {
     from: `"${fromName}" <${fromAddress}>`,
     to,
@@ -277,15 +283,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
   };
 
   try {
-    const canUseResendApi =
-      typeof fetch === 'function'
-      && fromAddress
-      && emailPass
-      && (String(process.env.RESEND_API_KEY || '').trim() || emailPass).startsWith('re_')
-      && (emailHost.includes('resend.com') || fromAddress.endsWith('@meloramoda.com'));
-
-    if (canUseResendApi) {
-      const resendApiKey = String(process.env.RESEND_API_KEY || emailPass).trim();
+    if (hasResendApiConfig) {
       console.log('Attempting email delivery via Resend API', {
         to,
         subject,
