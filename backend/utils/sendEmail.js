@@ -13,6 +13,17 @@ const isPlaceholderValue = (value = '') => {
   return !normalized || ['placeholder', 'replace_with_email_password', 'changeme'].includes(normalized);
 };
 
+const isLikelyPlaceholderEmail = (value = '') => {
+  const normalized = String(value || '').trim().toLowerCase();
+  return (
+    !normalized ||
+    !normalized.includes('@') ||
+    normalized.includes('your-domain.com') ||
+    normalized.includes('example.com') ||
+    normalized === 'resend'
+  );
+};
+
 const repairArabicMojibake = (value = '') => {
   let text = String(value || '');
 
@@ -73,9 +84,12 @@ const sendEmail = async ({ to, subject, type, data }) => {
   const emailPass = String(process.env.EMAIL_PASS || '');
   const resendApiKey = String(process.env.RESEND_API_KEY || '').trim()
     || (String(emailPass || '').trim().startsWith('re_') ? String(emailPass || '').trim() : '');
-  const fromAddress = String(
+  const requestedFromAddress = String(
     process.env.EMAIL_FROM || process.env.STORE_EMAIL || emailUser
   ).trim();
+  const fromAddress = resendApiKey && isLikelyPlaceholderEmail(requestedFromAddress)
+    ? 'onboarding@resend.dev'
+    : requestedFromAddress;
   const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();
   const hasResendApiConfig = Boolean(typeof fetch === 'function' && resendApiKey && fromAddress);
   const hasSmtpConfig = Boolean(
