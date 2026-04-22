@@ -27,20 +27,24 @@ const cloudinaryApiSecret = String(
   ''
 ).trim();
 
+const hasExplicitCloudinaryConfig = Boolean(
+  cloudinaryCloudName && cloudinaryApiKey && cloudinaryApiSecret
+);
+
 const hasCloudinaryConfig = Boolean(
-  cloudinaryUrl || (cloudinaryCloudName && cloudinaryApiKey && cloudinaryApiSecret)
+  hasExplicitCloudinaryConfig || cloudinaryUrl
 );
 
 if (hasCloudinaryConfig) {
-  if (cloudinaryUrl) {
-    cloudinary.config({
-      cloudinary_url: cloudinaryUrl,
-    });
-  } else {
+  if (hasExplicitCloudinaryConfig) {
     cloudinary.config({
       cloud_name: cloudinaryCloudName,
       api_key: cloudinaryApiKey,
       api_secret: cloudinaryApiSecret
+    });
+  } else {
+    cloudinary.config({
+      cloudinary_url: cloudinaryUrl,
     });
   }
 }

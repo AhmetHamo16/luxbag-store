@@ -1,3 +1,4 @@
+const https = require('https');
 const nodemailer = require('nodemailer');
 
 const stripHtml = (html = '') =>
@@ -51,34 +52,61 @@ const repairArabicMojibake = (value = '') => {
   return text;
 };
 
-const sendWithResendApi = async ({ apiKey, fromAddress, fromName, to, subject, html, text }) => {
-  const response = await fetch('https://api.resend.com/emails', {
+const sendWithResendApi = ({ apiKey, fromAddress, fromName, to, subject, html, text }) => new Promise((resolve, reject) => {
+  const body = JSON.stringify({
+    from: `${fromName} <${fromAddress}>`,
+    to: [to],
+    subject,
+    html,
+    text,
+  });
+
+  const request = https.request('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(body),
     },
-    body: JSON.stringify({
-      from: `${fromName} <${fromAddress}>`,
-      to: [to],
-      subject,
-      html,
-      text,
-    }),
+    timeout: 15000,
+  }, (response) => {
+    let raw = '';
+    response.setEncoding('utf8');
+    response.on('data', (chunk) => {
+      raw += chunk;
+    });
+    response.on('end', () => {
+      let payload = {};
+      try {
+        payload = raw ? JSON.parse(raw) : {};
+      } catch (_error) {
+        payload = { raw };
+      }
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        resolve(payload);
+        return;
+      }
+
+      const error = new Error(payload?.message || `Resend API request failed with status ${response.statusCode}`);
+      error.code = 'RESEND_API_ERROR';
+      error.response = payload;
+      error.responseCode = response.statusCode;
+      reject(error);
+    });
   });
 
-  const payload = await response.json().catch(() => ({}));
+  request.on('timeout', () => {
+    request.destroy(new Error('Resend API request timed out'));
+  });
 
-  if (!response.ok) {
-    const error = new Error(payload?.message || `Resend API request failed with status ${response.status}`);
-    error.code = 'RESEND_API_ERROR';
-    error.response = payload;
-    error.responseCode = response.status;
-    throw error;
-  }
+  request.on('error', (error) => {
+    reject(error);
+  });
 
-  return payload;
-};
+  request.write(body);
+  request.end();
+});
 
 const sendEmail = async ({ to, subject, type, data }) => {
   const emailHost = String(process.env.EMAIL_HOST || '').trim();
@@ -93,7 +121,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
     ? 'onboarding@resend.dev'
     : requestedFromAddress;
   const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();
-  const hasResendApiConfig = Boolean(typeof fetch === 'function' && resendApiKey && fromAddress);
+  const hasResendApiConfig = Boolean(resendApiKey && fromAddress);
   const hasSmtpConfig = Boolean(
     emailHost &&
     emailUser &&
