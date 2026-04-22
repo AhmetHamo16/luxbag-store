@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const { cloudinary, hasCloudinaryConfig } = require('../config/cloudinary');
 
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'products');
 fs.mkdirSync(uploadsDir, { recursive: true });
@@ -35,43 +33,10 @@ const localDiskStorage = multer.diskStorage({
   },
 });
 
-const resolveCloudinaryFolder = (req = {}) => {
-  const routeHint = String(req.baseUrl || req.originalUrl || '').toLowerCase();
-
-  if (routeHint.includes('/categories')) {
-    return 'melora/categories';
-  }
-
-  if (routeHint.includes('/content')) {
-    return 'melora/content';
-  }
-
-  return 'melora/products';
-};
-
-const cloudinaryStorage = hasCloudinaryConfig
-  ? new CloudinaryStorage({
-      cloudinary,
-      params: async (req, file) => {
-        const ext = path.extname(file.originalname || '').toLowerCase().replace('.', '') || 'jpg';
-        const safeBase = path
-          .basename(file.originalname || 'upload', path.extname(file.originalname || ''))
-          .replace(/[^a-zA-Z0-9_-]+/g, '-')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '')
-          .toLowerCase() || 'upload';
-
-        return {
-          folder: resolveCloudinaryFolder(req),
-          resource_type: 'image',
-          public_id: `${Date.now()}-${safeBase}`,
-          format: ext,
-        };
-      },
-    })
-  : null;
-
-const storage = cloudinaryStorage || localDiskStorage;
+// Always accept uploads to local disk first. Product/category/content controllers
+// can then promote files to Cloudinary when credentials are valid, while still
+// allowing saves to succeed if Cloudinary is temporarily misconfigured.
+const storage = localDiskStorage;
 
 const upload = multer({
   storage,
