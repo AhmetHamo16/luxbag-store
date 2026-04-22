@@ -55,10 +55,6 @@ const storage = hasCloudinaryConfig
 const upload = multer({
   storage,
   fileFilter: (_req, file, cb) => {
-    if (process.env.NODE_ENV === 'production' && !hasCloudinaryConfig) {
-      return cb(new Error('Product image uploads require Cloudinary configuration in production.'));
-    }
-
     if (isAllowedImageFile(file)) {
       return cb(null, true);
     }
