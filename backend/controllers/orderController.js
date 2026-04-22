@@ -142,6 +142,21 @@ const repairArabicMojibake = (value = '') => {
   }
 };
 
+const normalizeArabicEmailText = (value = '') => {
+  let text = repairArabicMojibake(value);
+
+  if (!/[ÃØÙ]/.test(text)) {
+    return text;
+  }
+
+  try {
+    const repaired = Buffer.from(text, 'latin1').toString('utf8');
+    return repaired || text;
+  } catch (_error) {
+    return text;
+  }
+};
+
 const getStatusEmailContent = (status, order) => {
   const language = getOrderPreferredLanguage(order);
   const trackingNumber = order?.trackingNumber || '';
@@ -316,11 +331,11 @@ const getStatusEmailContent = (status, order) => {
 
   return {
     ...payload,
-    subject: repairArabicMojibake(payload.subject),
-    title: repairArabicMojibake(payload.title),
-    greeting: repairArabicMojibake(payload.greeting),
-    message: repairArabicMojibake(payload.message),
-    cta: repairArabicMojibake(payload.cta),
+    subject: normalizeArabicEmailText(payload.subject),
+    title: normalizeArabicEmailText(payload.title),
+    greeting: normalizeArabicEmailText(payload.greeting),
+    message: normalizeArabicEmailText(payload.message),
+    cta: normalizeArabicEmailText(payload.cta),
   };
 };
 

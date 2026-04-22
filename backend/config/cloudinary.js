@@ -6,12 +6,29 @@ const cloudinaryUrl = String(
   ''
 ).trim();
 
+const cloudinaryCloudName = String(
+  process.env.CLOUDINARY_CLOUD_NAME ||
+  process.env.cloudinary_cloud_name ||
+  process.env.CLOUD_NAME ||
+  ''
+).trim();
+
+const cloudinaryApiKey = String(
+  process.env.CLOUDINARY_API_KEY ||
+  process.env.cloudinary_api_key ||
+  process.env.API_KEY ||
+  ''
+).trim();
+
+const cloudinaryApiSecret = String(
+  process.env.CLOUDINARY_API_SECRET ||
+  process.env.cloudinary_api_secret ||
+  process.env.API_SECRET ||
+  ''
+).trim();
+
 const hasCloudinaryConfig = Boolean(
-  cloudinaryUrl || (
-    process.env.CLOUDINARY_CLOUD_NAME &&
-    process.env.CLOUDINARY_API_KEY &&
-    process.env.CLOUDINARY_API_SECRET
-  )
+  cloudinaryUrl || (cloudinaryCloudName && cloudinaryApiKey && cloudinaryApiSecret)
 );
 
 if (hasCloudinaryConfig) {
@@ -21,9 +38,9 @@ if (hasCloudinaryConfig) {
     });
   } else {
     cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET
+      cloud_name: cloudinaryCloudName,
+      api_key: cloudinaryApiKey,
+      api_secret: cloudinaryApiSecret
     });
   }
 }
