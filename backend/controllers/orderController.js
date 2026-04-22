@@ -601,6 +601,7 @@ exports.createOrder = async (req, res) => {
 
     const newOrder = new Order(orderPayload);
     const saved = await newOrder.save();
+    const notificationOrder = await Order.findById(saved._id).populate('user', 'name email').exec();
 
     if (validatedCoupon) {
       validatedCoupon.usedCount += 1;
@@ -620,7 +621,7 @@ exports.createOrder = async (req, res) => {
     });
 
     setImmediate(() => {
-      notifyCustomerAboutOrderStatus(saved, saved.status).catch((error) => {
+      notifyCustomerAboutOrderStatus(notificationOrder || saved, saved.status).catch((error) => {
         console.error('Customer order receipt notification failed:', error.message);
       });
     });

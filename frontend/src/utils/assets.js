@@ -1,14 +1,6 @@
 import { backendOrigin } from '../services/api';
 
-const isLocalHost =
-  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
-
-const uploadsOrigin =
-  typeof window === 'undefined'
-    ? 'https://luxbag-store-production.up.railway.app'
-    : isLocalHost
-      ? backendOrigin
-      : 'https://luxbag-store-production.up.railway.app';
+const uploadsOrigin = backendOrigin;
 
 export const resolveAssetUrl = (value, fallback = 'https://via.placeholder.com/300') => {
   if (!value) return fallback;
