@@ -374,9 +374,20 @@ const sendEmail = async ({ to, subject, type, data }) => {
         });
         return true;
       } catch (resendError) {
-        if (await trySmtpDelivery(resendError)) {
-          return true;
-        }
+        console.error('Resend API delivery failed', {
+          to,
+          subject,
+          type,
+          fromAddress,
+          message: resendError?.message,
+          code: resendError?.code,
+          responseCode: resendError?.responseCode,
+          response: resendError?.response,
+        });
+
+        // When a Resend API key is configured, prefer failing loudly instead of
+        // timing out on SMTP fallback. Railway frequently blocks or times out
+        // outbound SMTP, while the HTTP API remains available.
         throw resendError;
       }
     }

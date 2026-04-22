@@ -7,6 +7,7 @@ import useTranslation from '../../../hooks/useTranslation';
 import toast from 'react-hot-toast';
 import ConfirmationModal from '../../../components/shared/ConfirmationModal';
 import useCurrencyStore from '../../../store/useCurrencyStore';
+import { resolveAssetUrl as resolveSharedAssetUrl } from '../../../utils/assets';
 
 const OrderList = () => {
   const { t, language } = useTranslation('admin');
@@ -106,6 +107,99 @@ const OrderList = () => {
       failedOrderDetails: 'Siparis detaylari yuklenemedi',
     },
   }[language];
+  const fixedUi = {
+    ar: {
+      exportCsv: 'تصدير CSV',
+      apply: 'تطبيق',
+      pendingPayment: 'بانتظار الدفع',
+      guestCustomer: 'عميل ضيف',
+      noEmail: 'لا يوجد بريد إلكتروني',
+      verify: 'تأكيد',
+      reject: 'رفض',
+      noOrders: 'لا توجد طلبات مطابقة لهذا البحث.',
+      previous: 'السابق',
+      next: 'التالي',
+      orderTimeline: 'مسار الطلب',
+      customerShipping: 'العميل والشحن',
+      paymentInfo: 'معلومات الدفع',
+      orderItems: 'عناصر الطلب',
+      printAddress: 'طباعة العنوان',
+      printInvoice: 'طباعة الفاتورة',
+      verifyReceipt: 'تأكيد الإيصال',
+      rejectReceipt: 'رفض الإيصال',
+      fullPageView: 'عرض الصفحة الكاملة',
+      name: 'الاسم',
+      email: 'البريد',
+      phone: 'الهاتف',
+      address: 'العنوان',
+      noPhone: 'لا يوجد رقم هاتف',
+      failedExport: 'فشل تصدير الملف',
+      failedStatus: 'فشل تحديث الحالة',
+      selectStatus: 'اختر الحالة',
+      selectOrder: 'اختر طلبًا واحدًا على الأقل',
+      failedOrderDetails: 'فشل تحميل تفاصيل الطلب',
+    },
+    tr: {
+      exportCsv: 'CSV Dışa Aktar',
+      pendingPayment: 'Ödeme Bekleniyor',
+      guestCustomer: 'Misafir Müşteri',
+      noOrders: 'Bu sorguya uyan sipariş bulunamadı.',
+      next: 'İleri',
+      orderTimeline: 'Sipariş Akışı',
+      customerShipping: 'Müşteri ve Teslimat',
+      paymentInfo: 'Ödeme Bilgisi',
+      orderItems: 'Sipariş Ürünleri',
+      printAddress: 'Adres Yazdır',
+      printInvoice: 'Fatura Yazdır',
+      fullPageView: 'Tam Sayfa Aç',
+      failedExport: 'CSV dışa aktarılamadı',
+      failedStatus: 'Durum güncellenemedi',
+      selectStatus: 'Bir durum seçin',
+      selectOrder: 'En az bir sipariş seçin',
+      failedOrderDetails: 'Sipariş detayları yüklenemedi',
+    },
+  }[language] || {};
+  const uiText = { ...ui, ...fixedUi };
+  const statusLabels = {
+    en: {
+      All: 'All',
+      pending_payment: 'Pending Payment',
+      pending: 'New Order',
+      confirmed: 'Order Confirmed',
+      processing: 'Your order is being prepared',
+      out_for_delivery: 'Your order is on the way',
+      shipped: 'Your order is on the way',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled',
+    },
+    ar: {
+      All: 'الكل',
+      pending_payment: 'بانتظار الدفع',
+      pending: 'طلب جديد',
+      confirmed: 'تم تأكيد الطلب',
+      processing: 'طلبك يتجهز',
+      out_for_delivery: 'طلبك عالطريق',
+      shipped: 'طلبك عالطريق',
+      delivered: 'تم التسليم',
+      cancelled: 'ملغي',
+    },
+    tr: {
+      All: 'Tum Siparisler',
+      pending_payment: 'Odeme Bekleniyor',
+      pending: 'Yeni Siparis',
+      confirmed: 'Siparis Onaylandi',
+      processing: 'Siparis hazirlaniyor',
+      out_for_delivery: 'Siparis yolda',
+      shipped: 'Siparis yolda',
+      delivered: 'Teslim edildi',
+      cancelled: 'Iptal edildi',
+    },
+  };
+  const getStatusLabel = (status) => statusLabels[language]?.[status] || t?.common?.[status] || status;
+  const resolveOrderItemImage = (item) => resolveSharedAssetUrl(
+    item?.image || item?.product?.images?.[0]?.url || item?.product?.images?.[0],
+    ''
+  );
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -176,7 +270,7 @@ const OrderList = () => {
       window.URL.revokeObjectURL(downloadUrl);
       a.remove();
     } catch (err) {
-      toast.error(ui.failedExport);
+      toast.error(uiText.failedExport);
       console.error(err);
     }
   };
@@ -184,7 +278,9 @@ const OrderList = () => {
 
   const handleStatusChangeClick = (id, newStatus) => {
     const currentOrder = orders.find((entry) => entry._id === id) || selectedOrder;
-    if (newStatus === 'shipped' && currentOrder?.payment?.method === 'iban' && currentOrder?.payment?.status !== 'paid') {
+    if (['out_for_delivery', 'shipped'].includes(newStatus) && currentOrder?.payment?.method === 'iban' && currentOrder?.payment?.status !== 'paid') {
+      toast.error(language === 'ar' ? 'لا يمكن شحن طلب التحويل البنكي قبل تأكيد الدفع.' : language === 'tr' ? 'Banka havalesi siparişi ödeme onayı olmadan kargolanamaz.' : 'This bank-transfer order must be marked paid before shipping.');
+      return;
       toast.error(language === 'ar' ? 'لا يمكن شحن طلب التحويل البنكي قبل تأكيد الدفع.' : language === 'tr' ? 'Banka havalesi siparisi odeme onayi olmadan kargolanamaz.' : 'This bank-transfer order must be marked paid before shipping.');
       return;
     }
@@ -198,13 +294,15 @@ const OrderList = () => {
       ? `هل تريد تغيير حالة الطلب إلى ${newStatus}؟`
       : language === 'tr'
         ? `Siparis durumu ${newStatus} olarak guncellensin mi?`
-        : `Change order status to ${newStatus}?`;
+        : `Change order status to ${getStatusLabel(newStatus)}?`;
+    const safeTitle = language === 'ar' ? 'تحديث حالة الطلب' : language === 'tr' ? 'Sipariş Durumunu Güncelle' : title;
+    const safeMessage = language === 'ar' ? `هل تريد تغيير حالة الطلب إلى ${newStatus}؟` : language === 'tr' ? `Sipariş durumu ${newStatus} olarak güncellensin mi?` : message;
 
     setConfirmModal({
        isOpen: true,
        data: { id, newStatus, trackingNumber: null },
-       title,
-       message
+       title: safeTitle,
+       message: safeMessage
     });
   };
 
@@ -214,7 +312,38 @@ const OrderList = () => {
     
     setConfirmModal({ ...confirmModal, isOpen: false });
 
-    if (newStatus === 'shipped') {
+    if (['out_for_delivery', 'shipped'].includes(newStatus)) {
+      const safeTrackingPrompt = language === 'ar' ? 'أدخل رقم التتبع لهذا الشحن. يمكنك تركه فارغًا إذا أردت.' : language === 'tr' ? 'Bu kargo için takip numarasını girin. İsterseniz boş bırakabilirsiniz.' : (t?.orders?.trackingPrompt || 'Enter tracking number for this shipment (optional):');
+      trackingNumber = window.prompt(safeTrackingPrompt, '');
+      if (trackingNumber === null) return;
+      try {
+        await orderService.updateOrderStatus(id, newStatus, trackingNumber);
+        toast.success(language === 'ar' ? `تم تحديث حالة الطلب إلى ${getStatusLabel(newStatus)}` : language === 'tr' ? `Sipariş durumu ${getStatusLabel(newStatus)} olarak güncellendi` : `Order marked as ${getStatusLabel(newStatus)}`);
+        fetchOrders();
+        if (selectedOrder && selectedOrder._id === id) {
+          fetchOrderDetails(id);
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error(uiText.failedStatus);
+      }
+      return;
+    }
+
+    try {
+      await orderService.updateOrderStatus(id, newStatus, trackingNumber);
+      toast.success(language === 'ar' ? `تم تحديث حالة الطلب إلى ${getStatusLabel(newStatus)}` : language === 'tr' ? `Sipariş durumu ${getStatusLabel(newStatus)} olarak güncellendi` : `Order marked as ${getStatusLabel(newStatus)}`);
+      fetchOrders();
+      if (selectedOrder && selectedOrder._id === id) {
+        fetchOrderDetails(id);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(uiText.failedStatus);
+    }
+    return;
+
+    if (['out_for_delivery', 'shipped'].includes(newStatus)) {
        trackingNumber = window.prompt(
          language === 'ar'
            ? 'أدخل رقم التتبع لهذا الشحن. يمكنك تركه فارغًا إذا أردت.'
@@ -233,7 +362,7 @@ const OrderList = () => {
           ? `تم تحديث حالة الطلب إلى ${newStatus}`
           : language === 'tr'
             ? `Siparis durumu ${newStatus} olarak guncellendi`
-            : `Order marked as ${newStatus}`
+            : `Order marked as ${getStatusLabel(newStatus)}`
       );
       fetchOrders();
       if (selectedOrder && selectedOrder._id === id) {
@@ -257,18 +386,18 @@ const OrderList = () => {
   };
 
   const handleBulkStatusUpdateClick = async () => {
-    if (!bulkStatus) return toast.error(ui.selectStatus);
-    if (selectedIds.length === 0) return toast.error(ui.selectOrder);
+    if (!bulkStatus) return toast.error(uiText.selectStatus);
+    if (selectedIds.length === 0) return toast.error(uiText.selectOrder);
 
     setConfirmModal({
        isOpen: true,
        data: 'bulk',
-       title: language === 'ar' ? 'تأكيد التحديث الجماعي' : language === 'tr' ? 'Toplu Guncellemeyi Onayla' : 'Confirm Bulk Update',
+       title: language === 'ar' ? 'تأكيد التحديث الجماعي' : language === 'tr' ? 'Toplu Güncellemeyi Onayla' : 'Confirm Bulk Update',
        message: language === 'ar'
          ? `هل تريد تحديث ${selectedIds.length} طلبات إلى ${bulkStatus}؟`
          : language === 'tr'
            ? `${selectedIds.length} siparis ${bulkStatus} durumuna guncellensin mi?`
-           : `Update ${selectedIds.length} orders to ${bulkStatus}?`
+           : `Update ${selectedIds.length} orders to ${getStatusLabel(bulkStatus)}?`
     });
   };
 
@@ -284,7 +413,7 @@ const OrderList = () => {
           ? `تم تحديث ${selectedIds.length} طلبات إلى ${bulkStatus}`
           : language === 'tr'
             ? `${selectedIds.length} siparis ${bulkStatus} durumuna guncellendi`
-            : `${selectedIds.length} orders updated to ${bulkStatus}`
+            : `${selectedIds.length} orders updated to ${getStatusLabel(bulkStatus)}`
       );
       setBulkStatus('');
       fetchOrders();
@@ -319,7 +448,7 @@ const OrderList = () => {
       setSelectedOrder(res.data);
     } catch (err) {
       console.error("Failed to load order details", err);
-      toast.error(ui.failedOrderDetails);
+      toast.error(uiText.failedOrderDetails);
       setIsModalOpen(false);
     } finally {
       setModalLoading(false);
@@ -343,7 +472,9 @@ const OrderList = () => {
   const statusColors = {
     'pending_payment': 'bg-red-600 text-white',
     'pending': 'bg-yellow-100 text-yellow-800',
+    'confirmed': 'bg-cyan-100 text-cyan-800',
     'processing': 'bg-blue-100 text-blue-800',
+    'out_for_delivery': 'bg-violet-100 text-violet-800',
     'shipped': 'bg-indigo-100 text-indigo-800',
     'delivered': 'bg-green-100 text-green-800',
     'cancelled': 'bg-red-100 text-red-800',
@@ -419,7 +550,7 @@ const OrderList = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-serif text-black">{t?.orders?.title || 'Order Management'}</h1>
         <button onClick={handleExportCSV} className="bg-black text-white px-4 py-2 text-sm font-medium hover:bg-gold transition-colors shadow-sm flex items-center gap-2">
-          {ui.exportCsv}
+          {uiText.exportCsv}
         </button>
       </div>
 
@@ -435,15 +566,16 @@ const OrderList = () => {
               className="border border-gray-300 p-2 text-sm focus:outline-none focus:border-black bg-white disabled:opacity-50"
               disabled={selectedIds.length === 0}
             >
-              <option value="">-- Bulk Status Update --</option>
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="">-- {language === 'ar' ? 'تحديث جماعي للحالة' : language === 'tr' ? 'Toplu Durum Guncelle' : 'Bulk Status Update'} --</option>
+              <option value="pending">{getStatusLabel('pending')}</option>
+              <option value="confirmed">{getStatusLabel('confirmed')}</option>
+              <option value="processing">{getStatusLabel('processing')}</option>
+              <option value="out_for_delivery">{getStatusLabel('out_for_delivery')}</option>
+              <option value="delivered">{getStatusLabel('delivered')}</option>
+              <option value="cancelled">{getStatusLabel('cancelled')}</option>
             </select>
             {bulkStatus && (
-              <button onClick={handleBulkStatusUpdateClick} className="bg-black text-white px-4 py-1.5 text-xs uppercase font-bold tracking-wider hover:bg-gold transition-colors">{ui.apply}</button>
+              <button onClick={handleBulkStatusUpdateClick} className="bg-black text-white px-4 py-1.5 text-xs uppercase font-bold tracking-wider hover:bg-gold transition-colors">{uiText.apply}</button>
             )}
           </div>
 
@@ -463,13 +595,13 @@ const OrderList = () => {
 
         {/* Quick Filter Tabs */}
         <div className="flex border-b border-gray-100 bg-gray-50 overflow-x-auto">
-          {['All', 'pending_payment', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(tab => (
+          {['All', 'pending_payment', 'pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered', 'cancelled'].map(tab => (
             <button
               key={tab}
               onClick={() => { setStatusFilter(tab); setPage(1); }}
               className={`px-6 py-3 text-sm font-bold uppercase tracking-wide whitespace-nowrap transition-colors border-b-2 ${statusFilter === tab ? 'border-brand text-brand bg-white' : 'border-transparent text-gray-500 hover:text-black hover:bg-gray-100'}`}
             >
-              {tab === 'pending_payment' ? ui.pendingPayment : tab}
+              {getStatusLabel(tab)}
             </button>
           ))}
         </div>
@@ -501,8 +633,8 @@ const OrderList = () => {
                     
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-black truncate max-w-[150px] font-mono">{order._id}</div>
-                      <div className="text-sm text-gray-800 font-medium mt-1">{order.user?.name || order.shippingAddress?.fullName || ui.guestCustomer}</div>
-                      <div className="text-xs text-gray-500">{order.user?.email || order.shippingAddress?.email || ui.noEmail}</div>
+                      <div className="text-sm text-gray-800 font-medium mt-1">{order.user?.name || order.shippingAddress?.fullName || uiText.guestCustomer}</div>
+                      <div className="text-xs text-gray-500">{order.user?.email || order.shippingAddress?.email || uiText.noEmail}</div>
                     </td>
                     
                     <td className="px-6 py-4 text-sm text-gray-500">{new Date(order.createdAt).toLocaleString()}</td>
@@ -515,7 +647,7 @@ const OrderList = () => {
                     <td className="px-6 py-4 text-sm">
                       <div className="flex flex-col gap-1 items-start">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}>
-                          {order.status === 'pending_payment' ? `🔴 ${ui.pendingPayment}` : (t?.common?.[order.status] || order.status)}
+                          {order.status === 'pending_payment' ? `● ${uiText.pendingPayment}` : getStatusLabel(order.status)}
                         </span>
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${order.payment?.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-50 text-red-800 border border-red-100'}`}>
                           PAY: {order.payment?.status || 'UNKNOWN'}
@@ -528,7 +660,7 @@ const OrderList = () => {
                             className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-green-600 text-white shadow-sm hover:bg-green-700 transition"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            ℓ Receipt Uploaded
+                            Receipt Uploaded
                           </a>
                         )}
                         <span className="text-[10px] text-gray-500 font-mono uppercase bg-gray-50 px-1 rounded border border-gray-200">
@@ -544,29 +676,30 @@ const OrderList = () => {
                            onChange={(e) => handleStatusChangeClick(order._id, e.target.value)}
                            className="border border-gray-300 p-1.5 text-xs focus:outline-none focus:border-black bg-white w-32 cursor-pointer rounded-sm font-medium"
                          >
-                           <option value="pending">{t?.common?.pending || 'Pending'}</option>
-                           <option value="processing">{t?.common?.processing || 'Processing'}</option>
-                           <option value="shipped">{t?.common?.shipped || 'Shipped'}</option>
-                           <option value="delivered">{t?.common?.delivered || 'Delivered'}</option>
-                           <option value="cancelled">{t?.common?.cancelled || 'Cancelled'}</option>
+                           <option value="pending">{getStatusLabel('pending')}</option>
+                           <option value="confirmed">{getStatusLabel('confirmed')}</option>
+                           <option value="processing">{getStatusLabel('processing')}</option>
+                           <option value="out_for_delivery">{getStatusLabel('out_for_delivery')}</option>
+                           <option value="delivered">{getStatusLabel('delivered')}</option>
+                           <option value="cancelled">{getStatusLabel('cancelled')}</option>
                          </select>
                          
                          <div className="flex flex-col items-center gap-2 mt-2 w-full justify-end">
                            {order.payment?.method === 'iban' && order.status === 'pending_payment' && (
                              <div className="grid w-full grid-cols-2 gap-2">
-                               <button onClick={() => handleStatusChangeClick(order._id, 'processing')} className="bg-green-600 text-white w-full px-3 py-1.5 rounded-sm hover:bg-green-700 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-colors text-center">
-                                 {ui.verify}
+                               <button onClick={() => handleStatusChangeClick(order._id, 'confirmed')} className="bg-green-600 text-white w-full px-3 py-1.5 rounded-sm hover:bg-green-700 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-colors text-center">
+                                 {uiText.verify}
                                </button>
                                <button onClick={() => handleStatusChangeClick(order._id, 'cancelled')} className="bg-red-600 text-white w-full px-3 py-1.5 rounded-sm hover:bg-red-700 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-colors text-center">
-                                 {ui.reject}
+                                 {uiText.reject}
                                </button>
                              </div>
                            )}
                            <button onClick={(e) => openModal(order._id, e)} className="bg-brand text-white w-full px-3 py-1.5 rounded-sm hover:bg-gold text-xs font-bold uppercase tracking-wider shadow-sm transition-colors text-center">
-                             Quick View
+                             {language === 'ar' ? 'عرض سريع' : language === 'tr' ? 'Hizli Gorunum' : 'Quick View'}
                            </button>
                            <button onClick={(e) => { e.stopPropagation(); window.open(`/admin/orders/${order._id}?print=true`, '_blank'); }} className="bg-gray-800 text-white w-full px-3 py-1.5 rounded-sm hover:bg-black text-xs font-bold uppercase tracking-wider shadow-sm transition-colors text-center">
-                             {ui.printInvoice}
+                             {uiText.printInvoice}
                            </button>
                          </div>
                       </div>
@@ -575,7 +708,7 @@ const OrderList = () => {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="5" className="text-center py-8 text-gray-500">{ui.noOrders}</td>
+                    <td colSpan="5" className="text-center py-8 text-gray-500">{uiText.noOrders}</td>
                   </tr>
                 )}
               </tbody>
@@ -593,7 +726,7 @@ const OrderList = () => {
                 disabled={page === 1}
                 className="px-3 py-1 border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium rounded-sm text-black"
              >
-                {ui.previous}
+                {uiText.previous}
              </button>
              
              <span className="px-3 py-1 font-medium text-black">
@@ -605,7 +738,7 @@ const OrderList = () => {
                 disabled={page >= totalPages || totalPages === 0}
                 className="px-3 py-1 border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium rounded-sm text-black"
              >
-                {ui.next}
+                {uiText.next}
              </button>
            </div>
         </div>
@@ -630,13 +763,14 @@ const OrderList = () => {
                 <div className="space-y-8">
                   {/* Timeline View */}
                   <div className="mb-8">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">{ui.orderTimeline}</h3>
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">{uiText.orderTimeline}</h3>
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 relative">
                       <div className="absolute left-[50%] md:left-0 md:top-1/2 md:-translate-y-1/2 h-full md:h-1 w-1 md:w-full bg-gray-200 -z-10"></div>
                       
-                      {['pending', 'processing', 'shipped', 'delivered'].map((step, idx) => {
-                        const statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
-                        const currentStatusIdx = statusOrder.indexOf(selectedOrder.status);
+                      {['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered'].map((step, idx) => {
+                        const statusOrder = ['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered'];
+                        const currentStatus = selectedOrder.status === 'shipped' ? 'out_for_delivery' : selectedOrder.status;
+                        const currentStatusIdx = statusOrder.indexOf(currentStatus);
                         const isCompleted = currentStatusIdx >= idx;
                         const isCancelled = selectedOrder.status === 'cancelled';
                         
@@ -650,7 +784,7 @@ const OrderList = () => {
                               {isCompleted && !isCancelled ? '✓' : (isCancelled && idx === 0 ? '✗' : idx + 1)}
                             </div>
                             <span className={`text-xs font-bold uppercase mt-2 ${isCompleted && !isCancelled ? 'text-brand' : (isCancelled && idx===0 ? 'text-red-500' : 'text-gray-400')}`}>
-                              {isCancelled && idx === 0 ? 'Cancelled' : step}
+                              {isCancelled && idx === 0 ? getStatusLabel('cancelled') : getStatusLabel(step)}
                             </span>
                           </div>
                         )
@@ -662,25 +796,25 @@ const OrderList = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-gray-50 p-4 rounded">
                       <div className="mb-3 flex items-center justify-between gap-3">
-                        <h4 className="font-bold text-sm text-gray-700 uppercase">{ui.customerShipping}</h4>
+                        <h4 className="font-bold text-sm text-gray-700 uppercase">{uiText.customerShipping}</h4>
                         <button
                           onClick={() => printShippingLabel(selectedOrder)}
                           className="rounded-full border border-[#c9ab83] bg-gradient-to-r from-[#1f130d] via-[#4a2c17] to-[#7b5532] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#f7efe4] shadow-[0_10px_26px_rgba(74,44,23,0.15)] transition-all duration-300 hover:-translate-y-0.5"
                         >
-                          {ui.printAddress}
+                          {uiText.printAddress}
                         </button>
                       </div>
-                      <p className="text-sm"><strong>{ui.name}:</strong> {selectedOrder.user?.name || selectedOrder.shippingAddress?.fullName || ui.guestCustomer}</p>
-                      <p className="text-sm"><strong>{ui.email}:</strong> {selectedOrder.user?.email || selectedOrder.shippingAddress?.email || ui.noEmail}</p>
-                      <p className="text-sm"><strong>{ui.phone}:</strong> {selectedOrder.shippingAddress?.phone || ui.noPhone}</p>
-                      <p className="text-sm mt-2"><strong>{ui.address}:</strong><br/>
+                      <p className="text-sm"><strong>{uiText.name}:</strong> {selectedOrder.user?.name || selectedOrder.shippingAddress?.fullName || uiText.guestCustomer}</p>
+                      <p className="text-sm"><strong>{uiText.email}:</strong> {selectedOrder.user?.email || selectedOrder.shippingAddress?.email || uiText.noEmail}</p>
+                      <p className="text-sm"><strong>{uiText.phone}:</strong> {selectedOrder.shippingAddress?.phone || uiText.noPhone}</p>
+                      <p className="text-sm mt-2"><strong>{uiText.address}:</strong><br/>
                         {selectedOrder.shippingAddress?.street}<br/>
                         {selectedOrder.shippingAddress?.city}{selectedOrder.shippingAddress?.state ? `, ${selectedOrder.shippingAddress.state}` : ''} {selectedOrder.shippingAddress?.zipCode}<br/>
                         {selectedOrder.shippingAddress?.country}
                       </p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded">
-                      <h4 className="font-bold text-sm text-gray-700 uppercase mb-3">{ui.paymentInfo}</h4>
+                      <h4 className="font-bold text-sm text-gray-700 uppercase mb-3">{uiText.paymentInfo}</h4>
                       <p className="text-sm flex items-center gap-2">
                         <strong>Status:</strong> 
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${selectedOrder.payment?.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-50 text-red-800'}`}>
@@ -705,13 +839,13 @@ const OrderList = () => {
 
                   {/* Items List */}
                   <div>
-                    <h4 className="font-bold text-sm text-gray-700 uppercase mb-3 border-b pb-2">{ui.orderItems}</h4>
+                    <h4 className="font-bold text-sm text-gray-700 uppercase mb-3 border-b pb-2">{uiText.orderItems}</h4>
                     <div className="space-y-3">
                       {selectedOrder.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between items-center text-sm border border-gray-100 p-3 rounded">
                           <div className="flex items-center gap-3">
-                            {item.product?.images?.[0] && (
-                              <img loading="lazy" src={resolveAssetUrl(item.product.images[0])} alt={item.name} className="w-12 h-12 rounded object-cover" />
+                            {resolveOrderItemImage(item) && (
+                              <img loading="lazy" src={resolveOrderItemImage(item)} alt={item.name} className="w-12 h-12 rounded object-cover" />
                             )}
                             <div>
                               <p className="font-bold text-brand">{item.name}</p>
@@ -727,13 +861,13 @@ const OrderList = () => {
                   <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                      {selectedOrder.payment?.method === 'iban' && selectedOrder.status === 'pending_payment' && (
                        <>
-                         <button onClick={() => handleStatusChangeClick(selectedOrder._id, 'processing')} className="px-4 py-2 bg-green-600 text-white text-sm font-medium hover:bg-green-700 rounded">{ui.verifyReceipt}</button>
-                         <button onClick={() => handleStatusChangeClick(selectedOrder._id, 'cancelled')} className="px-4 py-2 bg-red-600 text-white text-sm font-medium hover:bg-red-700 rounded">{ui.rejectReceipt}</button>
+                         <button onClick={() => handleStatusChangeClick(selectedOrder._id, 'confirmed')} className="px-4 py-2 bg-green-600 text-white text-sm font-medium hover:bg-green-700 rounded">{uiText.verifyReceipt}</button>
+                         <button onClick={() => handleStatusChangeClick(selectedOrder._id, 'cancelled')} className="px-4 py-2 bg-red-600 text-white text-sm font-medium hover:bg-red-700 rounded">{uiText.rejectReceipt}</button>
                        </>
                      )}
-                     <Link to={`/admin/orders/${selectedOrder._id}`} className="px-4 py-2 border border-gray-300 text-sm font-medium hover:bg-gray-50 rounded">{ui.fullPageView}</Link>
-                     <button onClick={() => printShippingLabel(selectedOrder)} className="rounded-full border border-[#c9ab83] bg-gradient-to-r from-[#1f130d] via-[#4a2c17] to-[#7b5532] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.24em] text-[#f7efe4] shadow-[0_12px_30px_rgba(74,44,23,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(74,44,23,0.24)]">{ui.printAddress}</button>
-                     <button onClick={() => window.open(`/admin/orders/${selectedOrder._id}?print=true`, '_blank')} className="rounded-full border border-[#d9c8af] bg-white px-5 py-2.5 text-sm font-bold uppercase tracking-[0.24em] text-[#2c1810] shadow-[0_10px_24px_rgba(36,21,15,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#fcf7f0]">{ui.printInvoice}</button>
+                     <Link to={`/admin/orders/${selectedOrder._id}`} className="px-4 py-2 border border-gray-300 text-sm font-medium hover:bg-gray-50 rounded">{uiText.fullPageView}</Link>
+                     <button onClick={() => printShippingLabel(selectedOrder)} className="rounded-full border border-[#c9ab83] bg-gradient-to-r from-[#1f130d] via-[#4a2c17] to-[#7b5532] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.24em] text-[#f7efe4] shadow-[0_12px_30px_rgba(74,44,23,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(74,44,23,0.24)]">{uiText.printAddress}</button>
+                     <button onClick={() => window.open(`/admin/orders/${selectedOrder._id}?print=true`, '_blank')} className="rounded-full border border-[#d9c8af] bg-white px-5 py-2.5 text-sm font-bold uppercase tracking-[0.24em] text-[#2c1810] shadow-[0_10px_24px_rgba(36,21,15,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#fcf7f0]">{uiText.printInvoice}</button>
                   </div>
                 </div>
               )}
@@ -749,7 +883,7 @@ const OrderList = () => {
         title={confirmModal.title}
         message={confirmModal.message}
         type="warning"
-        confirmText="Confirm"
+        confirmText={language === 'ar' ? 'تأكيد' : language === 'tr' ? 'Onayla' : 'Confirm'}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import Loader from '../../../components/shared/Loader';
 import useTranslation from '../../../hooks/useTranslation';
 import useCurrencyStore from '../../../store/useCurrencyStore';
 import toast from 'react-hot-toast';
+import { resolveAssetUrl as resolveSharedAssetUrl } from '../../../utils/assets';
 
 const OrderDetails = () => {
   const { t, language } = useTranslation('admin');
@@ -93,6 +94,57 @@ const OrderDetails = () => {
       shippingDestination: 'Teslimat Adresi',
     },
   }[language];
+  const fixedUi = {
+    ar: {
+      loadError: 'فشل تحميل تفاصيل الطلب',
+      statusError: 'فشل تحديث الحالة',
+      trackingError: 'فشل حفظ رقم التتبع',
+      paidError: 'فشل تحديث حالة الدفع',
+      guestCustomer: 'عميل ضيف',
+      noEmail: 'لا يوجد بريد إلكتروني',
+      printAddress: 'طباعة العنوان',
+      printInvoice: 'طباعة الفاتورة',
+      placedOn: 'تم إنشاء الطلب بتاريخ',
+      verifyCodPaid: 'تأكيد دفع COD',
+      confirmPayment: 'تأكيد الدفع',
+      rejectPayment: 'رفض الدفع',
+      markShipped: 'تحديده كمشحون',
+      markDelivered: 'تحديده كمسلّم',
+      cancelOrder: 'إلغاء الطلب',
+      subtotal: 'الإجمالي الفرعي',
+      grandTotal: 'الإجمالي النهائي',
+      statusTracking: 'الحالة والتتبع',
+      fulfillmentState: 'حالة التنفيذ',
+      paymentState: 'حالة الدفع',
+      enlargeHint: 'اضغط على الصورة للتكبير',
+      trackingToken: 'رمز التتبع',
+      unassignedSequence: 'لم يتم تعيينه بعد',
+      customerProfile: 'بيانات العميل',
+      shippingDestination: 'عنوان الشحن',
+    },
+    tr: {
+      loadError: 'Sipariş detayları yüklenemedi',
+      statusError: 'Durum güncellenemedi',
+      trackingError: 'Takip numarası kaydedilemedi',
+      paidError: 'Ödeme güncellenemedi',
+      guestCustomer: 'Misafir Müşteri',
+      printAddress: 'Adres Yazdır',
+      printInvoice: 'Fatura Yazdır',
+      placedOn: 'Oluşturma tarihi',
+      verifyCodPaid: 'COD Ödemesini Onayla',
+      confirmPayment: 'Ödemeyi Onayla',
+      rejectPayment: 'Ödemeyi Reddet',
+      markShipped: 'Kargolandı Olarak İşaretle',
+      markDelivered: 'Teslim Edildi Olarak İşaretle',
+      cancelOrder: 'Siparişi İptal Et',
+      fulfillmentState: 'Sipariş Durumu',
+      paymentState: 'Ödeme Durumu',
+      enlargeHint: 'Büyütmek için görseli tıklayın',
+      unassignedSequence: 'Henüz atanmadı',
+      customerProfile: 'Müşteri Profili',
+    },
+  }[language] || {};
+  const uiText = { ...ui, ...fixedUi };
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +157,7 @@ const OrderDetails = () => {
       setOrder(res.data);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || ui.loadError);
+      setError(err.response?.data?.message || uiText.loadError);
     } finally {
       setLoading(false);
     }
@@ -147,7 +199,7 @@ const OrderDetails = () => {
         fetchOrder();
       } catch (err) {
         console.error(err);
-        toast.error(ui.statusError);
+        toast.error(uiText.statusError);
       }
     }
   };
@@ -166,7 +218,7 @@ const OrderDetails = () => {
            await orderService.updateOrderStatus(order._id, order.status, trackingNumber);
            fetchOrder();
         } catch {
-           toast.error(ui.trackingError);
+           toast.error(uiText.trackingError);
         }
      }
   };
@@ -184,7 +236,7 @@ const OrderDetails = () => {
         fetchOrder();
       } catch (err) {
         console.error(err);
-        toast.error(ui.paidError);
+        toast.error(uiText.paidError);
       }
     }
   };
@@ -212,8 +264,8 @@ const OrderDetails = () => {
   };
 
   const printShippingLabel = () => {
-    const customerName = order.user?.name || order.shippingAddress?.fullName || ui.guestCustomer;
-    const email = order.user?.email || order.shippingAddress?.email || ui.noEmail;
+    const customerName = order.user?.name || order.shippingAddress?.fullName || uiText.guestCustomer;
+    const email = order.user?.email || order.shippingAddress?.email || uiText.noEmail;
     const phone = order.shippingAddress?.phone || 'No phone provided';
     const street = order.shippingAddress?.street || '';
     const cityLine = `${order.shippingAddress?.city || ''}${order.shippingAddress?.state ? `, ${order.shippingAddress.state}` : ''} ${order.shippingAddress?.zipCode || ''}`.trim();
@@ -260,6 +312,8 @@ const OrderDetails = () => {
   };
 
   const resolveAssetUrl = (value) => {
+    const resolvedSharedUrl = resolveSharedAssetUrl(value, '');
+    if (resolvedSharedUrl) return resolvedSharedUrl;
     if (!value) return '';
     if (typeof value === 'object') return resolveAssetUrl(value.url);
     if (typeof value === 'string' && value.includes('\\uploads\\')) {
@@ -270,6 +324,10 @@ const OrderDetails = () => {
     }
     return value;
   };
+
+  const resolveOrderItemImage = (item) => resolveAssetUrl(
+    item?.image || item?.product?.images?.[0]?.url || item?.product?.images?.[0]
+  );
 
   if (loading) return <div className="p-8"><Loader /></div>;
   if (error) return <div className="p-8 text-red-600 font-medium">Error: {error}</div>;
@@ -285,7 +343,7 @@ const OrderDetails = () => {
             &larr; {t?.common?.back || 'Back'}
           </Link>
           <h1 className="text-3xl font-serif text-black tracking-tight">{t?.orders?.title || 'Order'} #{order._id}</h1>
-          <p className="text-sm text-gray-500 mt-1">{ui.placedOn} {new Date(order.createdAt).toLocaleString()}</p>
+          <p className="text-sm text-gray-500 mt-1">{uiText.placedOn} {new Date(order.createdAt).toLocaleString()}</p>
         </div>
         
         <div className="flex flex-wrap gap-2">
@@ -294,23 +352,23 @@ const OrderDetails = () => {
               onClick={handleManualPayment}
               className="px-4 py-2 bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 text-sm font-bold rounded shadow-sm transition-colors"
             >
-              {ui.verifyCodPaid}
+              {uiText.verifyCodPaid}
             </button>
           )}
 
           {order.payment?.method === 'iban' && order.status === 'pending_payment' && (
             <>
               <button 
-                onClick={() => handleStatusChange('processing')}
+                onClick={() => handleStatusChange('confirmed')}
                 className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 text-sm font-bold rounded shadow-sm transition-colors"
               >
-                {ui.confirmPayment}
+                {uiText.confirmPayment}
               </button>
               <button 
                 onClick={() => handleStatusChange('cancelled')}
                 className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 text-sm font-bold rounded shadow-sm transition-colors"
               >
-                {ui.rejectPayment}
+                {uiText.rejectPayment}
               </button>
             </>
           )}
@@ -320,7 +378,7 @@ const OrderDetails = () => {
               onClick={() => handleStatusChange('shipped')}
               className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 text-sm font-bold rounded shadow-sm transition-colors"
             >
-              {ui.markShipped}
+              {uiText.markShipped}
             </button>
           )}
           
@@ -329,7 +387,7 @@ const OrderDetails = () => {
               onClick={() => handleStatusChange('delivered')}
               className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 text-sm font-bold rounded shadow-sm transition-colors"
             >
-              {ui.markDelivered}
+              {uiText.markDelivered}
             </button>
           )}
           
@@ -337,7 +395,7 @@ const OrderDetails = () => {
             onClick={printShippingLabel}
             className="rounded-full border border-[#c9ab83] bg-gradient-to-r from-[#1f130d] via-[#4a2c17] to-[#7b5532] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.24em] text-[#f7efe4] shadow-[0_12px_30px_rgba(74,44,23,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(74,44,23,0.24)]"
           >
-            {ui.printAddress}
+            {uiText.printAddress}
           </button>
 
           <button 
@@ -348,7 +406,7 @@ const OrderDetails = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.728 9H17.27a.75.75 0 01.75.75v5.5a.75.75 0 01-.75.75H6.728a.75.75 0 01-.75-.75v-5.5a.75.75 0 01.75-.75z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h3a2.25 2.25 0 0 1 2.25 2.25V9m-6.75 12h6.75a2.25 2.25 0 0 0 2.25-2.25v-2.625H5.25v2.625A2.25 2.25 0 0 0 7.5 21Z" />
             </svg>
-            {ui.printInvoice}
+            {uiText.printInvoice}
           </button>
           
           {order.status !== 'cancelled' && (
@@ -356,7 +414,7 @@ const OrderDetails = () => {
               onClick={handleCancelOrder}
               className="px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 text-sm font-bold rounded shadow-sm transition-colors"
             >
-              {ui.cancelOrder}
+              {uiText.cancelOrder}
             </button>
           )}
         </div>
@@ -373,6 +431,7 @@ const OrderDetails = () => {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-gray-200 text-sm text-gray-500">
+                    <th className="pb-3 font-medium">Image</th>
                     <th className="pb-3 font-medium">Item Details</th>
                     <th className="pb-3 font-medium">Subdocument UUID</th>
                     <th className="pb-3 font-medium text-center">Qty</th>
@@ -382,6 +441,13 @@ const OrderDetails = () => {
                 <tbody className="divide-y divide-gray-100">
                   {order.items.map((item, idx) => (
                     <tr key={idx}>
+                      <td className="py-4 pr-4">
+                        {resolveOrderItemImage(item) ? (
+                          <img loading="lazy" src={resolveOrderItemImage(item)} alt={item.name} className="h-16 w-16 rounded object-cover border border-gray-200 bg-gray-50" />
+                        ) : (
+                          <div className="h-16 w-16 rounded border border-dashed border-gray-200 bg-gray-50" />
+                        )}
+                      </td>
                       <td className="py-4">
                         <div className="font-medium text-black">{item.name}</div>
                         <div className="text-xs text-gray-500 mt-1 capitalize">
@@ -402,7 +468,7 @@ const OrderDetails = () => {
             
             <div className="mt-6 border-t pt-6 flex flex-col items-end w-full space-y-2 text-sm">
               <div className="flex justify-between w-64 text-gray-600">
-                <span>{ui.subtotal}</span>
+                <span>{uiText.subtotal}</span>
                 <span>{formatPrice(order.total)}</span>
               </div>
               <div className="flex justify-between w-64 text-gray-600">
@@ -410,7 +476,7 @@ const OrderDetails = () => {
                 <span>{formatPrice(order.shippingCost || 0)}</span>
               </div>
               <div className="flex justify-between w-64 text-xl font-medium text-black pt-2 border-t">
-                <span>{ui.grandTotal}</span>
+                <span>{uiText.grandTotal}</span>
                 <span>{formatPrice(order.total)}</span>
               </div>
             </div>
@@ -422,10 +488,10 @@ const OrderDetails = () => {
         <div className="space-y-6">
           
           <div className="bg-white border border-gray-200 rounded p-6 shadow-sm print:border-black print:shadow-none">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4 border-b pb-2">{ui.statusTracking}</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4 border-b pb-2">{uiText.statusTracking}</h2>
             
             <div className="mb-4">
-              <p className="text-xs text-gray-400 uppercase mb-1">{ui.fulfillmentState}</p>
+              <p className="text-xs text-gray-400 uppercase mb-1">{uiText.fulfillmentState}</p>
               <select 
                  value={order.status}
                  onChange={(e) => handleStatusChange(e.target.value)}
@@ -440,7 +506,7 @@ const OrderDetails = () => {
             </div>
             
             <div className="mb-2 border-t pt-4">
-              <p className="text-xs text-gray-400 uppercase mb-1">{ui.paymentState}</p>
+              <p className="text-xs text-gray-400 uppercase mb-1">{uiText.paymentState}</p>
               <div className="flex flex-col gap-2">
                  <div className="flex items-center gap-2">
                    <span className={`px-2 py-1 rounded text-xs font-bold tracking-wide uppercase ${order.payment?.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-50 text-red-800'}`}>
@@ -454,7 +520,7 @@ const OrderDetails = () => {
                    <div className="mt-2">
                      <p className="text-xs text-gray-400 uppercase mb-1">Transfer Receipt</p>
                      <img loading="lazy" src={resolveAssetUrl(order.payment.receiptImage)} alt="Receipt" className="w-full max-w-xs border border-gray-200 rounded shadow-sm cursor-pointer" onClick={() => window.open(resolveAssetUrl(order.payment.receiptImage), '_blank')} />
-                     <p className="text-[10px] text-gray-400 mt-1">{ui.enlargeHint}</p>
+                     <p className="text-[10px] text-gray-400 mt-1">{uiText.enlargeHint}</p>
                    </div>
                  )}
               </div>
@@ -462,17 +528,17 @@ const OrderDetails = () => {
             
             <div className="mt-6 border-t pt-4">
                <div className="flex justify-between items-center mb-1">
-                 <p className="text-xs text-gray-400 uppercase">{ui.trackingToken}</p>
+                 <p className="text-xs text-gray-400 uppercase">{uiText.trackingToken}</p>
                  <button onClick={updateTracking} className="text-[10px] text-blue-600 font-bold hover:underline print:hidden">Edit Array</button>
                </div>
                <p className="text-sm font-mono text-black font-medium break-all bg-gray-50 p-2 border rounded">
-                 {order.trackingNumber || ui.unassignedSequence}
+                 {order.trackingNumber || uiText.unassignedSequence}
                </p>
             </div>
           </div>
 
           <div className="bg-white border border-gray-200 rounded p-6 shadow-sm print:border-black print:shadow-none">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4 border-b pb-2">{ui.customerProfile}</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4 border-b pb-2">{uiText.customerProfile}</h2>
             <div className="space-y-3 text-sm">
               <div>
                 <p className="text-xs text-gray-400 uppercase">Target UID</p>
@@ -480,14 +546,14 @@ const OrderDetails = () => {
               </div>
               <div>
                 <p className="text-xs text-gray-400 uppercase">Registered Name</p>
-                <p className="font-medium text-black capitalize">{order.user?.name || order.shippingAddress?.fullName || ui.guestCustomer}</p>
+                <p className="font-medium text-black capitalize">{order.user?.name || order.shippingAddress?.fullName || uiText.guestCustomer}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400 uppercase">Email Identity</p>
                 {(order.user?.email || order.shippingAddress?.email) ? (
                   <a href={`mailto:${order.user?.email || order.shippingAddress?.email}`} className="text-blue-600 hover:underline">{order.user?.email || order.shippingAddress?.email}</a>
                 ) : (
-                  <span className="text-gray-500">{ui.noEmail}</span>
+                  <span className="text-gray-500">{uiText.noEmail}</span>
                 )}
               </div>
             </div>
@@ -495,9 +561,9 @@ const OrderDetails = () => {
 
           <div className="bg-white border border-gray-200 rounded p-6 shadow-sm print:border-black print:shadow-none">
             <div className="mb-4 flex items-center justify-between gap-3 border-b pb-2">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500">{ui.shippingDestination}</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500">{uiText.shippingDestination}</h2>
               <button onClick={printShippingLabel} className="print:hidden rounded-full border border-[#c9ab83] bg-gradient-to-r from-[#1f130d] via-[#4a2c17] to-[#7b5532] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#f7efe4] shadow-[0_10px_26px_rgba(74,44,23,0.15)] transition-all duration-300 hover:-translate-y-0.5">
-                {ui.printAddress}
+                {uiText.printAddress}
               </button>
             </div>
             <address className="not-italic text-sm text-black leading-relaxed">
