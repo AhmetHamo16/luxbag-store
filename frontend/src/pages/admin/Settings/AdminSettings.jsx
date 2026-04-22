@@ -116,9 +116,16 @@ const uiMap = {
   },
 };
 
+const shippingHintMap = {
+  en: 'Orders at or above this amount get free shipping automatically at checkout.',
+  ar: 'الطلبات التي تصل إلى هذا المبلغ أو تتجاوزه تحصل على شحن مجاني تلقائيًا.',
+  tr: 'Bu tutara ulasan veya gecen siparislerde kargo otomatik olarak ucretsiz olur.',
+};
+
 const AdminSettings = () => {
   const { language } = useLangStore();
   const ui = uiMap[language] || uiMap.en;
+  const shippingHint = shippingHintMap[language] || shippingHintMap.en;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewingTone, setPreviewingTone] = useState('');
@@ -126,16 +133,12 @@ const AdminSettings = () => {
     storeName: '',
     storeEmail: '',
     currency: 'TRY',
-    freeShippingThreshold: 0,
+    freeShippingThreshold: 2000,
     shippingCost: 25,
     monthlySalesTarget: 0,
     weeklySalesTarget: 0,
     notificationTone: 'custom',
-    iban: '',
-    accountHolder: '',
     maintenanceMode: false,
-    cardPayment: true,
-    codPayment: true,
   });
 
   useEffect(() => {
@@ -149,16 +152,12 @@ const AdminSettings = () => {
           storeName: data.storeName || '',
           storeEmail: data.storeEmail || '',
           currency: data.currency || 'TRY',
-          freeShippingThreshold: data.freeShippingThreshold || 0,
+          freeShippingThreshold: data.freeShippingThreshold ?? 2000,
           shippingCost: data.shippingCost ?? 25,
           monthlySalesTarget: data.monthlySalesTarget ?? 0,
           weeklySalesTarget: data.weeklySalesTarget ?? 0,
           notificationTone: nextTone,
-          iban: data.iban || '',
-          accountHolder: data.accountHolder || '',
           maintenanceMode: data.maintenanceMode || false,
-          cardPayment: data.paymentMethods?.card ?? true,
-          codPayment: data.paymentMethods?.cod ?? true,
         });
 
         setNotificationTone(nextTone);
@@ -209,13 +208,7 @@ const AdminSettings = () => {
         monthlySalesTarget: Number(formData.monthlySalesTarget || 0),
         weeklySalesTarget: Number(formData.weeklySalesTarget || 0),
         notificationTone: formData.notificationTone,
-        iban: formData.iban,
-        accountHolder: formData.accountHolder,
         maintenanceMode: formData.maintenanceMode,
-        paymentMethods: {
-          card: formData.cardPayment,
-          cod: formData.codPayment,
-        },
       });
       setNotificationTone(formData.notificationTone);
       toast.success(ui.success);
@@ -269,6 +262,7 @@ const AdminSettings = () => {
             <div>
               <label className="mb-1 block text-sm font-medium">{ui.freeShippingThreshold}</label>
               <input type="number" name="freeShippingThreshold" value={formData.freeShippingThreshold} onChange={handleChange} className="w-full border p-2 text-sm focus:border-black focus:outline-none" />
+              <p className="mt-2 text-xs text-gray-500">{shippingHint}</p>
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">{ui.shippingCost}</label>
@@ -330,34 +324,6 @@ const AdminSettings = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="mb-4 border-b pb-2 text-lg font-medium">{ui.bank}</h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium">{ui.accountHolder}</label>
-              <input type="text" name="accountHolder" value={formData.accountHolder} onChange={handleChange} className="w-full border p-2 text-sm focus:border-black focus:outline-none" />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">{ui.iban}</label>
-              <input type="text" name="iban" value={formData.iban} onChange={handleChange} className="w-full border p-2 font-mono text-sm focus:border-black focus:outline-none" placeholder="TR..." />
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="mb-4 border-b pb-2 text-lg font-medium">{ui.payments}</h2>
-          <div className="flex flex-col gap-4">
-            <label className="flex items-center gap-3">
-              <input type="checkbox" name="cardPayment" checked={formData.cardPayment} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black" />
-              <span className="text-sm font-medium">{ui.cardPayment}</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="checkbox" name="codPayment" checked={formData.codPayment} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black" />
-              <span className="text-sm font-medium">{ui.codPayment}</span>
-            </label>
           </div>
         </section>
 

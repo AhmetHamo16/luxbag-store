@@ -22,7 +22,6 @@ const Checkout = () => {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1);
-  
   const [receiptFile, setReceiptFile] = useState(null);
   const [receiptPreview, setReceiptPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -225,11 +224,30 @@ const Checkout = () => {
     });
   }
 
+  const shippingMessage = {
+    en: {
+      unlocked: 'Free shipping applies to orders of {threshold} and above.',
+      remaining: 'Add {remaining} more to unlock free shipping.',
+    },
+    ar: {
+      unlocked: 'الشحن مجاني للطلبات بقيمة {threshold} فأكثر.',
+      remaining: 'أضف {remaining} أكثر للحصول على شحن مجاني.',
+    },
+    tr: {
+      unlocked: '{threshold} ve uzeri siparislerde kargo ucretsizdir.',
+      remaining: 'Ucretsiz kargo icin sepetine {remaining} daha ekle.',
+    },
+  }[language] || {
+    unlocked: 'Free shipping applies to orders of {threshold} and above.',
+    remaining: 'Add {remaining} more to unlock free shipping.',
+  };
+
   const subtotal = getTotal();
   const [adminSettings, setAdminSettings] = useState(null);
-  const threshold = adminSettings?.freeShippingThreshold ?? 500;
+  const threshold = adminSettings?.freeShippingThreshold ?? 2000;
   const baseShippingVal = adminSettings?.shippingCost ?? 25;
-  const shippingCost = subtotal > threshold || subtotal === 0 ? 0 : baseShippingVal;
+  const shippingCost = subtotal >= threshold || subtotal === 0 ? 0 : baseShippingVal;
+  const freeShippingRemaining = Math.max(0, threshold - subtotal);
   const total = subtotal + shippingCost - discountAmount;
 
   useEffect(() => {
@@ -243,10 +261,6 @@ const Checkout = () => {
       }).catch(console.error);
     }
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    setSelectedPaymentMethod((adminSettings?.paymentMethods?.cod ?? true) ? 'cod' : 'iban');
-  }, [adminSettings]);
 
   const handleSelectAddress = (addr, idx) => {
     setSelectedAddressIndex(idx);
@@ -282,23 +296,8 @@ const Checkout = () => {
     });
   };
 
-  const handleReceiptUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setReceiptFile(file);
-      setReceiptPreview(URL.createObjectURL(file));
-      // Immediately clear any past upload error by having valid state
-    }
-  };
-
   const createOrderWithPaymentMethod = async (paymentMethod) => {
     try {
-      if (paymentMethod === 'cod' && !(adminSettings?.paymentMethods?.cod ?? true)) {
-        return toast.error(feedbackCopy.paymentMethodUnavailable);
-      }
-      if (paymentMethod === 'iban' && !receiptFile) {
-        return toast.error(t.uploadReceiptRequired || feedbackCopy.uploadReceiptRequired);
-      }
       setIsUploading(true);
       
       const rawItems = cartItems || [];
@@ -342,9 +341,6 @@ const Checkout = () => {
       };
 
       const formData = new FormData();
-      if (paymentMethod === 'iban' && receiptFile) {
-        formData.append('receipt', receiptFile);
-      }
       formData.append('orderData', JSON.stringify(orderData));
 
       const response = await orderService.createOrder(formData);
@@ -364,19 +360,7 @@ const Checkout = () => {
     }
   };
 
-  const handleIBANSubmit = async () => createOrderWithPaymentMethod('iban');
   const handleCODSubmit = async () => createOrderWithPaymentMethod('cod');
-
-  const copyText = async (value, label) => {
-    try {
-      await navigator.clipboard.writeText(value);
-      toast.success(`${label} ${ui.copied}`);
-    } catch {
-      toast.error(`${ui.copyFailed} ${label.toLowerCase()}`);
-    }
-  };
-
-  const luxeCopyButtonClass = "inline-flex min-w-[110px] items-center justify-center rounded-full border border-[#b9986b] bg-gradient-to-r from-[#1f130d] via-[#4a2c17] to-[#7b5532] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#f7efe4] shadow-[0_10px_30px_rgba(74,44,23,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(74,44,23,0.28)]";
 
   if (cartItems.length === 0 && step === 1) {
     return (
@@ -529,8 +513,8 @@ const Checkout = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   <button
                     type="button"
-                    onClick={() => setSelectedPaymentMethod('iban')}
-                    className={`rounded-[24px] border p-5 text-left transition-all ${selectedPaymentMethod === 'iban' ? 'border-[#8B6914] bg-[#fff7ed] shadow-[0_18px_45px_rgba(139,105,20,0.08)]' : 'border-gray-200 bg-white hover:border-[#c9ab7b]'}`}
+                    onClick={() => setSelectedPaymentMethod('cod')}
+                    className="hidden"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div>
@@ -655,7 +639,7 @@ const Checkout = () => {
                       </span>
                       <p className="mt-4 text-sm leading-7 text-gray-700">{ui.codDescription}</p>
                       <div className="mt-5 rounded-[18px] border border-[#f0e5d7] bg-[#fffaf4] p-4">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#8b6b46]">{ui.amountToTransfer}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#8b6b46]">{t.total || 'Total'}</p>
                         <p className="mt-2 font-serif text-3xl text-[#8B6914]">{formatPrice(total)}</p>
                       </div>
                     </div>
@@ -664,11 +648,11 @@ const Checkout = () => {
               )}
                
                <button 
-                 onClick={selectedPaymentMethod === 'cod' ? handleCODSubmit : handleIBANSubmit} 
-                 disabled={(selectedPaymentMethod === 'iban' && !receiptFile) || isUploading}
+                 onClick={handleCODSubmit} 
+                 disabled={isUploading}
                  className="w-full bg-[#4A2C17] text-white py-4 uppercase tracking-widest text-sm font-medium hover:bg-[#8B6914] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                >
-                 {isUploading ? ui.processing : selectedPaymentMethod === 'cod' ? ui.placeCodOrder : ui.submitTransfer}
+                 {isUploading ? ui.processing : ui.placeCodOrder}
                </button>
               
               <div className="mt-8 pt-6 border-t border-gray-200">
@@ -729,6 +713,13 @@ const Checkout = () => {
                 <span className="text-gray-500">{t.shipping || 'Shipping'}</span>
                 <span className="font-medium">{formatPrice(Math.max(0, shippingCost - (appliedCoupon?.discountType === 'free_shipping' ? discountAmount : 0)).toFixed(2))}</span>
               </div>
+              {threshold > 0 && (
+                <div className="rounded border border-[#eadcc6] bg-[#fff9f1] px-3 py-2 text-xs text-[#6e4d2b]">
+                  {subtotal >= threshold
+                    ? shippingMessage.unlocked.replace('{threshold}', formatPrice(threshold))
+                    : shippingMessage.remaining.replace('{remaining}', formatPrice(freeShippingRemaining))}
+                </div>
+              )}
               {discountAmount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>{appliedCoupon?.discountType === 'free_shipping' ? ui.shippingDiscount : ui.discount}</span>
