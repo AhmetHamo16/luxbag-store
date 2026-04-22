@@ -4,7 +4,7 @@ export const orderService = {
   createOrder: async (orderData) => {
     const isFormData = orderData instanceof FormData;
     const response = await api.post('/orders', orderData, {
-      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+      headers: isFormData ? { 'Content-Type': undefined } : {}
     });
     return response.data;
   },
@@ -61,7 +61,7 @@ export const orderService = {
 
   uploadReceipt: async (formData) => {
     const response = await api.post('/orders/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': undefined }
     });
     return response.data;
   },

@@ -298,34 +298,22 @@ const sendEmail = async ({ to, subject, type, data }) => {
     text: stripHtml(htmlContent),
   };
 
-  try {
-    if (hasResendApiConfig) {
-      console.log('Attempting email delivery via Resend API', {
-        to,
-        subject,
-        type,
-        fromAddress,
-      });
-
-      const apiResult = await sendWithResendApi({
-        apiKey: resendApiKey,
-        fromAddress,
-        fromName,
-        to,
-        subject,
-        html: htmlContent,
-        text: stripHtml(htmlContent),
-      });
-
-      console.log('Email sent successfully via Resend API', {
-        id: apiResult?.id,
-        to,
-        subject,
-      });
-      return true;
+  const trySmtpDelivery = async (errorContext = null) => {
+    if (!transporter) {
+      return false;
     }
 
-    console.log('Attempting email delivery', {
+    if (errorContext) {
+      console.warn('Falling back to SMTP after Resend failure.', {
+        subject,
+        to,
+        message: errorContext.message,
+        code: errorContext.code,
+        responseCode: errorContext.responseCode,
+      });
+    }
+
+    console.log('Attempting email delivery via SMTP', {
       to,
       subject,
       type,
@@ -334,14 +322,52 @@ const sendEmail = async ({ to, subject, type, data }) => {
       smtpPort,
       smtpSecure,
     });
+
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully', {
+    console.log('Email sent successfully via SMTP', {
       messageId: info.messageId,
       accepted: info.accepted,
       rejected: info.rejected,
       response: info.response,
     });
     return true;
+  };
+
+  try {
+    if (hasResendApiConfig) {
+      try {
+        console.log('Attempting email delivery via Resend API', {
+          to,
+          subject,
+          type,
+          fromAddress,
+        });
+
+        const apiResult = await sendWithResendApi({
+          apiKey: resendApiKey,
+          fromAddress,
+          fromName,
+          to,
+          subject,
+          html: htmlContent,
+          text: stripHtml(htmlContent),
+        });
+
+        console.log('Email sent successfully via Resend API', {
+          id: apiResult?.id,
+          to,
+          subject,
+        });
+        return true;
+      } catch (resendError) {
+        if (await trySmtpDelivery(resendError)) {
+          return true;
+        }
+        throw resendError;
+      }
+    }
+
+    return await trySmtpDelivery();
   } catch (error) {
     console.error('Email sending failed:', {
       message: error.message,
