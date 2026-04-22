@@ -20,7 +20,9 @@ const isLikelyPlaceholderEmail = (value = '') => {
     !normalized.includes('@') ||
     normalized.includes('your-domain.com') ||
     normalized.includes('example.com') ||
-    normalized === 'resend'
+    normalized === 'resend' ||
+    normalized.endsWith('@gmail.com') ||
+    normalized.endsWith('@yahoo.com')
   );
 };
 
@@ -87,7 +89,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
   const requestedFromAddress = String(
     process.env.EMAIL_FROM || process.env.STORE_EMAIL || emailUser
   ).trim();
-  const fromAddress = resendApiKey && isLikelyPlaceholderEmail(requestedFromAddress)
+  const fromAddress = resendApiKey
     ? 'onboarding@resend.dev'
     : requestedFromAddress;
   const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();

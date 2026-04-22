@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-const { cloudinary, hasCloudinaryConfig } = require('../config/cloudinary');
 
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'products');
 fs.mkdirSync(uploadsDir, { recursive: true });
@@ -34,23 +33,7 @@ const localDiskStorage = multer.diskStorage({
   },
 });
 
-const storage = hasCloudinaryConfig
-  ? new (require('multer-storage-cloudinary').CloudinaryStorage)({
-      cloudinary,
-      params: async (_req, file) => {
-        const ext = path.extname(file.originalname || '').toLowerCase().replace('.', '');
-        const format = ext || 'jpg';
-
-        return {
-          folder: 'melora/products',
-          allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'jfif', 'avif', 'heic', 'heif'],
-          format,
-          public_id: `${Date.now()}-${Math.round(Math.random() * 1e9)}`,
-          resource_type: 'image',
-        };
-      },
-    })
-  : localDiskStorage;
+const storage = localDiskStorage;
 
 const upload = multer({
   storage,
