@@ -118,7 +118,7 @@ const sendEmail = async ({ to, subject, type, data }) => {
     process.env.EMAIL_FROM || process.env.STORE_EMAIL || emailUser
   ).trim();
   const fromAddress = resendApiKey
-    ? 'onboarding@resend.dev'
+    ? 'noreply@meloramoda.com'
     : requestedFromAddress;
   const fromName = String(process.env.STORE_NAME || 'Melora Boutique').trim();
   const hasResendApiConfig = Boolean(resendApiKey && fromAddress);
