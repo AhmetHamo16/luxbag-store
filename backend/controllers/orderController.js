@@ -199,6 +199,13 @@ const getStatusEmailContent = (status, order) => {
         message: 'تم تسليم طلبك إلى شركة الشحن وهو الآن في الطريق إليك.',
         cta: 'تتبع الطلب',
       },
+      delivered: {
+        subject: 'تم تسليم طلبك من ميلورا',
+        title: 'تم تسليم الطلب بنجاح',
+        greeting: 'مرحباً',
+        message: 'يسعدنا إبلاغك بأن طلبك تم تسليمه بنجاح. نتمنى أن تنال تجربتك مع ميلورا إعجابك، وسنكون سعداء بخدمتك مجدداً في أي وقت.',
+        cta: 'عرض تفاصيل الطلب',
+      },
     },
     tr: {
       pending_payment: {
@@ -236,6 +243,13 @@ const getStatusEmailContent = (status, order) => {
         message: 'Siparisiniz kargo firmasina guvenle teslim edildi ve artik size dogru yolda. Dilerseniz guncel durumu anlik olarak takip edebilirsiniz.',
         cta: 'Siparisinizi takip edin',
       },
+      delivered: {
+        subject: 'Melora siparisiniz teslim edildi',
+        title: 'Siparisiniz teslim edildi',
+        greeting: 'Merhaba',
+        message: 'Siparisiniz basariyla teslim edildi. Melora deneyiminizin keyifli gecmesini diler, sizi yeniden agirlamaktan mutluluk duyariz.',
+        cta: 'Siparis detaylarini goruntuleyin',
+      },
     },
     en: {
       pending_payment: {
@@ -272,6 +286,13 @@ const getStatusEmailContent = (status, order) => {
         greeting: 'Hello',
         message: 'Your order has been handed to the shipping carrier and is now making its way to you. You can follow its latest status at any time from your tracking page.',
         cta: 'Track your order',
+      },
+      delivered: {
+        subject: 'Your Melora order has been delivered',
+        title: 'Your order has been delivered',
+        greeting: 'Hello',
+        message: 'We are delighted to let you know that your order has been delivered successfully. We hope you love your Melora experience and would be glad to serve you again.',
+        cta: 'View your order details',
       },
     },
   };
@@ -313,6 +334,13 @@ const getStatusEmailContent = (status, order) => {
     case 'shipped':
       payload = {
         ...selected.shipped,
+        trackingNumber,
+        trackUrl
+      };
+      break;
+    case 'delivered':
+      payload = {
+        ...selected.delivered,
         trackingNumber,
         trackUrl
       };

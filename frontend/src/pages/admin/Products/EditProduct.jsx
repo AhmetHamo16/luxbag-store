@@ -336,6 +336,8 @@ const EditProduct = () => {
   const [variants, setVariants] = useState([]);
   const [images, setImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
+  const acceptedImageTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+  const acceptedImageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif', '.avif'];
 
   const getCategoryLabel = (category) => {
     const en = category?.name?.en || 'Unnamed';
@@ -424,7 +426,28 @@ const EditProduct = () => {
     setFormData(prev => ({ ...prev, barcode: generated }));
   };
 
-  const handleFileChange = (e) => setImages([...images, ...Array.from(e.target.files)]);
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const validFiles = [];
+
+    selectedFiles.forEach((file) => {
+      const fileName = String(file.name || '').toLowerCase();
+      const hasAcceptedExtension = acceptedImageExtensions.some((extension) => fileName.endsWith(extension));
+
+      if (acceptedImageTypes.has(file.type) || hasAcceptedExtension) {
+        validFiles.push(file);
+        return;
+      }
+
+      toast.error(`Unsupported image format: ${file.name}. Please use JPG, PNG, WEBP, GIF, or AVIF.`);
+    });
+
+    if (validFiles.length) {
+      setImages((current) => [...current, ...validFiles]);
+    }
+
+    e.target.value = '';
+  };
   const removeExistingImage = (index) => setExistingImages(existingImages.filter((_, i) => i !== index));
   const removeNewImage = (index) => setImages(images.filter((_, i) => i !== index));
 
@@ -835,7 +858,7 @@ const EditProduct = () => {
               <h2 className="text-lg font-medium text-black">{copy.mediaGallery}</h2>
             </div>
             
-            <input type="file" multiple onChange={handleFileChange} accept="image/*,.jfif,.avif,.heic,.heif" className="w-full border border-dashed border-gray-300 p-8 text-center cursor-pointer mb-6 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors" />
+            <input type="file" multiple onChange={handleFileChange} accept=".jpg,.jpeg,.png,.webp,.gif,.jfif,.avif,image/jpeg,image/png,image/webp,image/gif,image/avif" className="w-full border border-dashed border-gray-300 p-8 text-center cursor-pointer mb-6 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 transition-colors" />
             
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                {existingImages.map((imgObj, i) => (

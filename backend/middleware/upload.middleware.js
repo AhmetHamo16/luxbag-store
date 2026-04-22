@@ -5,7 +5,7 @@ const multer = require('multer');
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'products');
 fs.mkdirSync(uploadsDir, { recursive: true });
 
-const allowedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif', '.avif', '.heic', '.heif']);
+const allowedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif', '.avif']);
 
 const isAllowedImageFile = (file = {}) => {
   const mime = String(file.mimetype || '').toLowerCase();
