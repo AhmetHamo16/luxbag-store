@@ -11,6 +11,7 @@ import BackToTop from './components/layout/BackToTop';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import FloatingSocials from './components/shared/FloatingSocials';
 import AnnouncementBar from './components/layout/AnnouncementBar';
+import SitewideCodBanner from './components/layout/SitewideCodBanner';
 import { contentService } from './services/contentService';
 
 import useLangStore from './store/useLangStore';
@@ -112,6 +113,7 @@ function App() {
           <Route path="/*" element={
             <>
               <AnnouncementBar content={globalContent?.announcementBar} />
+              <SitewideCodBanner />
               <Navbar />
               <CartDrawer />
               <main className="grow">
