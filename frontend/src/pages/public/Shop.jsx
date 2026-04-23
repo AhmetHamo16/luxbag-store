@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProductCard from '../../components/product/ProductCard';
 import Loader from '../../components/shared/Loader';
 import { productService } from '../../services/productService';
@@ -17,6 +17,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   const [filterTrigger, setFilterTrigger] = useState(0);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const productGridRef = useRef(null);
   
   const { t, language } = useTranslation('shop');
   const location = useLocation();
@@ -355,6 +356,17 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     setIsMobileFiltersOpen(false);
   };
 
+  const scrollToProductGrid = () => {
+    productGridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handlePageChange = (nextPage) => {
+    setCurrentPage(nextPage);
+    requestAnimationFrame(() => {
+      scrollToProductGrid();
+    });
+  };
+
   const totalPages = Math.max(1, Math.ceil(products.length / PRODUCTS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const pageStartIndex = (safeCurrentPage - 1) * PRODUCTS_PER_PAGE;
@@ -538,7 +550,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
           </div>
           
           {/* Top Bar */}
-          <div className="mb-8 flex flex-col gap-4 rounded-[26px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:rounded-[28px]">
+          <div ref={productGridRef} className="mb-8 flex flex-col gap-4 rounded-[26px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:rounded-[28px]">
             <span className="text-sm font-medium text-[#6d5a48]">
               {language === 'ar'
                 ? `${paginationCopy.summary} ${visibleFrom} إلى ${visibleTo} من ${products.length} منتج`
@@ -587,7 +599,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                   <div className="flex flex-wrap items-center justify-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() => handlePageChange(Math.max(safeCurrentPage - 1, 1))}
                       disabled={safeCurrentPage === 1}
                       className="rounded-full border border-[#dcc4a5] bg-[#fffaf5] px-4 py-2 text-sm font-semibold text-[#6d4b26] transition disabled:cursor-not-allowed disabled:opacity-45 hover:bg-[#f6ecdf]"
                     >
@@ -599,7 +611,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                         <button
                           key={pageNumber}
                           type="button"
-                          onClick={() => setCurrentPage(pageNumber)}
+                          onClick={() => handlePageChange(pageNumber)}
                           className={`h-11 min-w-[44px] rounded-full border text-sm font-bold transition ${
                             isActive
                               ? 'border-[#2c1d12] bg-[#2c1d12] text-[#fff7ee] shadow-[0_10px_22px_rgba(44,29,18,0.18)]'
@@ -612,7 +624,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                     })}
                     <button
                       type="button"
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() => handlePageChange(Math.min(safeCurrentPage + 1, totalPages))}
                       disabled={safeCurrentPage === totalPages}
                       className="rounded-full border border-[#dcc4a5] bg-[#fffaf5] px-4 py-2 text-sm font-semibold text-[#6d4b26] transition disabled:cursor-not-allowed disabled:opacity-45 hover:bg-[#f6ecdf]"
                     >
