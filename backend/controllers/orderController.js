@@ -1491,8 +1491,9 @@ exports.getAdminStats = async (req, res) => {
 
     const User = require('../models/User');
     const Product = require('../models/Product');
+    const Setting = require('../models/Setting');
 
-    const [orders, users, products, topProductsAgg] = await Promise.all([
+    const [orders, users, products, topProductsAgg, settings] = await Promise.all([
       Order.find(dateFilter),
       User.find(dateFilter),
       Product.find(dateFilter),
@@ -1501,10 +1502,15 @@ exports.getAdminStats = async (req, res) => {
         { $group: { _id: "$items.product", qtysold: { $sum: "$items.quantity" }, name: { $first: "$items.name" } } },
         { $sort: { qtysold: -1 } },
         { $limit: 5 }
-      ])
+      ]),
+      Setting.findOne()
     ]);
 
-    const totalRevenue = orders.reduce((acc, curr) => acc + (curr.totalAmount || curr.total || 0), 0);
+    const revenueAdjustment = Number(settings?.dashboardRevenueAdjustment || 0);
+    const ordersAdjustment = Number(settings?.dashboardOrdersAdjustment || 0);
+    const rawRevenue = orders.reduce((acc, curr) => acc + (curr.totalAmount || curr.total || 0), 0);
+    const totalRevenue = Math.max(0, rawRevenue + revenueAdjustment);
+    const totalOrders = Math.max(0, orders.length + ordersAdjustment);
     
     // Top 5 formatting
     const topProducts = topProductsAgg.map(p => ({
@@ -1613,7 +1619,7 @@ exports.getAdminStats = async (req, res) => {
       success: true,
       data: {
         totalRevenue: totalRevenue.toFixed(2),
-        totalOrders: orders.length,
+        totalOrders,
         totalUsers: users.length,
         totalProducts: products.length,
         topProducts,

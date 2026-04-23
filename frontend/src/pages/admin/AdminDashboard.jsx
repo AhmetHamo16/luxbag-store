@@ -70,7 +70,16 @@ const dashboardUi = {
     status: 'Status',
     criticalStock: 'Critical Stock Alerts',
     leftInWarehouse: 'left in warehouse',
-    pendingPayment: 'Pending Payment'
+    pendingPayment: 'Pending Payment',
+    statsControl: 'Revenue & Orders Control',
+    revenueAdjustment: 'Revenue Adjustment',
+    ordersAdjustment: 'Orders Adjustment',
+    statsHelp: 'Use positive numbers to increase and negative numbers to reduce the dashboard totals.',
+    saveAdjustments: 'Save Adjustments',
+    resetStats: 'Reset Revenue & Orders',
+    statsResetSuccess: 'Dashboard totals were reset successfully.',
+    statsSaveSuccess: 'Dashboard adjustments saved successfully.',
+    statsSaveFailed: 'Failed to update dashboard totals.'
   },
   ar: {
     monthlyTarget: 'الهدف الشهري',
@@ -130,7 +139,16 @@ const dashboardUi = {
     status: 'الحالة',
     criticalStock: 'تنبيهات المخزون الحرج',
     leftInWarehouse: 'متبقي في المستودع',
-    pendingPayment: 'بانتظار الدفع'
+    pendingPayment: 'بانتظار الدفع',
+    statsControl: 'التحكم في الإيراد والطلبات',
+    revenueAdjustment: 'تعديل الإيراد',
+    ordersAdjustment: 'تعديل الطلبات',
+    statsHelp: 'استخدمي رقمًا موجبًا للزيادة ورقمًا سالبًا للنقصان في إجماليات الداشبورد.',
+    saveAdjustments: 'حفظ التعديلات',
+    resetStats: 'تصفير الإيراد والطلبات',
+    statsResetSuccess: 'تم تصفير إجماليات الداشبورد بنجاح.',
+    statsSaveSuccess: 'تم حفظ تعديلات الداشبورد بنجاح.',
+    statsSaveFailed: 'تعذر تحديث إجماليات الداشبورد.'
   },  tr: {
     monthlyTarget: 'Aylik Hedef',
     weeklyTarget: 'Haftalik Hedef',
@@ -189,7 +207,16 @@ const dashboardUi = {
     status: 'Durum',
     criticalStock: 'Kritik Stok Uyarilari',
     leftInWarehouse: 'depoda kalan',
-    pendingPayment: 'Ödeme Bekliyor'
+    pendingPayment: 'Ödeme Bekliyor',
+    statsControl: 'Gelir ve Siparis Kontrolu',
+    revenueAdjustment: 'Gelir Duzeltmesi',
+    ordersAdjustment: 'Siparis Duzeltmesi',
+    statsHelp: 'Toplamlari artirmak icin pozitif, azaltmak icin negatif deger kullanin.',
+    saveAdjustments: 'Duzeltmeleri Kaydet',
+    resetStats: 'Gelir ve Siparisleri Sifirla',
+    statsResetSuccess: 'Panel toplamlari basariyla sifirlandi.',
+    statsSaveSuccess: 'Panel duzeltmeleri basariyla kaydedildi.',
+    statsSaveFailed: 'Panel toplamlari guncellenemedi.'
   }
 };
 
@@ -224,60 +251,72 @@ const AdminDashboard = () => {
   const [weeklySalesTarget, setWeeklySalesTarget] = useState(0);
   const [monthlyTargetInput, setMonthlyTargetInput] = useState('0');
   const [weeklyTargetInput, setWeeklyTargetInput] = useState('0');
+  const [revenueAdjustmentInput, setRevenueAdjustmentInput] = useState('0');
+  const [ordersAdjustmentInput, setOrdersAdjustmentInput] = useState('0');
+  const [currentRevenueAdjustment, setCurrentRevenueAdjustment] = useState(0);
+  const [currentOrdersAdjustment, setCurrentOrdersAdjustment] = useState(0);
   const [savingTargets, setSavingTargets] = useState(false);
+  const [savingAdjustments, setSavingAdjustments] = useState(false);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('all'); // 'today', 'week', 'month', 'year', 'all'
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const [res, posRes, shiftsRes, settingsRes] = await Promise.all([
-          orderService.getAdminStats(timeframe),
-          orderService.getPosSummary(),
-          orderService.getPosShifts(6),
-          settingsService.getSettings()
-        ]);
-        const data = res.data;
-        
-        setStats({
-          totalRevenue: data.totalRevenue,
-          totalOrders: data.totalOrders,
-          totalProducts: data.totalProducts,
-          totalUsers: data.totalUsers,
-          inventoryStats: data.inventoryStats || { totalUnits: 0, lowStockCount: 0, outOfStockCount: 0 },
-          visitorStats: data.visitorStats || { today: 0, week: 0, month: 0, allTime: 0 }
-        });
-        
-        setTrends(data.trends || { revenue: 0, orders: 0, users: 0 });
-        setChartData(data.revenueByDay || []);
-        setPieData(data.ordersByStatus || []);
-        setLowStockAlerts(data.lowStockAlerts || []);
-        setTopProducts(data.topProducts || []);
-        setPosSummary(posRes.data || posRes || {
-          today: { totalSales: 0, invoices: 0, pieces: 0, estimatedProfit: 0, discountTotal: 0 },
-          month: { totalSales: 0, invoices: 0, bestDay: null, salesByDay: [] },
-          topProducts: [],
-          lowProducts: [],
-          recentSales: []
-        });
-        setPosShifts(shiftsRes.data || []);
-        const nextMonthlyTarget = Number(settingsRes?.data?.monthlySalesTarget || 0);
-        const nextWeeklyTarget = Number(settingsRes?.data?.weeklySalesTarget || 0);
-        setMonthlySalesTarget(nextMonthlyTarget);
-        setWeeklySalesTarget(nextWeeklyTarget);
-        setMonthlyTargetInput(String(nextMonthlyTarget || ''));
-        setWeeklyTargetInput(String(nextWeeklyTarget || ''));
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [res, posRes, shiftsRes, settingsRes] = await Promise.all([
+        orderService.getAdminStats(timeframe),
+        orderService.getPosSummary(),
+        orderService.getPosShifts(6),
+        settingsService.getSettings()
+      ]);
+      const data = res.data;
+      
+      setStats({
+        totalRevenue: data.totalRevenue,
+        totalOrders: data.totalOrders,
+        totalProducts: data.totalProducts,
+        totalUsers: data.totalUsers,
+        inventoryStats: data.inventoryStats || { totalUnits: 0, lowStockCount: 0, outOfStockCount: 0 },
+        visitorStats: data.visitorStats || { today: 0, week: 0, month: 0, allTime: 0 }
+      });
+      
+      setTrends(data.trends || { revenue: 0, orders: 0, users: 0 });
+      setChartData(data.revenueByDay || []);
+      setPieData(data.ordersByStatus || []);
+      setLowStockAlerts(data.lowStockAlerts || []);
+      setTopProducts(data.topProducts || []);
+      setPosSummary(posRes.data || posRes || {
+        today: { totalSales: 0, invoices: 0, pieces: 0, estimatedProfit: 0, discountTotal: 0 },
+        month: { totalSales: 0, invoices: 0, bestDay: null, salesByDay: [] },
+        topProducts: [],
+        lowProducts: [],
+        recentSales: []
+      });
+      setPosShifts(shiftsRes.data || []);
+      const nextMonthlyTarget = Number(settingsRes?.data?.monthlySalesTarget || 0);
+      const nextWeeklyTarget = Number(settingsRes?.data?.weeklySalesTarget || 0);
+      const nextRevenueAdjustment = Number(settingsRes?.data?.dashboardRevenueAdjustment || 0);
+      const nextOrdersAdjustment = Number(settingsRes?.data?.dashboardOrdersAdjustment || 0);
+      setMonthlySalesTarget(nextMonthlyTarget);
+      setWeeklySalesTarget(nextWeeklyTarget);
+      setMonthlyTargetInput(String(nextMonthlyTarget || ''));
+      setWeeklyTargetInput(String(nextWeeklyTarget || ''));
+      setCurrentRevenueAdjustment(nextRevenueAdjustment);
+      setCurrentOrdersAdjustment(nextOrdersAdjustment);
+      setRevenueAdjustmentInput(String(nextRevenueAdjustment || 0));
+      setOrdersAdjustmentInput(String(nextOrdersAdjustment || 0));
 
-        // Fetch recent orders
-        const ordersRes = await orderService.getAllOrders('', 'All', 1, 5);
-        setRecentOrders(ordersRes.data || []);
-      } catch (err) {
-        console.error("Failed to load dashboard data", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Fetch recent orders
+      const ordersRes = await orderService.getAllOrders('', 'All', 1, 5);
+      setRecentOrders(ordersRes.data || []);
+    } catch (err) {
+      console.error("Failed to load dashboard data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchDashboardData();
   }, [timeframe]);
 
@@ -333,6 +372,50 @@ const AdminDashboard = () => {
       toast.error(ui.saveFailed);
     } finally {
       setSavingTargets(false);
+    }
+  };
+
+  const saveDashboardAdjustments = async () => {
+    try {
+      setSavingAdjustments(true);
+      const nextRevenueAdjustment = Number(revenueAdjustmentInput || 0);
+      const nextOrdersAdjustment = Number(ordersAdjustmentInput || 0);
+      await settingsService.updateSettings({
+        dashboardRevenueAdjustment: nextRevenueAdjustment,
+        dashboardOrdersAdjustment: nextOrdersAdjustment
+      });
+      setCurrentRevenueAdjustment(nextRevenueAdjustment);
+      setCurrentOrdersAdjustment(nextOrdersAdjustment);
+      toast.success(ui.statsSaveSuccess);
+      await fetchDashboardData();
+    } catch (error) {
+      console.error(error);
+      toast.error(ui.statsSaveFailed);
+    } finally {
+      setSavingAdjustments(false);
+    }
+  };
+
+  const resetDashboardTotals = async () => {
+    try {
+      setSavingAdjustments(true);
+      const nextRevenueAdjustment = Number((currentRevenueAdjustment - Number(stats.totalRevenue || 0)).toFixed(2));
+      const nextOrdersAdjustment = currentOrdersAdjustment - Number(stats.totalOrders || 0);
+      await settingsService.updateSettings({
+        dashboardRevenueAdjustment: nextRevenueAdjustment,
+        dashboardOrdersAdjustment: nextOrdersAdjustment
+      });
+      setCurrentRevenueAdjustment(nextRevenueAdjustment);
+      setCurrentOrdersAdjustment(nextOrdersAdjustment);
+      setRevenueAdjustmentInput(String(nextRevenueAdjustment));
+      setOrdersAdjustmentInput(String(nextOrdersAdjustment));
+      toast.success(ui.statsResetSuccess);
+      await fetchDashboardData();
+    } catch (error) {
+      console.error(error);
+      toast.error(ui.statsSaveFailed);
+    } finally {
+      setSavingAdjustments(false);
     }
   };
 
@@ -393,6 +476,56 @@ const AdminDashboard = () => {
 
       {/* Stats Grid */}
       <h3 className="text-lg font-serif text-brand mb-4">{t?.dashboard?.storeOverview || 'Store Overview'}</h3>
+      <div className="mb-6 rounded-2xl border border-[#eadbca] bg-[linear-gradient(135deg,#fffaf5,#f5eadf)] p-6 shadow-sm">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#9d7848]">{ui.statsControl}</p>
+            <p className="mt-2 text-sm text-[#6f5b49]">{ui.statsHelp}</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-4">
+            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-4">
+              <label className="text-xs uppercase tracking-[0.2em] text-[#9d7848]">{ui.revenueAdjustment}</label>
+              <input
+                type="number"
+                step="0.01"
+                value={revenueAdjustmentInput}
+                onChange={(e) => setRevenueAdjustmentInput(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-[#e3d1bd] bg-white px-3 py-2 text-sm font-semibold text-[#25170f] outline-none transition focus:border-[#8b6914] focus:ring-2 focus:ring-[#8b6914]/15"
+              />
+            </div>
+            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-4">
+              <label className="text-xs uppercase tracking-[0.2em] text-[#9d7848]">{ui.ordersAdjustment}</label>
+              <input
+                type="number"
+                step="1"
+                value={ordersAdjustmentInput}
+                onChange={(e) => setOrdersAdjustmentInput(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-[#e3d1bd] bg-white px-3 py-2 text-sm font-semibold text-[#25170f] outline-none transition focus:border-[#8b6914] focus:ring-2 focus:ring-[#8b6914]/15"
+              />
+            </div>
+            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-4">
+              <button
+                type="button"
+                onClick={saveDashboardAdjustments}
+                disabled={savingAdjustments}
+                className="mt-6 w-full rounded-xl bg-[#1d1730] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#2a2145] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {savingAdjustments ? '...' : ui.saveAdjustments}
+              </button>
+            </div>
+            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-4">
+              <button
+                type="button"
+                onClick={resetDashboardTotals}
+                disabled={savingAdjustments}
+                className="mt-6 w-full rounded-xl bg-[#8b6914] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#6f5310] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {savingAdjustments ? '...' : ui.resetStats}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
           { key: 'totalRevenue', label: t?.dashboard?.totalRevenue || 'Total Revenue', value: formatPrice(stats.totalRevenue), icon: DollarSign, trend: trends.revenue },

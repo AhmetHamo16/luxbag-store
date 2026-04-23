@@ -34,6 +34,14 @@ const settingSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
+  dashboardRevenueAdjustment: {
+    type: Number,
+    default: 0
+  },
+  dashboardOrdersAdjustment: {
+    type: Number,
+    default: 0
+  },
   notificationTone: {
     type: String,
     default: 'custom',
