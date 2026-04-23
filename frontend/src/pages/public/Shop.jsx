@@ -269,16 +269,6 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     }
   }, [location.search, dbCategories, activeCategory]);
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeCategory, sortOption, language, location.pathname, location.search, categorySlugs]);
-
   const heroImages = [
     {
       src: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=80',
@@ -371,6 +361,16 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   const paginatedProducts = products.slice(pageStartIndex, pageStartIndex + PRODUCTS_PER_PAGE);
   const visibleFrom = products.length === 0 ? 0 : pageStartIndex + 1;
   const visibleTo = products.length === 0 ? 0 : Math.min(pageStartIndex + PRODUCTS_PER_PAGE, products.length);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, sortOption, language, location.pathname, location.search, categorySlugs]);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
