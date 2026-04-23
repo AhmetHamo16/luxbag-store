@@ -5,6 +5,7 @@ import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import useTranslation from '../../hooks/useTranslation';
 import { Link, useLocation } from 'react-router-dom';
+import { resolveAssetUrl } from '../../utils/assets';
 
 const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath = '/shop' }) => {
   const [products, setProducts] = useState([]);
@@ -15,9 +16,11 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   const [maxPrice, setMaxPrice] = useState('');
   const [filterTrigger, setFilterTrigger] = useState(0);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   
   const { t, language } = useTranslation('shop');
   const location = useLocation();
+  const PRODUCTS_PER_PAGE = 12;
   
   const [dbCategories, setDbCategories] = useState([]);
   const collectionBar = [
@@ -119,6 +122,22 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   collectionBar[4].ar = 'نظارات شمسية';
   collectionCards[3].ar = { title: 'نظارات شمسية', subtitle: 'تصاميم أنيقة تحمي حضورك وتكمل إطلالتك' };
 
+  const getCollectionCardImage = (card) => {
+    const categoryGroups = {
+      bags: ['classic', 'mini', 'shoulder', 'evening', 'bags', 'bag', 'wallet'],
+      watches: ['watches', 'watch'],
+      perfumes: ['perfumes', 'perfume', 'parfum', 'parfumler'],
+      glasses: ['glasses', 'sunglasses', 'eyewear'],
+    };
+
+    const matchedCategory = dbCategories.find((category) => {
+      const slug = String(category?.slug || '').toLowerCase();
+      return categoryGroups[card.key]?.includes(slug);
+    });
+
+    return matchedCategory?.image ? resolveAssetUrl(matchedCategory.image, card.image) : card.image;
+  };
+
   useEffect(() => {
     const defaultSeo = {
       en: {
@@ -200,9 +219,11 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
         fetched = fetched.filter((product) => allowedIds.has(String(product.category?._id || product.category)));
       }
 
-      const cats = [{ name: t.allCategories || 'All', value: '' }, ...categoryRows.map(c => ({
+      const cats = [{ name: t.allCategories || 'All', value: '', slug: '', image: '' }, ...categoryRows.map(c => ({
         name: getCategoryName(c),
-        value: c._id
+        value: c._id,
+        slug: c.slug,
+        image: c.image || ''
       }))];
       
       setDbCategories(cats);
@@ -247,6 +268,16 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
       setActiveCategory(matched.value);
     }
   }, [location.search, dbCategories, activeCategory]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, sortOption, language, location.pathname, location.search, categorySlugs]);
 
   const heroImages = [
     {
@@ -312,7 +343,14 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     tr: { filters: 'Filtreler', close: 'Kapat', apply: 'Filtreleri Uygula', clear: 'Sifirla' },
   }[language] || { filters: 'Filters', close: 'Close', apply: 'Apply Filters', clear: 'Reset' };
 
+  const paginationCopy = {
+    en: { previous: 'Previous', next: 'Next', summary: 'Showing' },
+    ar: { previous: 'السابق', next: 'التالي', summary: 'عرض' },
+    tr: { previous: 'Onceki', next: 'Sonraki', summary: 'Gosterilen' },
+  }[language] || { previous: 'Previous', next: 'Next', summary: 'Showing' };
+
   const handleApplyFilters = () => {
+    setCurrentPage(1);
     setFilterTrigger((prev) => prev + 1);
     setIsMobileFiltersOpen(false);
   };
@@ -322,9 +360,17 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
     setMinPrice('');
     setMaxPrice('');
     setSortOption('-createdAt');
+    setCurrentPage(1);
     setFilterTrigger((prev) => prev + 1);
     setIsMobileFiltersOpen(false);
   };
+
+  const totalPages = Math.max(1, Math.ceil(products.length / PRODUCTS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const pageStartIndex = (safeCurrentPage - 1) * PRODUCTS_PER_PAGE;
+  const paginatedProducts = products.slice(pageStartIndex, pageStartIndex + PRODUCTS_PER_PAGE);
+  const visibleFrom = products.length === 0 ? 0 : pageStartIndex + 1;
+  const visibleTo = products.length === 0 ? 0 : Math.min(pageStartIndex + PRODUCTS_PER_PAGE, products.length);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
@@ -427,7 +473,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 >
                   <div className="relative h-52 overflow-hidden">
                     <img
-                      src={card.image}
+                      src={getCollectionCardImage(card)}
                       alt={copy.title}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
@@ -493,7 +539,13 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
           
           {/* Top Bar */}
           <div className="mb-8 flex flex-col gap-4 rounded-[26px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:rounded-[28px]">
-            <span className="text-sm font-medium text-[#6d5a48]">{t.showing?.replace('{count}', products.length) || `Showing ${products.length} products`}</span>
+            <span className="text-sm font-medium text-[#6d5a48]">
+              {language === 'ar'
+                ? `${paginationCopy.summary} ${visibleFrom} إلى ${visibleTo} من ${products.length} منتج`
+                : language === 'tr'
+                  ? `${paginationCopy.summary} ${visibleFrom}-${visibleTo} / ${products.length} urun`
+                  : `${paginationCopy.summary} ${visibleFrom} to ${visibleTo} of ${products.length} products`}
+            </span>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-2">
               <span className="text-xs uppercase tracking-[0.18em] text-[#8b6b4b] sm:text-sm sm:normal-case sm:tracking-normal">{t.sortBy || 'Sort by:'}</span>
               <select 
@@ -512,8 +564,9 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
           {loading ? (
             <Loader />
           ) : (
+            <>
             <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
-              {products.length > 0 ? products.map(product => (
+              {products.length > 0 ? paginatedProducts.map(product => (
                 <ProductCard key={product._id} product={product} />
               )) : (
                 <div className="col-span-full rounded-[28px] border border-dashed border-[#dac7b1] bg-white/70 px-6 py-16 text-center text-[#7b6651]">
@@ -521,6 +574,55 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
                 </div>
               )}
             </div>
+            {products.length > PRODUCTS_PER_PAGE && (
+              <div className="mt-10 rounded-[28px] border border-[#eadcc8] bg-white/88 px-4 py-5 shadow-[0_15px_35px_rgba(71,45,20,0.06)] backdrop-blur-sm sm:px-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm font-medium text-[#6d5a48]">
+                    {language === 'ar'
+                      ? `${paginationCopy.summary} ${visibleFrom} إلى ${visibleTo} من ${products.length} منتج`
+                      : language === 'tr'
+                        ? `${paginationCopy.summary} ${visibleFrom}-${visibleTo} / ${products.length} urun`
+                        : `${paginationCopy.summary} ${visibleFrom} to ${visibleTo} of ${products.length} products`}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={safeCurrentPage === 1}
+                      className="rounded-full border border-[#dcc4a5] bg-[#fffaf5] px-4 py-2 text-sm font-semibold text-[#6d4b26] transition disabled:cursor-not-allowed disabled:opacity-45 hover:bg-[#f6ecdf]"
+                    >
+                      {paginationCopy.previous}
+                    </button>
+                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => {
+                      const isActive = pageNumber === safeCurrentPage;
+                      return (
+                        <button
+                          key={pageNumber}
+                          type="button"
+                          onClick={() => setCurrentPage(pageNumber)}
+                          className={`h-11 min-w-[44px] rounded-full border text-sm font-bold transition ${
+                            isActive
+                              ? 'border-[#2c1d12] bg-[#2c1d12] text-[#fff7ee] shadow-[0_10px_22px_rgba(44,29,18,0.18)]'
+                              : 'border-[#e6d7c4] bg-white text-[#7a5b3a] hover:border-[#d8bea0] hover:bg-[#fbf2e7]'
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={safeCurrentPage === totalPages}
+                      className="rounded-full border border-[#dcc4a5] bg-[#fffaf5] px-4 py-2 text-sm font-semibold text-[#6d4b26] transition disabled:cursor-not-allowed disabled:opacity-45 hover:bg-[#f6ecdf]"
+                    >
+                      {paginationCopy.next}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>
           )}
 
         </main>
