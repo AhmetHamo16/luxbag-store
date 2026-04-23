@@ -329,13 +329,13 @@ const Home = () => {
               <img loading="lazy" src="/logo.png" alt="Watermark" className="w-full h-auto object-contain" />
             </div>
             <div className="relative z-20 max-w-xl">
-              {adminSettings?.paymentMethods?.cod && (
-                <div className="mb-4 inline-flex items-center gap-3 rounded-full border border-[#c9a36a] bg-[#2f1f15] px-5 py-3 text-[12px] font-bold uppercase tracking-[0.24em] text-[#fff4df] shadow-[0_16px_40px_rgba(47,31,21,0.18)]">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#e8c27a]" />
-                  <span>{copy.codBadge}</span>
-                </div>
-              )}
               <div className="rounded-[30px] border border-white/70 bg-white/58 px-5 py-6 shadow-[0_20px_60px_rgba(77,47,19,0.1)] backdrop-blur-md sm:px-7 sm:py-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none" style={{ minHeight: '260px', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', direction: slides[currentCopy].dir, textAlign: slides[currentCopy].dir === 'rtl' ? 'right' : 'left' }}>
+                {adminSettings?.paymentMethods?.cod && (
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#e3cfb9] bg-white/80 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#8b5e34] shadow-sm">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#e8c27a]" />
+                    <span>{copy.codBadge}</span>
+                  </div>
+                )}
                 <span className="mb-4 block text-[11px] uppercase tracking-[0.28em] text-[#8b5e34] sm:mb-6 md:text-sm">{copy.collectionLabel}</span>
                 <h1 className="mb-4 font-serif text-[2rem] leading-[1.08] text-[#2f1f15] sm:text-[2.5rem] md:mb-6 md:text-5xl lg:text-6xl">
                   {getHeroTitle(slides[currentCopy])}
