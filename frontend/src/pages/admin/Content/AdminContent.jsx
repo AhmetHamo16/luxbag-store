@@ -30,6 +30,8 @@ const AdminContent = () => {
       phone: '',
       email: '',
       whatsapp: '',
+      instagram: '',
+      tiktok: '',
       address: { en: '', ar: '', tr: '' }
     },
     homeSections: {
@@ -64,7 +66,7 @@ const AdminContent = () => {
           setFormData({
             heroBanner: res.data.heroBanner || formData.heroBanner,
             aboutUs: res.data.aboutUs || formData.aboutUs,
-            contactInfo: res.data.contactInfo || formData.contactInfo,
+            contactInfo: { ...formData.contactInfo, ...(res.data.contactInfo || {}) },
             homeSections: res.data.homeSections || formData.homeSections,
             productPage: res.data.productPage || formData.productPage,
             footerText: res.data.footerText || formData.footerText,
@@ -256,6 +258,14 @@ const AdminContent = () => {
             <div>
               <label className="block text-sm font-medium mb-1">WhatsApp Line</label>
               <input type="text" value={formData.contactInfo.whatsapp} onChange={(e) => handleContactChange('whatsapp', e.target.value)} className="w-full border p-2 focus:outline-none focus:border-black text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Instagram URL</label>
+              <input type="url" value={formData.contactInfo.instagram || ''} onChange={(e) => handleContactChange('instagram', e.target.value)} className="w-full border p-2 focus:outline-none focus:border-black text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">TikTok URL</label>
+              <input type="url" value={formData.contactInfo.tiktok || ''} onChange={(e) => handleContactChange('tiktok', e.target.value)} className="w-full border p-2 focus:outline-none focus:border-black text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Physical Address ({activeLang.toUpperCase()})</label>

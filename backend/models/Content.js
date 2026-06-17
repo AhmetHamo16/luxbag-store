@@ -24,6 +24,8 @@ const contentSchema = new mongoose.Schema({
     phone: { type: String, default: '' },
     email: { type: String, default: '' },
     whatsapp: { type: String, default: '' },
+    instagram: { type: String, default: '' },
+    tiktok: { type: String, default: '' },
     address: { ...localizedString }
   },
 

@@ -1,21 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { contentService } from '../../services/contentService';
+
+const fallbackLinks = {
+  whatsapp: 'https://wa.me/905057777723',
+  instagram: 'https://www.instagram.com/melora_cantasi?igsh=MmgzbWhoajk2eHps',
+  tiktok: 'https://www.tiktok.com/@meloraantas?_r=1&_t=ZS-94txKQpbGVB'
+};
+
+const toWhatsAppUrl = (value) => {
+  if (!value) return fallbackLinks.whatsapp;
+  if (value.startsWith('http')) return value;
+  const digits = value.replace(/\D/g, '');
+  return digits ? `https://wa.me/${digits}` : fallbackLinks.whatsapp;
+};
 
 const FloatingSocials = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [links, setLinks] = useState(fallbackLinks);
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Appear after scrolling 100px natively
-      setIsVisible(window.scrollY > 100);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    contentService.getContent()
+      .then((res) => {
+        const contactInfo = res.data?.contactInfo || res.data?.data?.contactInfo || {};
+        setLinks({
+          whatsapp: toWhatsAppUrl(contactInfo.whatsapp),
+          instagram: contactInfo.instagram || fallbackLinks.instagram,
+          tiktok: contactInfo.tiktok || fallbackLinks.tiktok
+        });
+      })
+      .catch(() => {});
   }, []);
 
   const socials = [
     {
       id: 'whatsapp',
-      url: 'https://wa.me/905057777723',
+      url: links.whatsapp,
       bgClass: 'bg-[#25D366] hover:bg-[#128C7E]',
       shadow: 'shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)]',
       tooltip: 'Chat with us',
@@ -25,7 +43,7 @@ const FloatingSocials = () => {
     },
     {
       id: 'instagram',
-      url: 'https://www.instagram.com/melora_cantasi?igsh=MmgzbWhoajk2eHps',
+      url: links.instagram,
       bgClass: 'bg-gradient-to-tr from-[#FD1D1D] to-[#833AB4] hover:opacity-90',
       shadow: 'shadow-[0_4px_14px_rgba(225,48,108,0.4)] hover:shadow-[0_6px_20px_rgba(225,48,108,0.6)]',
       tooltip: 'Follow us',
@@ -35,7 +53,7 @@ const FloatingSocials = () => {
     },
     {
       id: 'tiktok',
-      url: 'https://www.tiktok.com/@meloraantas?_r=1&_t=ZS-94txKQpbGVB',
+      url: links.tiktok,
       bgClass: 'bg-black hover:bg-gray-800',
       shadow: 'shadow-[0_4px_14px_rgba(0,0,0,0.4)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)]',
       tooltip: 'Watch us',
@@ -46,7 +64,7 @@ const FloatingSocials = () => {
   ];
 
   return (
-    <div className={`fixed bottom-6 right-6 z-[90] hidden md:flex flex-col gap-4 transition-all duration-500 ease-in-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+    <div className="fixed bottom-20 right-4 z-[90] flex flex-col gap-3 transition-all duration-300 ease-in-out sm:bottom-6 sm:right-6 sm:gap-4">
       {socials.map((platform) => (
         <div key={platform.id} className="relative group flex items-center justify-center">
           {/* Tooltip */}
@@ -60,7 +78,7 @@ const FloatingSocials = () => {
             href={platform.url} 
             target="_blank" 
             rel="noreferrer"
-            className={`w-[40px] h-[40px] md:w-[50px] md:h-[50px] rounded-full flex items-center justify-center ${platform.bgClass} ${platform.shadow} ${platform.darkShadow} hover:scale-110 transition-all duration-300 select-none cursor-pointer border border-[#ffffff20]`}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border border-[#ffffff20] ${platform.bgClass} ${platform.shadow} transition-all duration-300 hover:scale-110 sm:h-[50px] sm:w-[50px]`}
           >
             {platform.icon}
           </a>

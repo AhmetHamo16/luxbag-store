@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 
 export default function useDarkMode() {
   const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('theme')) {
-      return localStorage.getItem('theme');
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        return savedTheme;
+      }
     }
-    return 'light'; // default theme
+    return 'light';
   });
 
   const colorTheme = theme === 'dark' ? 'light' : 'dark';
@@ -14,6 +17,7 @@ export default function useDarkMode() {
     const root = window.document.documentElement;
     root.classList.remove(colorTheme);
     root.classList.add(theme);
+    root.style.colorScheme = theme;
 
     if (typeof window !== 'undefined') {
       localStorage.setItem('theme', theme);

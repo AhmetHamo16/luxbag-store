@@ -352,6 +352,27 @@ const Navbar = () => {
             </div>
           </div>
 
+          <button
+            type="button"
+            onClick={() => setTheme(colorTheme)}
+            className="flex items-center justify-between rounded-3xl border border-[var(--border-primary)]/60 bg-white/70 px-4 py-4 text-brand shadow-sm transition-colors hover:text-gold dark:bg-white/5"
+          >
+            <span className="text-sm font-semibold uppercase tracking-[0.18em]">
+              {language === 'tr' ? 'Koyu Mod' : 'Dark Mode'}
+            </span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2f2117] text-[#f8efe2] dark:bg-gold dark:text-[#0a0a0a]">
+              {colorTheme === 'light' ? (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </span>
+          </button>
+
           <div className="grid grid-cols-3 gap-3">
             <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl border border-[#eadcc8] bg-white/80 px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-brand shadow-sm">
               {t.shop}

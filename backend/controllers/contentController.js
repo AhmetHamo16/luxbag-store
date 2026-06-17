@@ -20,6 +20,8 @@ exports.getContent = async (req, res) => {
           phone: '+1 800 MELORA',
           email: 'hello@melora.com',
           whatsapp: '+1 800 555 1234',
+          instagram: 'https://www.instagram.com/melora_cantasi?igsh=MmgzbWhoajk2eHps',
+          tiktok: 'https://www.tiktok.com/@meloraantas?_r=1&_t=ZS-94txKQpbGVB',
           address: { en: '123 Fashion Ave, NY', ar: '123 شارع الموضة، نيويورك', tr: '123 Moda Cad, NY' }
         },
         homeSections: {
