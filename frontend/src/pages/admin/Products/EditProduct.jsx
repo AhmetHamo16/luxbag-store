@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
@@ -443,10 +443,7 @@ const EditProduct = () => {
     });
 
     if (validFiles.length) {
-      // Replacing product media in edit mode should feel deterministic:
-      // the newly selected files become the new gallery and main image.
-      setExistingImages([]);
-      setImages(validFiles);
+      setImages((current) => [...current, ...validFiles]);
     }
 
     e.target.value = '';
@@ -558,7 +555,6 @@ const EditProduct = () => {
          data.append('existingImages', JSON.stringify(existingImages));
       }
       if (images.length > 0) {
-        data.append('replaceImages', 'true');
         for(let i = 0; i < images.length; i++) {
           data.append('images', images[i]);
         }

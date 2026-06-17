@@ -33,10 +33,20 @@ const localDiskStorage = multer.diskStorage({
   },
 });
 
-// Always accept uploads to local disk first. Product/category/content controllers
-// can then promote files to Cloudinary when credentials are valid, while still
-// allowing saves to succeed if Cloudinary is temporarily misconfigured.
-const storage = localDiskStorage;
+const { cloudinary, hasCloudinaryConfig } = require('../config/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Use Cloudinary directly if configured, otherwise fallback to local disk.
+// This ensures images are directly uploaded with proper URLs without manual promotion logic failing.
+const storage = hasCloudinaryConfig 
+  ? new CloudinaryStorage({
+      cloudinary,
+      params: {
+        folder: 'melora/products',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif', 'avif'],
+      },
+    })
+  : localDiskStorage;
 
 const upload = multer({
   storage,
