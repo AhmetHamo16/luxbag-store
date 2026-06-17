@@ -246,7 +246,7 @@ const Navbar = () => {
             <button 
               type="button"
               onClick={() => setTheme(colorTheme)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-brand shadow-sm transition-colors hover:text-gold md:h-auto md:w-auto md:bg-transparent md:shadow-none shrink-0 cursor-pointer"
+              className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#ead9c5] bg-[#fff8ec] text-[#6f4a1f] shadow-sm transition-all duration-300 hover:border-[#c99b4f] hover:bg-[#f7dfb1] hover:text-[#2f2117] dark:border-[#d8ad63]/55 dark:bg-[#2a2117] dark:text-[#f4d7a1] dark:shadow-[0_0_18px_rgba(216,173,99,0.18)] dark:hover:bg-[#d8ad63] dark:hover:text-[#17110b] md:h-9 md:w-9"
               aria-label="Toggle Dark Mode"
             >
               {colorTheme === 'light' ? (
@@ -355,12 +355,12 @@ const Navbar = () => {
           <button
             type="button"
             onClick={() => setTheme(colorTheme)}
-            className="flex items-center justify-between rounded-3xl border border-[var(--border-primary)]/60 bg-white/70 px-4 py-4 text-brand shadow-sm transition-colors hover:text-gold dark:bg-white/5"
+            className="flex items-center justify-between rounded-3xl border border-[#ead9c5] bg-[#fff8ec] px-4 py-4 text-[#6f4a1f] shadow-sm transition-all duration-300 hover:border-[#c99b4f] hover:bg-[#f7dfb1] dark:border-[#d8ad63]/45 dark:bg-[#1d1711] dark:text-[#f4d7a1] dark:shadow-[0_14px_28px_rgba(0,0,0,0.18)] dark:hover:bg-[#2a2117]"
           >
             <span className="text-sm font-semibold uppercase tracking-[0.18em]">
               {language === 'tr' ? 'Koyu Mod' : 'Dark Mode'}
             </span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2f2117] text-[#f8efe2] dark:bg-gold dark:text-[#0a0a0a]">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#6f4a1f] text-[#fff8ec] shadow-sm dark:bg-[#d8ad63] dark:text-[#17110b] dark:shadow-[0_0_18px_rgba(216,173,99,0.28)]">
               {colorTheme === 'light' ? (
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
