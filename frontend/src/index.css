@@ -73,6 +73,42 @@
     background: var(--bg-primary);
     color: var(--text-primary);
   }
+
+  .dark .melora-footer {
+    background: #2a1c12 !important;
+    color: #fff8ed !important;
+  }
+
+  .dark .melora-footer h1,
+  .dark .melora-footer h2,
+  .dark .melora-footer h3,
+  .dark .melora-footer h4,
+  .dark .melora-footer p,
+  .dark .melora-footer li,
+  .dark .melora-footer a,
+  .dark .melora-footer span {
+    color: #f4dfc3 !important;
+    opacity: 1 !important;
+  }
+
+  .dark .melora-footer h3 {
+    color: #fff8ed !important;
+  }
+
+  .dark .melora-footer a:hover,
+  .dark .melora-footer button {
+    color: #f0bd63 !important;
+  }
+
+  .dark .melora-footer input {
+    border-color: #9a754d !important;
+    color: #fff8ed !important;
+  }
+
+  .dark .melora-footer input::placeholder {
+    color: #c9aa85 !important;
+    opacity: 1 !important;
+  }
 }
 
 @layer utilities {
