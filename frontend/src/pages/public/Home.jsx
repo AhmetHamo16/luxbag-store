@@ -331,8 +331,8 @@ const Home = () => {
             <div className="relative z-20 max-w-xl">
               <div className="rounded-[30px] border border-white/70 bg-white/58 px-5 py-6 shadow-[0_20px_60px_rgba(77,47,19,0.1)] backdrop-blur-md sm:px-7 sm:py-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none" style={{ minHeight: '260px', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease', direction: slides[currentCopy].dir, textAlign: slides[currentCopy].dir === 'rtl' ? 'right' : 'left' }}>
                 {adminSettings?.paymentMethods?.cod && (
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#e3cfb9] bg-white/80 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#8b5e34] shadow-sm">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#e8c27a]" />
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#b8844d] bg-[#5b3318] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#fff4df] shadow-[0_10px_24px_rgba(91,51,24,0.22)]">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#f4c76f] shadow-[0_0_0_5px_rgba(244,199,111,0.22)]" />
                     <span>{copy.codBadge}</span>
                   </div>
                 )}
@@ -357,10 +357,10 @@ const Home = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:gap-4">
-                <Link to="/shop" className="w-full rounded-[1.35rem] border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#fffaf4] shadow-[0_16px_30px_rgba(47,31,21,0.14)] transition-colors duration-300 hover:bg-[#8b5e34] hover:border-[#8b5e34] dark:border-gold dark:bg-gold dark:text-[#120c08] dark:hover:bg-[#e3c08a] sm:w-auto">
+                <Link to="/shop" className="w-full rounded-[1.35rem] border border-[#2f1f15] bg-[#2f1f15] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#fffaf4] shadow-[0_16px_30px_rgba(47,31,21,0.14)] transition-colors duration-300 hover:border-[#8b5e34] hover:bg-[#8b5e34] dark:border-[#d9ad6a] dark:bg-[#d9ad6a] dark:text-[#120c08] dark:hover:bg-[#f0c56e] sm:w-auto">
                   {content?.heroBanner?.buttonText?.[language] || copy.shopNow || t.shopNow || 'Shop Now'}
                 </Link>
-                <Link to="/categories" className="w-full rounded-[1.35rem] border border-[#2f1f15] bg-white/65 px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#2f1f15] transition-colors duration-300 hover:bg-[#2f1f15] hover:text-[#fffaf4] dark:border-[var(--border-color)] dark:text-[var(--text-primary)] dark:hover:bg-[var(--bg-card)] dark:hover:text-[var(--text-primary)] sm:w-auto">
+                <Link to="/categories" className="w-full rounded-[1.35rem] border border-[#6b4528] bg-[#fff8ee] px-8 py-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#4a2a14] shadow-[0_12px_26px_rgba(74,42,20,0.08)] transition-colors duration-300 hover:border-[#2f1f15] hover:bg-[#2f1f15] hover:text-[#fffaf4] dark:border-[#d9ad6a] dark:bg-[#fff2dd] dark:text-[#3a210f] dark:hover:bg-[#d9ad6a] dark:hover:text-[#120c08] sm:w-auto">
                   {copy.viewCollection}
                 </Link>
               </div>
