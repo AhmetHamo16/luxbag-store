@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import { contentService } from '../../services/contentService';
 import { getAvailableStock, getStockLevel, isAvailableForPurchase } from '../../utils/stock';
 import { getProductFallbackImage, resolveAssetUrl as sharedResolveAssetUrl } from '../../utils/assets';
+import { toWhatsAppUrl } from '../../utils/whatsapp';
 
 const ProductDetail = () => {
   const { id } = useParams(); // URL param acts as slug/id
@@ -783,7 +784,7 @@ const ProductDetail = () => {
                {ui.share}
             </button>
             
-            <a href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.shareMessage)}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
+            <a href={toWhatsAppUrl('05057777723', ui.shareMessage)} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
                {ui.whatsapp}
             </a>
           </div>
@@ -853,7 +854,7 @@ const ProductDetail = () => {
             </button>
             
             <a 
-              href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`} 
+              href={toWhatsAppUrl('05057777723', ui.orderMessage)}
               target="_blank" 
               rel="noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] bg-[#25D366] px-4 py-4 text-sm font-medium uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-[#128C7E] sm:w-auto sm:rounded-full md:px-6 whitespace-nowrap"
@@ -1047,7 +1048,7 @@ const ProductDetail = () => {
             {canPurchase ? (t.addToCart || 'Add to Cart') : 'Soon'}
           </button>
           <a
-            href={`https://wa.me/905057777723?text=${encodeURIComponent(ui.orderMessage)}`}
+            href={toWhatsAppUrl('05057777723', ui.orderMessage)}
             target="_blank"
             rel="noreferrer"
             className="rounded-full bg-[#25D366] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white"

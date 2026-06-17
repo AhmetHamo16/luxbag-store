@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { normalizeWhatsAppNumber } from '../../utils/whatsapp';
 
 const FloatingWhatsApp = () => {
   const [waNumber, setWaNumber] = useState('905057777723'); // Custom overridden fallback
@@ -21,8 +22,7 @@ const FloatingWhatsApp = () => {
     fetchNumber();
   }, []);
 
-  // Ensure digits only for wa.me link
-  const cleanNumber = waNumber.replace(/[^0-9]/g, '');
+  const cleanNumber = normalizeWhatsAppNumber(waNumber);
 
   return (
     <div className="fixed bottom-6 right-6 z-[90] group">

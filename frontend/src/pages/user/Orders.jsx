@@ -4,6 +4,7 @@ import Loader from '../../components/shared/Loader';
 import { orderService } from '../../services/orderService';
 import useLangStore from '../../store/useLangStore';
 import { resolveProductImage } from '../../utils/assets';
+import { toWhatsAppUrl } from '../../utils/whatsapp';
 
 const copyMap = {
   en: {
@@ -130,7 +131,7 @@ const Orders = () => {
                 <div className="flex flex-col items-end gap-3 text-right">
                   <p className="text-lg font-medium text-brand">${order.total?.toFixed(2)}</p>
                   <button
-                    onClick={() => window.open(`https://wa.me/905000000000?text=I%20need%20help%20with%20my%20order%20%23${order._id}`, '_blank')}
+                    onClick={() => window.open(toWhatsAppUrl('05057777723', `I need help with my order #${order._id}`), '_blank')}
                     className="flex items-center gap-1.5 rounded-full border border-green-200 px-3 py-1.5 text-xs font-medium text-[#25D366] transition-colors hover:bg-green-50 hover:text-[#128C7E]"
                   >
                     <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.266 2.008.772 2.88l-1.01 3.692 3.774-.99a5.727 5.727 0 002.231.45h.001c3.18 0 5.767-2.586 5.767-5.766 0-3.181-2.588-5.766-5.767-5.766zm0 9.773c-.859 0-1.7-.231-2.435-.668l-.174-.103-1.808.474.484-1.763-.113-.18a4.8 4.8 0 01-.734-2.569c0-2.656 2.16-4.815 4.818-4.815 2.656 0 4.816 2.158 4.816 4.815-.001 2.657-2.16 4.815-4.816 4.815z" /></svg>

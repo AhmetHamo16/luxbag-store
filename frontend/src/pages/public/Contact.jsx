@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import useLangStore from '../../store/useLangStore';
 import { contentService } from '../../services/contentService';
+import { toWhatsAppUrl } from '../../utils/whatsapp';
 
 const fallbackSocialLinks = {
   whatsapp: 'https://wa.me/905057777723',
   instagram: 'https://www.instagram.com/melora_cantasi?igsh=MmgzbWhoajk2eHps',
   tiktok: 'https://www.tiktok.com/@meloraantas?_r=1&_t=ZS-94txKQpbGVB'
-};
-
-const toWhatsAppUrl = (value) => {
-  if (!value) return fallbackSocialLinks.whatsapp;
-  if (value.startsWith('http')) return value;
-  const digits = value.replace(/\D/g, '');
-  return digits ? `https://wa.me/${digits}` : fallbackSocialLinks.whatsapp;
 };
 
 const Contact = () => {
