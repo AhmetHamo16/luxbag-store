@@ -57,8 +57,8 @@ const ProductCard = ({ product }) => {
   const badgeLabel = hasNewBadge ? 'New' : hasFeaturedBadge ? 'Featured' : null;
 
   return (
-    <div className="group relative flex min-h-[330px] w-full flex-col overflow-hidden rounded-[24px] border border-[#e7dccd] bg-[linear-gradient(180deg,#fffefb_0%,#fbf6ef_55%,#f4ebdf_100%)] shadow-[0_14px_38px_rgba(73,43,16,0.08)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_22px_56px_rgba(73,43,16,0.16)] dark:border-[#9b7448] dark:bg-[linear-gradient(180deg,#21140e_0%,#1a100b_100%)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.5)] sm:h-[470px] sm:rounded-[28px] lg:h-[530px]">
-      <div className="relative h-[205px] w-full overflow-hidden rounded-b-[26px] bg-transparent dark:bg-[linear-gradient(180deg,#e6dac7_0%,#c4a77f_58%,#987653_100%)] dark:p-5 sm:h-[74%] sm:rounded-b-[30px] sm:dark:p-6">
+    <div className="group relative flex min-h-[330px] w-full flex-col overflow-hidden rounded-[24px] border border-[#9b7448] bg-[linear-gradient(180deg,#21140e_0%,#1a100b_100%)] shadow-[0_18px_48px_rgba(0,0,0,0.5)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_22px_56px_rgba(0,0,0,0.58)] sm:h-[470px] sm:rounded-[28px] lg:h-[530px]">
+      <div className="relative h-[205px] w-full overflow-hidden rounded-b-[26px] bg-[linear-gradient(180deg,#e6dac7_0%,#c4a77f_58%,#987653_100%)] p-5 sm:h-[74%] sm:rounded-b-[30px] sm:p-6">
         <button
           type="button"
           onClick={(event) => {
@@ -66,11 +66,11 @@ const ProductCard = ({ product }) => {
             event.stopPropagation();
             toggleWishlist(product);
           }}
-          className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-white/92 shadow-sm backdrop-blur transition-all duration-300 hover:bg-[#f7efe4] dark:bg-[#2a1d17] dark:text-[#f7efe2] dark:shadow-[0_8px_18px_rgba(0,0,0,0.32)] sm:right-4 sm:top-4"
+          className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-[#2a1d17] text-[#f7efe2] shadow-[0_8px_18px_rgba(0,0,0,0.32)] backdrop-blur transition-all duration-300 hover:bg-[#3a281f] sm:right-4 sm:top-4"
           aria-label={copy.addToWishlist}
         >
           <svg
-            className={`h-5 w-5 transition-colors ${isSaved ? 'fill-black text-black dark:fill-white dark:text-white' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
+            className={`h-5 w-5 transition-colors ${isSaved ? 'fill-[#f7efe2] text-[#f7efe2]' : 'text-[#f7efe2]/75 hover:text-[#f7efe2]'}`}
             fill={isSaved ? 'currentColor' : 'none'}
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -89,7 +89,7 @@ const ProductCard = ({ product }) => {
             src={image}
             alt={safeName}
             loading="lazy"
-            className="h-full w-full object-contain object-center bg-[radial-gradient(circle_at_top,#fffefb_0%,#f7f0e6_58%,#ecdfcf_100%)] p-2.5 transition-transform duration-1000 ease-out group-hover:scale-105 dark:bg-transparent dark:p-0 sm:p-5"
+            className="h-full w-full object-contain object-center bg-transparent p-0 transition-transform duration-1000 ease-out group-hover:scale-105"
             onError={(event) => {
               event.currentTarget.src = categoryFallbackImage;
             }}
@@ -118,10 +118,10 @@ const ProductCard = ({ product }) => {
       </div>
 
       <div className="flex flex-1 flex-col justify-between px-3 pb-4 pt-3 text-center sm:h-[26%] sm:px-5 sm:pb-5 sm:pt-4">
-        <div className="mx-auto mb-2 h-px w-10 bg-[#c7aa82] dark:bg-[#d9ad6a] sm:mb-3 sm:w-12"></div>
+        <div className="mx-auto mb-2 h-px w-10 bg-[#d9ad6a] sm:mb-3 sm:w-12"></div>
         <Link to={`/product/${product.slug || product._id || product.id}`} className="block">
           <h3
-            className="line-clamp-2 min-h-[2.7rem] font-serif text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[#2f2117] dark:text-[#fff5e8] sm:min-h-0 sm:text-[15px] sm:tracking-[0.2em]"
+            className="line-clamp-2 min-h-[2.7rem] font-serif text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[#fff5e8] sm:min-h-0 sm:text-[15px] sm:tracking-[0.2em]"
             title={safeName}
           >
             {safeName}
@@ -134,12 +134,12 @@ const ProductCard = ({ product }) => {
               <span className="text-[10px] font-light text-gray-400 line-through sm:text-xs">
                 {formatPrice(product.oldPrice)}
               </span>
-              <span className="rounded-full border border-[#ead9c5] bg-white/88 px-3 py-2 text-[13px] font-bold tracking-[0.08em] text-[#2f2117] shadow-sm dark:border-[#d9ad6a] dark:bg-[#fff2dd] dark:text-[#3a210f] dark:shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:px-4 sm:text-base sm:tracking-[0.14em]">
+              <span className="rounded-full border border-[#d9ad6a] bg-[#fff2dd] px-3 py-2 text-[13px] font-bold tracking-[0.08em] text-[#3a210f] shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:px-4 sm:text-base sm:tracking-[0.14em]">
                 {formatPrice(product.price)}
               </span>
             </>
           ) : (
-            <span className="rounded-full border border-[#ead9c5] bg-white/88 px-3 py-2 text-[13px] font-bold tracking-[0.08em] text-[#2f2117] shadow-sm dark:border-[#d9ad6a] dark:bg-[#fff2dd] dark:text-[#3a210f] dark:shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:px-4 sm:text-base sm:tracking-[0.14em]">
+            <span className="rounded-full border border-[#d9ad6a] bg-[#fff2dd] px-3 py-2 text-[13px] font-bold tracking-[0.08em] text-[#3a210f] shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:px-4 sm:text-base sm:tracking-[0.14em]">
               {formatPrice(product.price)}
             </span>
           )}
