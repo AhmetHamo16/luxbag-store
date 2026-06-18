@@ -172,9 +172,9 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-[4.5rem] sm:h-16 rounded-b-[1.5rem] border-b border-[#eadcc8]/70 bg-white/80 px-1 shadow-[0_8px_24px_rgba(44,29,18,0.04)] backdrop-blur-md md:rounded-none md:border-b-0 md:bg-transparent md:px-0 md:shadow-none">
           
           {/* Logo (allowed to shrink so icons on right are protected) */}
-          <div className="shrink flex items-center min-w-[68px]">
-            <Link to="/" className="inline-flex items-center rounded-xl border border-[#d8c6ad] bg-[#fffaf1]/95 p-1.5 shadow-[0_8px_22px_rgba(44,29,18,0.12)] transition-transform duration-300 hover:scale-105 dark:border-[#d9ad6a] dark:bg-[#fff4e5]">
-              <img loading="lazy" src="/logo.png" className="h-11 w-auto max-w-[118px] object-contain opacity-0 animate-fade-in contrast-125 saturate-125 drop-shadow-[0_2px_4px_rgba(44,29,18,0.28)] transition-all duration-500 ease-out sm:h-12" alt="Melora Logo" />
+          <div className="shrink flex items-center min-w-[82px]">
+            <Link to="/" className="inline-flex items-center rounded-xl border border-[#c9a875] bg-[#fffdf8] p-0.5 shadow-[0_8px_22px_rgba(44,29,18,0.18)] transition-transform duration-300 hover:scale-105 dark:border-[#d9ad6a] dark:bg-[#fff7ea]">
+              <img loading="lazy" src="/logo.png" className="h-[3.65rem] w-auto max-w-[142px] object-contain opacity-0 animate-fade-in contrast-150 saturate-150 brightness-90 drop-shadow-[0_2px_5px_rgba(44,29,18,0.36)] transition-all duration-500 ease-out sm:h-[3.85rem]" alt="Melora Logo" />
             </Link>
           </div>
           
