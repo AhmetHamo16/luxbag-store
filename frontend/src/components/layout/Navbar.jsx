@@ -173,8 +173,8 @@ const Navbar = () => {
           
           {/* Logo (allowed to shrink so icons on right are protected) */}
           <div className="shrink flex items-center min-w-[82px]">
-            <Link to="/" className="inline-flex items-center rounded-xl border border-[#c9a875] bg-[#fffdf8] p-0.5 shadow-[0_8px_22px_rgba(44,29,18,0.18)] transition-transform duration-300 hover:scale-105 dark:border-[#d9ad6a] dark:bg-[#fff7ea]">
-              <img loading="lazy" src="/logo.png" className="h-[3.65rem] w-auto max-w-[142px] object-contain opacity-0 animate-fade-in contrast-150 saturate-150 brightness-90 drop-shadow-[0_2px_5px_rgba(44,29,18,0.36)] transition-all duration-500 ease-out sm:h-[3.85rem]" alt="Melora Logo" />
+            <Link to="/" className="inline-flex items-center rounded-xl border border-[#e6d5bd]/70 bg-[#f7efe3]/80 p-0.5 shadow-[0_3px_10px_rgba(44,29,18,0.08)] transition-transform duration-300 hover:scale-105 dark:border-[#d9ad6a]/60 dark:bg-[#f7ead8]/85">
+              <img loading="lazy" src="/logo.png" className="h-[3.65rem] w-auto max-w-[142px] object-contain opacity-0 animate-fade-in contrast-150 saturate-150 brightness-90 drop-shadow-[0_1px_3px_rgba(44,29,18,0.28)] transition-all duration-500 ease-out sm:h-[3.85rem]" alt="Melora Logo" />
             </Link>
           </div>
           
