@@ -35,6 +35,11 @@ const ProductCard = ({ product }) => {
   };
 
   const copy = labels[language] || labels.en;
+  const badgeCopy = {
+    en: { new: 'New', featured: 'Best Seller' },
+    ar: { new: 'جديد', featured: 'الأكثر طلباً' },
+    tr: { new: 'Yeni', featured: 'Cok Satan' },
+  }[language] || { new: 'New', featured: 'Best Seller' };
 
   const toggleWishlist = (item) => {
     toggleWishlistStoreItem(item);
@@ -53,8 +58,8 @@ const ProductCard = ({ product }) => {
   const availableStock = getAvailableStock(product);
   const stockLevel = getStockLevel(availableStock);
   const hasNewBadge = product.badges?.includes('New');
-  const hasFeaturedBadge = product.badges?.includes('Featured') || product.isFeatured;
-  const badgeLabel = hasNewBadge ? 'New' : hasFeaturedBadge ? 'Featured' : null;
+  const hasFeaturedBadge = product.badges?.includes('Featured') || product.isFeatured || Number(product.reviewCount || 0) >= 3;
+  const badgeLabel = hasNewBadge ? badgeCopy.new : hasFeaturedBadge ? badgeCopy.featured : null;
 
   return (
     <div className="group relative flex min-h-[330px] w-full flex-col overflow-hidden rounded-[24px] border border-[#e7dccd] bg-[linear-gradient(180deg,#fffefb_0%,#fbf6ef_55%,#f4ebdf_100%)] shadow-[0_14px_38px_rgba(73,43,16,0.08)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_22px_56px_rgba(73,43,16,0.16)] dark:border-[#9b7448] dark:bg-[linear-gradient(180deg,#21140e_0%,#1a100b_100%)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.5)] sm:h-[470px] sm:rounded-[28px] lg:h-[530px]">

@@ -41,7 +41,8 @@ const Home = () => {
       codBadge: 'Cash On Delivery Available',
       codTitle: 'Pay at your door with confidence.',
       codDescription: 'You can now complete your order with cash on delivery or choose direct bank transfer.',
-      heroNotice: 'Cash on delivery available'
+      heroNotice: 'Cash on delivery available',
+      promoTrust: ['Cash on delivery', 'Fast WhatsApp support', 'Curated daily picks'],
     },
     ar: {
       collectionLabel: 'تشكيلة ميلورا الموقعة',
@@ -59,7 +60,8 @@ const Home = () => {
       codBadge: 'الدفع عند الباب متوفر',
       codTitle: 'اطلبي الآن وادفعي عند الباب بكل راحة.',
       codDescription: 'يمكنك الآن إتمام الطلب عبر الدفع عند الباب أو اختيار التحويل البنكي المباشر.',
-      heroNotice: 'الدفع عند الباب متوفر'
+      heroNotice: 'الدفع عند الباب متوفر',
+      promoTrust: ['الدفع عند الباب', 'دعم سريع عبر واتساب', 'اختيارات يومية أنيقة'],
     },
     tr: {
       collectionLabel: 'Melora Imza Koleksiyonu',
@@ -77,7 +79,8 @@ const Home = () => {
       codBadge: 'Kapıda ödeme mevcuttur',
       codTitle: 'Siparisini ver, kapida guvenle ode.',
       codDescription: 'Artik siparisini kapida odeme ile tamamlayabilir veya banka havalesini tercih edebilirsin.',
-      heroNotice: 'Kapıda ödeme mevcuttur'
+      heroNotice: 'Kapıda ödeme mevcuttur',
+      promoTrust: ['Kapida odeme', 'Hizli WhatsApp destek', 'Gunluk zarif secimler'],
     }
   };
 
@@ -100,6 +103,7 @@ const Home = () => {
       codTitle: 'اطلبي الآن وادفعي عند الباب بكل راحة.',
       codDescription: 'يمكنك الآن إتمام الطلب عبر الدفع عند الباب أو اختيار التحويل البنكي المباشر.',
       heroNotice: 'الدفع عند الباب متوفر',
+      promoTrust: ['الدفع عند الباب', 'دعم سريع عبر واتساب', 'اختيارات يومية أنيقة'],
     });
   }
 
@@ -404,6 +408,16 @@ const Home = () => {
             <AnimatedCounter target={50000} text={copy.customers} />
             <AnimatedCounter target={15} text={copy.countries} />
           </div>
+        </div>
+      </section>
+
+      <section className="border-y border-[#eadcc8] bg-[linear-gradient(90deg,#fffaf4_0%,#f4e7d7_50%,#fffaf4_100%)] px-4 py-4 dark:border-[#6d4a2b] dark:bg-[linear-gradient(90deg,#1a100b_0%,#2a1b12_50%,#1a100b_100%)]">
+        <div className="mx-auto grid max-w-7xl gap-3 text-center sm:grid-cols-3">
+          {(copy.promoTrust || homeCopy.en.promoTrust).map((item) => (
+            <div key={item} className="rounded-full border border-[#e1c9aa] bg-white/72 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#5f3a1b] shadow-[0_8px_20px_rgba(73,43,16,0.05)] dark:border-[#d9ad6a]/55 dark:bg-[#fff2dd] dark:text-[#3a210f]">
+              {item}
+            </div>
+          ))}
         </div>
       </section>
 

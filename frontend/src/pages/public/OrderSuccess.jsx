@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { orderService } from '../../services/orderService';
 import useLangStore from '../../store/useLangStore';
+import { toWhatsAppUrl } from '../../utils/whatsapp';
 
 const STATUS_FLOW = [
   'pending_payment',
@@ -285,6 +286,16 @@ const OrderSuccess = () => {
   const currentStatus = orderStatus?.status || 'pending';
   const currentStatusLabel = statusLabels[currentStatus] || currentStatus;
   const currentTheme = STATUS_THEMES[currentStatus] || STATUS_THEMES.pending;
+  const supportWhatsappLabel = {
+    ar: 'تواصل عبر واتساب',
+    tr: 'WhatsApp Destek',
+    en: 'Contact on WhatsApp',
+  }[language] || 'Contact on WhatsApp';
+  const supportMessage = {
+    ar: `مرحباً ميلورا، أريد الاستفسار عن طلبي${id ? ` رقم ${id}` : ''}`,
+    tr: `Merhaba Melora, siparisim hakkinda destek istiyorum${id ? `: ${id}` : ''}`,
+    en: `Hello Melora, I need support with my order${id ? `: ${id}` : ''}`,
+  }[language] || `Hello Melora, I need support with my order${id ? `: ${id}` : ''}`;
 
   const timelineSteps = useMemo(() => {
     const currentIndex = STATUS_FLOW.indexOf(currentStatus);
@@ -498,6 +509,14 @@ const OrderSuccess = () => {
                   >
                     {content.continueShopping}
                   </Link>
+                  <a
+                    href={toWhatsAppUrl('05057777723', supportMessage)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#128C7E]"
+                  >
+                    {supportWhatsappLabel}
+                  </a>
                 </div>
               </div>
             </aside>

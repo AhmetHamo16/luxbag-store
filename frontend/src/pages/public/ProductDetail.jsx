@@ -508,6 +508,43 @@ const ProductDetail = () => {
   const stockLevel = getStockLevel(availableStock);
   const canPurchase = isAvailableForPurchase(product, selectedVariant);
   const currentPrice = selectedVariant?.salePrice || selectedVariant?.price || product.salePrice || product.price;
+  const salesCopy = {
+    en: {
+      orderLine: 'Hello Melora, I would like to order this product',
+      name: 'Product',
+      price: 'Price',
+      quantity: 'Quantity',
+      link: 'Link',
+    },
+    ar: {
+      orderLine: 'مرحباً ميلورا، أريد طلب هذا المنتج',
+      name: 'المنتج',
+      price: 'السعر',
+      quantity: 'الكمية',
+      link: 'الرابط',
+    },
+    tr: {
+      orderLine: 'Merhaba Melora, bu urunu siparis vermek istiyorum',
+      name: 'Urun',
+      price: 'Fiyat',
+      quantity: 'Adet',
+      link: 'Link',
+    },
+  }[language] || {
+    orderLine: 'Hello Melora, I would like to order this product',
+    name: 'Product',
+    price: 'Price',
+    quantity: 'Quantity',
+    link: 'Link',
+  };
+  const productUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const whatsappOrderMessage = [
+    salesCopy.orderLine,
+    `${salesCopy.name}: ${name}`,
+    `${salesCopy.price}: ${formatPrice(currentPrice)}`,
+    `${salesCopy.quantity}: ${quantity}`,
+    productUrl ? `${salesCopy.link}: ${productUrl}` : '',
+  ].filter(Boolean).join('\n');
   const quickBenefits = {
     en: ['Boutique selection', 'Fast support', 'Secure ordering'],
     ar: ['اختيار بوتيكي', 'دعم سريع', 'طلب آمن'],
@@ -784,7 +821,7 @@ const ProductDetail = () => {
                {ui.share}
             </button>
             
-            <a href={toWhatsAppUrl('05057777723', ui.shareMessage)} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
+            <a href={toWhatsAppUrl('05057777723', whatsappOrderMessage)} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-[#25D366] hover:text-[#128C7E] transition-colors">
                {ui.whatsapp}
             </a>
           </div>
@@ -854,7 +891,7 @@ const ProductDetail = () => {
             </button>
             
             <a 
-              href={toWhatsAppUrl('05057777723', ui.orderMessage)}
+              href={toWhatsAppUrl('05057777723', whatsappOrderMessage)}
               target="_blank" 
               rel="noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] bg-[#25D366] px-4 py-4 text-sm font-medium uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-[#128C7E] sm:w-auto sm:rounded-full md:px-6 whitespace-nowrap"
@@ -1048,7 +1085,7 @@ const ProductDetail = () => {
             {canPurchase ? (t.addToCart || 'Add to Cart') : 'Soon'}
           </button>
           <a
-            href={toWhatsAppUrl('05057777723', ui.orderMessage)}
+            href={toWhatsAppUrl('05057777723', whatsappOrderMessage)}
             target="_blank"
             rel="noreferrer"
             className="rounded-full bg-[#25D366] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
