@@ -385,7 +385,7 @@ const Shop = ({ categorySlugs = null, seo = null, heroCopy = null, canonicalPath
   }, [activeCategory, sortOption, language, location.pathname, location.search, categorySlugs]);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
+    <div className="melora-shop-page min-h-screen bg-[radial-gradient(circle_at_top,#f7efe4_0%,#fbf7f1_38%,#ffffff_100%)] text-[var(--text-primary)] transition-colors">
       <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-10">
       
       <div className="mb-8 overflow-hidden rounded-[32px] border border-[#eadcc8] bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_45%,#efe1cf_100%)] shadow-[0_25px_60px_rgba(88,54,27,0.09)] sm:mb-10 sm:rounded-[36px]">

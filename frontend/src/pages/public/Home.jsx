@@ -322,7 +322,7 @@ const Home = () => {
 
   return (
     <div className="w-full bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors">
-      <section className="relative min-h-[88vh] w-full overflow-hidden bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_48%,#f2e5d5_100%)]">
+      <section className="melora-home-hero relative min-h-[88vh] w-full overflow-hidden bg-[linear-gradient(135deg,#f8efe5_0%,#fffaf4_48%,#f2e5d5_100%)]">
         <div className="mx-auto grid min-h-[88vh] max-w-7xl grid-cols-1 md:min-h-screen md:grid-cols-2">
           <div className="relative order-2 flex flex-col justify-center px-4 pb-12 pt-6 sm:px-8 md:order-1 md:px-16 md:pb-16 md:pt-24 lg:px-24">
             <div className="absolute left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 opacity-5 pointer-events-none">

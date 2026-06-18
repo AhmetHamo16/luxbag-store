@@ -109,6 +109,90 @@
     color: #c9aa85 !important;
     opacity: 1 !important;
   }
+
+  .dark .melora-home-hero,
+  .dark .melora-shop-page {
+    background: radial-gradient(circle at top, #2a1b12 0%, #18110d 42%, #0f0a07 100%) !important;
+    color: #fff5e7 !important;
+  }
+
+  .dark .melora-home-hero [class*="bg-white"],
+  .dark .melora-home-hero [class*="#fff"],
+  .dark .melora-shop-page [class*="bg-white"],
+  .dark .melora-shop-page [class*="#fff"],
+  .dark .melora-shop-page [class*="rgba(255,255,255"] {
+    background: linear-gradient(180deg, #2a1c13 0%, #1a100b 100%) !important;
+    border-color: #8f6a44 !important;
+    color: #fff5e7 !important;
+  }
+
+  .dark .melora-home-hero h1,
+  .dark .melora-home-hero h2,
+  .dark .melora-home-hero h3,
+  .dark .melora-home-hero p,
+  .dark .melora-home-hero span,
+  .dark .melora-home-hero button,
+  .dark .melora-home-hero a,
+  .dark .melora-shop-page h1,
+  .dark .melora-shop-page h2,
+  .dark .melora-shop-page h3,
+  .dark .melora-shop-page p,
+  .dark .melora-shop-page span,
+  .dark .melora-shop-page button,
+  .dark .melora-shop-page a,
+  .dark .melora-shop-page li,
+  .dark .melora-shop-page div {
+    color: #fff5e7 !important;
+    opacity: 1 !important;
+  }
+
+  .dark .melora-home-hero [class*="#8b5e34"],
+  .dark .melora-home-hero [class*="#9d7a52"],
+  .dark .melora-shop-page [class*="#8b5e34"],
+  .dark .melora-shop-page [class*="#9d7a52"],
+  .dark .melora-shop-page [class*="#7a5b3a"],
+  .dark .melora-shop-page [class*="#6d5a48"],
+  .dark .melora-shop-page [class*="#6a5848"] {
+    color: #d9ad6a !important;
+  }
+
+  .dark .melora-home-hero a,
+  .dark .melora-home-hero button,
+  .dark .melora-shop-page a,
+  .dark .melora-shop-page button {
+    border-color: #d9ad6a !important;
+  }
+
+  .dark .melora-home-hero a[href="/shop"],
+  .dark .melora-shop-page button[class*="bg-[#2c1d12]"],
+  .dark .melora-shop-page a[class*="bg-[#2c1d12]"] {
+    background: #d9ad6a !important;
+    color: #1a100b !important;
+    border-color: #d9ad6a !important;
+  }
+
+  .dark .melora-home-hero a[href="/categories"],
+  .dark .melora-shop-page input,
+  .dark .melora-shop-page select {
+    background: #fff2dd !important;
+    color: #2a180d !important;
+    border-color: #d9ad6a !important;
+  }
+
+  .dark .melora-shop-page input::placeholder {
+    color: #7b5938 !important;
+    opacity: 1 !important;
+  }
+
+  .dark .melora-shop-page option {
+    background: #fff2dd !important;
+    color: #2a180d !important;
+  }
+
+  .dark .melora-shop-page img + div,
+  .dark .melora-shop-page [class*="absolute inset-0 bg-[linear-gradient"] {
+    background: linear-gradient(180deg, rgba(25,16,10,0.08), rgba(25,16,10,0.74)) !important;
+  }
 }
 
 @layer utilities {
